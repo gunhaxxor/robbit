@@ -4,10 +4,10 @@ import { SelectedPage } from './selected';
 
 @NgModule({
   declarations: [
-    SelectedPage,
+    SelectedPage
   ],
   imports: [
     IonicPageModule.forChild(SelectedPage),
   ],
 })
-export class SelectedPageModule {}
+export class SelectedPageModule { }
