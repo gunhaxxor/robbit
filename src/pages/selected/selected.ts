@@ -6,7 +6,7 @@ import { BLE } from '@ionic-native/ble';
 @IonicPage()
 @Component({
   selector: 'page-selected',
-  templateUrl: 'selected.html',
+  templateUrl: 'selected.html'
 })
 export class SelectedPage {
   setStatus: any;
@@ -14,21 +14,27 @@ export class SelectedPage {
   connecteddd: boolean = false;
   uartService: any;
   uartRXCharacteristic: any;
-  constructor(public navCtrl: NavController, private ble: BLE, public loading: LoadingController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController,
+    private ble: BLE,
+    public loading: LoadingController,
+    public navParams: NavParams
+  ) {
     let device = navParams.get('device');
-    this.setStatus = ("Shaking hand with " + device.name + " ID: " + device.id);
+    this.setStatus = 'Shaking hand with ' + device.name + ' ID: ' + device.id;
     // UUID ex. FF11 = 1 on && 0 off
 
-
-    this.ble.connect(device.id).subscribe(
-      peripheral => this.onConnected(peripheral),
-      peripheral => this.onDeviceDisconnected(peripheral)
-    );
+    this.ble
+      .connect(device.id)
+      .subscribe(
+        peripheral => this.onConnected(peripheral),
+        peripheral => this.onDeviceDisconnected(peripheral)
+      );
   }
   // Loader
   presentloading() {
     const loader = this.loading.create({
-      content: "Ansluter till apparat",
+      content: 'Ansluter till apparat',
       duration: 500
     });
     loader.present();
@@ -38,11 +44,11 @@ export class SelectedPage {
     this.presentloading();
     //alert("Handshake complete");
     this.peripheral = peripheral; // Peripheral is the slave && central master
-    this.uartService = peripheral.services.find((element) => {
+    this.uartService = peripheral.services.find(element => {
       return element.includes('b5a');
     });
 
-    console.log("uartservice:" + JSON.stringify(this.uartService));
+    console.log('uartservice:' + JSON.stringify(this.uartService));
 
     // var found = array1.find(function (element) {
     //   return element > 10;
@@ -59,9 +65,10 @@ export class SelectedPage {
         }
         console.log(JSON.stringify(currentCrtscs));
       }
-
     }
-    console.log('RX characteristic: ' + JSON.stringify(this.uartRXCharacteristic));
+    console.log(
+      'RX characteristic: ' + JSON.stringify(this.uartRXCharacteristic)
+    );
     // this.uartRXCharacteristic =
     this.connecteddd = true;
     // console.log(JSON.stringify(peripheral));
@@ -69,11 +76,11 @@ export class SelectedPage {
 
   onDeviceDisconnected(peripheral) {
     this.peripheral = undefined;
-    alert("Handshake stopped");
+    alert('Handshake stopped');
     this.connecteddd = false;
   }
 
-  // When user is leaving the selected page. 
+  // When user is leaving the selected page.
   ionViewWillLeave() {
     this.ble.disconnect(this.peripheral.id);
   }
@@ -90,9 +97,14 @@ export class SelectedPage {
   sender() {
     console.log('gonna send BLE stuuufffzzz!');
     let msg: string = '1\n';
-    let buffer = new Uint8Array([msg]).buffer;
-    this.ble.write(this.peripheral.id, this.uartservice, this.uartRXCharacteristic, buffer);
+    let textEncoder = new TextEncoder();
+    // let buffer = new Uint8Array([msg]).buffer;
+    let buffer = textEncoder.encode(msg).buffer;
+    this.ble.write(
+      this.peripheral.id,
+      this.uartService,
+      this.uartRXCharacteristic,
+      buffer
+    );
   }
-
 }
-
