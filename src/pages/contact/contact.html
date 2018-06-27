@@ -1,17 +1,19 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Gunnar är bäst!!
+      Gunnar är bäst!! <button (click)="scan()"> Skanna </button>
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
-    </ion-item>
-  </ion-list>
+    <ion-list>
+      <button ion-item *ngFor="let device of devices" (click)="selecteddevice(device)">
+        <!-- <template *ngIf="{{device.name}}" > -->
+           <h2> {{ device.name }} </h2>
+           <p> {{ device.id }} </p>
+           <p> {{ device.rssi}} </p>
+        <!-- </template> -->
+        </button>  
+    </ion-list>
 </ion-content>
