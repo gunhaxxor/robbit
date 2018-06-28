@@ -1,19 +1,35 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title> är selectad</ion-title>
-    <button (click)="sender()"> Skicka </button>
+    <ion-title> Micro:bit ? </ion-title>
+
+
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <button (mouseup)="arrowLeftActive = false" (mousedown)="arrowLeftActive = true">
+    <ion-icon name="arrow-round-back"></ion-icon>
+  </button>
+  <button id="forward" (mouseup)="arrowForwardActive = false" (mousedown)="arrowForwardActive = true">
+    <ion-icon name="arrow-round-up"></ion-icon>
+  </button>
+  <button (mouseup)="arrowRightActive = false" (mousedown)="arrowRightActive = true">
+    <ion-icon name="arrow-round-forward"></ion-icon>
+  </button>
+  <button id="backward" (mouseup)="arrowBackwardActive = false" (mousedown)="arrowBackwardActive = true">
+    <ion-icon name="arrow-round-down"></ion-icon>
+  </button>
+  <button id="warning" (click)="stop()">
+    <ion-icon name="warning"></ion-icon>
+  </button>
 
 </ion-content>
 
-<ion-list *ngIf="connecteddd">
+<!-- <ion-list *ngIf="connecteddd">
   <p ion-item *ngFor="let service of peripheral.services">
     {{service}}
   </p>
-</ion-list>
+</ion-list> -->
