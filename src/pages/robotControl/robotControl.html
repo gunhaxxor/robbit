@@ -10,16 +10,16 @@
 
 
 <ion-content padding>
-  <button (mouseup)="logButtonPress(false)" (mousedown)="logButtonPress(true)">
+  <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
     <ion-icon name="arrow-round-back"></ion-icon>
   </button>
-  <button id="forward" (mouseup)="arrowForwardActive = false" (mousedown)="arrowForwardActive = true">
+  <button id="forward" (touchstart)="arrowForwardActive = true" (touchend)="arrowForwardActive = false">
     <ion-icon name="arrow-round-up"></ion-icon>
   </button>
-  <button (mouseup)="arrowRightActive = false" (mousedown)="arrowRightActive = true">
+  <button (touchstart)="arrowRightActive = true" (touchend)="arrowRightActive = false">
     <ion-icon name="arrow-round-forward"></ion-icon>
   </button>
-  <button id="backward" (mouseup)="arrowBackwardActive = false" (mousedown)="arrowBackwardActive = true">
+  <button id="backward" (touchstart)="arrowBackwardActive = true" (touchend)="arrowBackwardActive = false">
     <ion-icon name="arrow-round-down"></ion-icon>
   </button>
   <button id="warning" (click)="stop()">
