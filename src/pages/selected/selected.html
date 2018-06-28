@@ -10,7 +10,7 @@
 
 
 <ion-content padding>
-  <button (mouseup)="arrowLeftActive = false" (mousedown)="arrowLeftActive = true">
+  <button (mouseup)="logButtonPress(false)" (mousedown)="logButtonPress(true)">
     <ion-icon name="arrow-round-back"></ion-icon>
   </button>
   <button id="forward" (mouseup)="arrowForwardActive = false" (mousedown)="arrowForwardActive = true">

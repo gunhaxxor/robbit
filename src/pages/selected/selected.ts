@@ -15,12 +15,14 @@ export class SelectedPage {
   uartService: any;
   uartRXCharacteristic: any;
 
+  robotControlIntervalId: any;
+
   arrowLeftActive: boolean;
-  aroowForwardActive: boolean;
-  aroowRightActive: boolean;
+  arrowForwardActive: boolean;
+  arrowRightActive: boolean;
   arrowBackwardActive: boolean;
 
-  textEncoder = new TextEncoder();
+  textEncoder: TextEncoder;
   constructor(
     public navCtrl: NavController,
     private ble: BLE,
@@ -37,6 +39,9 @@ export class SelectedPage {
         peripheral => this.onConnected(peripheral),
         peripheral => this.onDeviceDisconnected(peripheral)
       );
+
+    //initiera vår textencoder så vi kan använda den seeen!!!
+    this.textEncoder = new TextEncoder();
   }
   // Loader
   presentloading() {
@@ -50,7 +55,7 @@ export class SelectedPage {
   onConnected(peripheral) {
     this.presentloading();
     //alert("Handshake complete");
-    this.peripheral = peripheral; // Peripheral is the slave && central master
+    this.peripheral = peripheral; // Peripheral is the slave
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
@@ -79,9 +84,25 @@ export class SelectedPage {
     // this.uartRXCharacteristic =
     this.connecteddd = true;
     // console.log(JSON.stringify(peripheral));
+
+    this.robotControlIntervalId = setInterval(() => {
+      ///Let's here check if we should send drive stuff to the robot
+      if (this.arrowLeftActive) {
+        this.left();
+      } else if (this.arrowForwardActive) {
+        this.forward();
+      } else if (this.arrowRightActive) {
+        this.right();
+      } else if (this.arrowBackwardActive) {
+        this.backward();
+      } else {
+        this.stop();
+      }
+    }, 100);
   }
 
   onDeviceDisconnected(peripheral) {
+    clearInterval(this.robotControlIntervalId);
     this.peripheral = undefined;
     alert("Handshake stopped");
     this.connecteddd = false;
@@ -97,24 +118,27 @@ export class SelectedPage {
   }
 
   ionViewDidLoad() {
-    setInterval(() => { 
-      ///Let's here check if we should send drive stuff to the robot
-      if()
-     }, 100);
     this.presentloading();
     console.log("ionViewDidLoad SelectedPage");
   }
 
   send(msg) {
-    console.log("gonna send BLE stuuufffzzz!");
+    //console.log("gonna send BLE stuuufffzzz!");
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
+    if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
+      console.error("device, service or characteristic are not set!!");
+    }
     this.ble.write(
       this.peripheral.id,
       this.uartService,
       this.uartRXCharacteristic,
       buffer
     );
+  }
+
+  logButtonPress(state: boolean) {
+    console.log("button " + state);
   }
 
   forward() {
