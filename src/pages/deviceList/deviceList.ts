@@ -2,13 +2,13 @@ import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
-import { SelectedPage } from "../selected/selected";
+import { RobotControlPage } from "../robotControl/robotControl";
 
 @Component({
   selector: "page-contact",
   templateUrl: "contact.html"
 })
-export class ContactPage {
+export class DeviceListPage {
   devices: any[] = [];
   statusMessage: string;
   setStatus: any;
@@ -42,7 +42,7 @@ export class ContactPage {
   }
   // When user selects a device from the array / list
   selecteddevice(device) {
-    this.navCtrl.push(SelectedPage, {
+    this.navCtrl.push(RobotControlPage, {
       device: device
     });
   }

@@ -5,10 +5,10 @@ import { BLE } from "@ionic-native/ble";
 
 @IonicPage()
 @Component({
-  selector: "page-selected",
-  templateUrl: "selected.html"
+  selector: "page-robotControl",
+  templateUrl: "robotControl.html"
 })
-export class SelectedPage {
+export class RobotControlPage {
   setStatus: any;
   peripheral: any;
   connecteddd: boolean = false;
