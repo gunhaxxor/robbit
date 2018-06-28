@@ -1,12 +1,12 @@
-import { Component } from "@angular/core";
-import { NavController } from "ionic-angular";
-import { BLE } from "@ionic-native/ble";
-import { LoadingController } from "ionic-angular";
-import { RobotControlPage } from "../robotControl/robotControl";
+import { Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { BLE } from '@ionic-native/ble';
+import { LoadingController } from 'ionic-angular';
+import { RobotControlPage } from '../robotControl/robotControl';
 
 @Component({
-  selector: "page-contact",
-  templateUrl: "contact.html"
+  selector: 'page-contact',
+  templateUrl: 'deviceList.html'
 })
 export class DeviceListPage {
   devices: any[] = [];
@@ -21,14 +21,14 @@ export class DeviceListPage {
   // Loader, basically updates the list when scanning is running
   presentloading() {
     const loader = this.loading.create({
-      content: "Söker efter apparater",
+      content: 'Söker efter apparater',
       duration: 3000
     });
     loader.present();
   }
   // Scan function for Bluetooth / BLE
   scan() {
-    this.setStatus = "Skannar efter bluetooth apparater";
+    this.setStatus = 'Skannar efter bluetooth apparater';
     this.devices = [];
     this.ble.scan([], 7).subscribe(device => this.DevFound(device));
     this.presentloading();
@@ -36,7 +36,7 @@ export class DeviceListPage {
   // When a device is discovered
   DevFound(device) {
     console.log(device.name);
-    if (device.name && device.name.includes("micro")) {
+    if (device.name && device.name.includes('micro')) {
       this.devices.push(device);
     }
   }
