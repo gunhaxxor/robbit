@@ -2,11 +2,13 @@ import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { BLE } from "@ionic-native/ble";
+import { ServicesProvider } from "../../providers/services/services";
 
 @IonicPage()
 @Component({
   selector: "page-robotControl",
-  templateUrl: "robotControl.html"
+  templateUrl: "robotControl.html",
+  providers: [ServicesProvider]
 })
 export class RobotControlPage {
   setStatus: any;
@@ -27,7 +29,8 @@ export class RobotControlPage {
     public navCtrl: NavController,
     private ble: BLE,
     public loading: LoadingController,
-    public navParams: NavParams
+    public navParams: NavParams,
+    public serice: ServicesProvider
   ) {
     let device = navParams.get("device");
     this.setStatus = "Shaking hand with " + device.name + " ID: " + device.id;
@@ -108,7 +111,7 @@ export class RobotControlPage {
     this.connecteddd = false;
   }
 
-  // When user is leaving the selected page.
+  // //n user is leaving the selected page.
   ionViewWillLeave() {
     this.ble.disconnect(this.peripheral.id);
   }
@@ -123,7 +126,7 @@ export class RobotControlPage {
   }
 
   send(msg) {
-    //console.log("gonna send BLE stuuufffzzz!");
+    console.log("gonna send BLE stuuufffzzz!");
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
@@ -142,23 +145,23 @@ export class RobotControlPage {
   }
 
   forward() {
-    var msg: string = "0\n";
+    var msg: string = "0102301023";
     this.send(msg);
   }
   backward() {
-    var msg: string = "1\n";
+    var msg: string = "-1023-1023";
     this.send(msg);
   }
   left() {
-    var msg: string = "3\n";
+    var msg: string = "-102301023";
     this.send(msg);
   }
   right() {
-    var msg: string = "2\n";
+    var msg: string = "01023-1023";
     this.send(msg);
   }
   stop() {
-    var msg: string = "4\n";
+    var msg: string = "0000000000";
     this.send(msg);
   }
 }

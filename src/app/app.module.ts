@@ -12,10 +12,12 @@ import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
+import { ServicesProvider } from "../providers/services/services";
+import { HttpModule } from "@angular/http";
 
 @NgModule({
   declarations: [MyApp, DeviceListPage, HomePage, TabsPage, RobotControlPage],
-  imports: [BrowserModule, IonicModule.forRoot(MyApp)],
+  imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpModule],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
@@ -29,7 +31,8 @@ import { LoadingController } from "ionic-angular";
     SplashScreen,
     BLE,
     LoadingController,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    ServicesProvider
   ]
 })
 export class AppModule {}
