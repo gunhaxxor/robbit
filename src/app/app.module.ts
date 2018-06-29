@@ -12,7 +12,7 @@ import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
-import { ServicesProvider } from "../providers/services/services";
+import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
 
 @NgModule({
@@ -32,7 +32,7 @@ import { HttpModule } from "@angular/http";
     BLE,
     LoadingController,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    ServicesProvider
+    BleService
   ]
 })
 export class AppModule {}

@@ -1,12 +1,11 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { ServicesProvider } from "../../providers/services/services";
+import { BleService } from "../../providers/bleservice/BleService";
 
 @Component({
   selector: "page-home",
-  templateUrl: "home.html",
-  providers: [ServicesProvider]
+  templateUrl: "home.html"
 })
 export class HomePage {
-  constructor(public navCtrl: NavController, public serice: ServicesProvider) {}
+  constructor(public navCtrl: NavController, public bleService: BleService) {}
 }

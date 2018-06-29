@@ -2,12 +2,10 @@
 
   <ion-navbar>
     <ion-title> Micro:bit ? </ion-title>
-
-
+    <ion-icon [ngStyle]="{'color': statusColor}" name="bluetooth">
+    </ion-icon>
   </ion-navbar>
-
 </ion-header>
-
 
 <ion-content padding>
   <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
@@ -25,11 +23,4 @@
   <button id="warning" (click)="stop()">
     <ion-icon name="warning"></ion-icon>
   </button>
-
 </ion-content>
-
-<!-- <ion-list *ngIf="connecteddd">
-  <p ion-item *ngFor="let service of peripheral.services">
-    {{service}}
-  </p>
-</ion-list> -->
