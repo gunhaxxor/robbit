@@ -84,6 +84,8 @@ export class RobotControlPage {
     this.robotControlIntervalId = setInterval(() => {
       let forwardAmt = 0;
       let turnAmt = 0;
+      let motorValue1 = 0;
+      let motorValue2 = 0;
       ///Let's here check if we should send drive stuff to the robot
       if (this.arrowLeftActive) {
         turnAmt -= 1023;
@@ -101,11 +103,16 @@ export class RobotControlPage {
         forwardAmt -= 1023;
         // this.backward();
       }
-
-      let motorValue1 = forwardAmt / 2 + turnAmt / 2;
-      let motorValue2 = forwardAmt / 2 - turnAmt / 2;
+      if (turnAmt == 0) {
+        motorValue1 = forwardAmt;
+        motorValue2 = forwardAmt;
+      } else {
+        motorValue1 = forwardAmt / 2 + turnAmt / 2;
+        motorValue2 = forwardAmt / 2 - turnAmt / 2;
+      }
       // motorValue1 += 1023;
       // motorValue2 += 1023;
+
       motorValue1 = Math.floor(motorValue1);
       motorValue2 = Math.floor(motorValue2);
       console.log(motorValue1);
