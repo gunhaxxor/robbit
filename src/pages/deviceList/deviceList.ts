@@ -3,12 +3,10 @@ import { NavController } from "ionic-angular";
 import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
 import { RobotControlPage } from "../robotControl/robotControl";
-import { ServicesProvider } from "../../providers/services/services";
 
 @Component({
   selector: "page-contact",
-  templateUrl: "deviceList.html",
-  providers: [ServicesProvider]
+  templateUrl: "deviceList.html"
 })
 export class DeviceListPage {
   devices: any[] = [];
@@ -18,14 +16,13 @@ export class DeviceListPage {
   constructor(
     public navCtrl: NavController,
     private ble: BLE,
-    public loading: LoadingController,
-    public serice: ServicesProvider
+    public loading: LoadingController
   ) {}
   // Loader, basically updates the list when scanning is running
   presentloading() {
     const loader = this.loading.create({
       content: "Söker efter apparater",
-      duration: 3000
+      duration: 50
     });
     loader.present();
   }

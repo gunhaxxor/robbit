@@ -16,14 +16,11 @@ export class RobotControlPage {
   connecteddd: boolean = false;
   uartService: any;
   uartRXCharacteristic: any;
-
   robotControlIntervalId: any;
-
   arrowLeftActive: boolean;
   arrowForwardActive: boolean;
   arrowRightActive: boolean;
   arrowBackwardActive: boolean;
-
   textEncoder: TextEncoder;
   constructor(
     public navCtrl: NavController,
@@ -54,7 +51,6 @@ export class RobotControlPage {
     });
     loader.present();
   }
-
   onConnected(peripheral) {
     this.presentloading();
     //alert("Handshake complete");
@@ -62,13 +58,10 @@ export class RobotControlPage {
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
-
     console.log("uartservice:" + JSON.stringify(this.uartService));
-
     // var found = array1.find(function (element) {
     //   return element > 10;
     // });
-
     // this.uartService = peripheral.services[3]; // We think this is the uart service
     // Här behöver vi hitta rx charactericicsgrejimojen
     for (let i = 0; i < peripheral.characteristics.length; i++) {
@@ -91,13 +84,27 @@ export class RobotControlPage {
     this.robotControlIntervalId = setInterval(() => {
       ///Let's here check if we should send drive stuff to the robot
       if (this.arrowLeftActive) {
-        this.left();
+        //this.left();
+        this.stop2();
+        this.stop3();
       } else if (this.arrowForwardActive) {
         this.forward();
       } else if (this.arrowRightActive) {
         this.right();
       } else if (this.arrowBackwardActive) {
         this.backward();
+      } else if (this.arrowForwardActive && this.arrowLeftActive) {
+        console.log("forleft");
+        this.forwardLeft();
+      } else if (this.arrowForwardActive && this.arrowRightActive) {
+        console.log("forright");
+        this.forwardRight();
+      } else if (this.arrowBackwardActive && this.arrowLeftActive) {
+        console.log("backleft");
+        this.backLeft();
+      } else if (this.arrowBackwardActive && this.arrowRightActive) {
+        console.log("backright");
+        this.backRight();
       } else {
         this.stop();
       }
@@ -160,8 +167,36 @@ export class RobotControlPage {
     var msg: string = "01023-1023";
     this.send(msg);
   }
+
+  forwardLeft() {
+    var msg: string = "5\n";
+    this.send(msg);
+  }
+  forwardRight() {
+    var msg: string = "6\n";
+    this.send(msg);
+  }
+  backLeft() {
+    var msg: string = "7\n";
+    this.send(msg);
+  }
+  backRight() {
+    var msg: string = "8\n";
+    this.send(msg);
+  }
+
   stop() {
     var msg: string = "0000000000";
+    this.send(msg);
+  }
+
+  stop2() {
+    var msg: string = "0500\n";
+    this.send(msg);
+  }
+
+  stop3() {
+    var msg: string = "0500\n";
     this.send(msg);
   }
 }
