@@ -82,33 +82,37 @@ export class RobotControlPage {
     // console.log(JSON.stringify(peripheral));
 
     this.robotControlIntervalId = setInterval(() => {
+      let forwardAmt = 0;
+      let turnAmt = 0;
       ///Let's here check if we should send drive stuff to the robot
       if (this.arrowLeftActive) {
-        //this.left();
-        this.stop2();
-        this.stop3();
-      } else if (this.arrowForwardActive) {
-        this.forward();
-      } else if (this.arrowRightActive) {
-        this.right();
-      } else if (this.arrowBackwardActive) {
-        this.backward();
-      } else if (this.arrowForwardActive && this.arrowLeftActive) {
-        console.log("forleft");
-        this.forwardLeft();
-      } else if (this.arrowForwardActive && this.arrowRightActive) {
-        console.log("forright");
-        this.forwardRight();
-      } else if (this.arrowBackwardActive && this.arrowLeftActive) {
-        console.log("backleft");
-        this.backLeft();
-      } else if (this.arrowBackwardActive && this.arrowRightActive) {
-        console.log("backright");
-        this.backRight();
-      } else {
-        this.stop();
+        turnAmt -= 1023;
+        // this.left();
       }
-    }, 100);
+      if (this.arrowForwardActive) {
+        // this.forward();
+        forwardAmt += 1023;
+      }
+      if (this.arrowRightActive) {
+        turnAmt += 1023;
+        // this.right();
+      }
+      if (this.arrowBackwardActive) {
+        forwardAmt -= 1023;
+        // this.backward();
+      }
+
+      let motorValue1 = forwardAmt / 2 + turnAmt / 2;
+      let motorValue2 = forwardAmt / 2 - turnAmt / 2;
+      // motorValue1 += 1023;
+      // motorValue2 += 1023;
+      motorValue1 = Math.floor(motorValue1);
+      motorValue2 = Math.floor(motorValue2);
+      console.log(motorValue1);
+      console.log(motorValue2);
+      let msg = "" + motorValue1 + ";" + motorValue2 + "\n";
+      this.send(msg);
+    }, 200);
   }
 
   onDeviceDisconnected(peripheral) {
@@ -133,7 +137,7 @@ export class RobotControlPage {
   }
 
   send(msg) {
-    console.log("gonna send BLE stuuufffzzz!");
+    console.log("Sending Gunnar är sämst: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
@@ -149,54 +153,5 @@ export class RobotControlPage {
 
   logButtonPress(state: boolean) {
     console.log("button " + state);
-  }
-
-  forward() {
-    var msg: string = "0102301023";
-    this.send(msg);
-  }
-  backward() {
-    var msg: string = "-1023-1023";
-    this.send(msg);
-  }
-  left() {
-    var msg: string = "-102301023";
-    this.send(msg);
-  }
-  right() {
-    var msg: string = "01023-1023";
-    this.send(msg);
-  }
-
-  forwardLeft() {
-    var msg: string = "5\n";
-    this.send(msg);
-  }
-  forwardRight() {
-    var msg: string = "6\n";
-    this.send(msg);
-  }
-  backLeft() {
-    var msg: string = "7\n";
-    this.send(msg);
-  }
-  backRight() {
-    var msg: string = "8\n";
-    this.send(msg);
-  }
-
-  stop() {
-    var msg: string = "0000000000";
-    this.send(msg);
-  }
-
-  stop2() {
-    var msg: string = "0500\n";
-    this.send(msg);
-  }
-
-  stop3() {
-    var msg: string = "0500\n";
-    this.send(msg);
   }
 }
