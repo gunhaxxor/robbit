@@ -16,12 +16,20 @@ export class BleService {
   setStatus: any;
   scanError: any;
   textEncoder: any;
+
   constructor(private ble: BLE) {
     console.log("GET TO THE CHOOOPPER");
     this.textEncoder = new TextEncoder();
   }
+
+  start() {
+    console.log("BLE service started");
+    this.scan();
+  }
+
   scan() {
     this.setStatus = "Skannar efter bluetooth apparater";
+    console.log(this.setStatus);
     this.devices = [];
     this.ble.scan([], 5).subscribe(device => this.devFound(device));
   }
@@ -37,6 +45,7 @@ export class BleService {
   }
   // Goes through found devices and attempts to connect to the first available uBit.
   connectToMicrobit(device) {
+    console.log("Connecting to micro:bit");
     this.ble
       .connect(device.id)
       .subscribe(

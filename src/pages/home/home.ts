@@ -8,4 +8,8 @@ import { BleService } from "../../providers/bleservice/BleService";
 })
 export class HomePage {
   constructor(public navCtrl: NavController, public bleService: BleService) {}
+
+  ionViewDidLoad() {
+    this.bleService.start();
+  }
 }

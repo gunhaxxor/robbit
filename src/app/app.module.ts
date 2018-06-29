@@ -30,9 +30,9 @@ import { HttpModule } from "@angular/http";
     StatusBar,
     SplashScreen,
     BLE,
+    BleService,
     LoadingController,
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
-    BleService
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
 export class AppModule {}

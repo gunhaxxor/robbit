@@ -8,6 +8,7 @@ import { BleService } from "../../providers/bleservice/BleService";
 @Component({
   selector: "page-robotControl",
   templateUrl: "robotControl.html"
+  // providers: [BleService]
 })
 export class RobotControlPage {
   setStatus: any;
