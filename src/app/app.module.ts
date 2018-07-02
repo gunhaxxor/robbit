@@ -8,6 +8,7 @@ import { HomePage } from "../pages/home/home";
 import { TabsPage } from "../pages/tabs/tabs";
 import { RobotControlPage } from "../pages/robotControl/robotControl";
 import { VideolinkPage } from "../pages/videolink/videolink";
+import { PeerPage } from "../pages/peer/peer";
 
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
@@ -15,6 +16,7 @@ import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
+import { AndroidPermissions } from "@ionic-native/android-permissions";
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { HttpModule } from "@angular/http";
     HomePage,
     TabsPage,
     RobotControlPage,
-    VideolinkPage
+    VideolinkPage,
+    PeerPage
   ],
   imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpModule],
   bootstrap: [IonicApp],
@@ -33,7 +36,8 @@ import { HttpModule } from "@angular/http";
     HomePage,
     TabsPage,
     RobotControlPage,
-    VideolinkPage
+    VideolinkPage,
+    PeerPage
   ],
   providers: [
     StatusBar,
@@ -41,6 +45,7 @@ import { HttpModule } from "@angular/http";
     BLE,
     BleService,
     LoadingController,
+    AndroidPermissions,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
