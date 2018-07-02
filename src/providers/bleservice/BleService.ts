@@ -23,8 +23,8 @@ export class BleService {
   }
 
   start() {
-    console.log("BLE service started");
     this.scan();
+    console.log("Flyger till schweiz");
   }
 
   scan() {
@@ -37,10 +37,11 @@ export class BleService {
   devFound(device) {
     console.log("found device: " + device.name);
     if (device.name && device.name.includes("micro")) {
-      if (!this.devices) {
-        this.connectToMicrobit(device);
-      }
       this.devices.push(device);
+      if (this.devices.length < 2) {
+        this.connectToMicrobit(device);
+        console.log("Hittat och ansluter till micro:bit");
+      }
     }
   }
   // Goes through found devices and attempts to connect to the first available uBit.
@@ -63,6 +64,7 @@ export class BleService {
   }
 
   onConnected(peripheral) {
+    console.log("Ansluten till enhet");
     this.selectedDevice = peripheral;
     this.connectedToDevice = true;
     this.uartService = peripheral.services.find(element => {

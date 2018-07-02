@@ -14,4 +14,8 @@ export class DeviceListPage {
     private ble: BLE,
     public bleService: BleService
   ) {}
+
+  scan() {
+    this.bleService.start();
+  }
 }
