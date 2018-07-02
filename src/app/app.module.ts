@@ -7,6 +7,7 @@ import { DeviceListPage } from "../pages/deviceList/deviceList";
 import { HomePage } from "../pages/home/home";
 import { TabsPage } from "../pages/tabs/tabs";
 import { RobotControlPage } from "../pages/robotControl/robotControl";
+import { VideolinkPage } from "../pages/videolink/videolink";
 
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
@@ -16,7 +17,14 @@ import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
 
 @NgModule({
-  declarations: [MyApp, DeviceListPage, HomePage, TabsPage, RobotControlPage],
+  declarations: [
+    MyApp,
+    DeviceListPage,
+    HomePage,
+    TabsPage,
+    RobotControlPage,
+    VideolinkPage
+  ],
   imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpModule],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -24,7 +32,8 @@ import { HttpModule } from "@angular/http";
     DeviceListPage,
     HomePage,
     TabsPage,
-    RobotControlPage
+    RobotControlPage,
+    VideolinkPage
   ],
   providers: [
     StatusBar,
