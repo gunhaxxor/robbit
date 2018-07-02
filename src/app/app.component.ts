@@ -5,6 +5,7 @@ import { SplashScreen } from "@ionic-native/splash-screen";
 import { TabsPage } from "../pages/tabs/tabs";
 import { BLE } from "@ionic-native/ble";
 import { BleService } from "../providers/bleservice/BleService";
+import { AndroidPermissions } from "@ionic-native/android-permissions";
 
 @Component({
   templateUrl: "app.html"
@@ -17,11 +18,19 @@ export class MyApp {
     statusBar: StatusBar,
     splashScreen: SplashScreen,
     public ble: BLE,
-    public bleService: BleService
+    private bleService: BleService,
+    private androidPermissions: AndroidPermissions
   ) {
     platform.ready().then(() => {
       document.addEventListener("deviceready", () => {
-        // Your code here...
+        this.androidPermissions.requestPermissions([
+          this.androidPermissions.PERMISSION.CAMERA,
+          this.androidPermissions.PERMISSION.CALL_PHONE,
+          this.androidPermissions.PERMISSION.GET_ACCOUNTS,
+          this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE,
+          this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+        ]);
+
         this.bleService.start();
       });
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
-import encoding from 'text-encoding';
+import encoding from "text-encoding";
 /*
   OUR BLE SERVICE PROVIDER
 */
