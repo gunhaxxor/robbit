@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
+import encoding from 'text-encoding';
 /*
   OUR BLE SERVICE PROVIDER
 */
@@ -19,7 +20,7 @@ export class BleService {
 
   constructor(private ble: BLE) {
     console.log("GET TO THE CHOOOPPER");
-    this.textEncoder = new TextEncoder();
+    this.textEncoder = new encoding.TextEncoder();
   }
 
   start() {
