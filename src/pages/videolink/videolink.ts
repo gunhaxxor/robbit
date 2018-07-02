@@ -1,21 +1,24 @@
 import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams } from "ionic-angular";
+import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 
 declare let cordova: any;
-/**
- * Generated class for the VideolinkPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: "page-videolink",
   templateUrl: "videolink.html"
 })
 export class VideolinkPage {
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      //this is very important
+      console.log("printing phonertc object");
+      console.log(cordova.plugins.phonertc);
+    });
+  }
 
   config = {
     isInitiator: true,
