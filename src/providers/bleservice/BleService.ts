@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
+import encoding from 'text-encoding';
 /*
   OUR BLE SERVICE PROVIDER
 */
@@ -15,11 +16,11 @@ export class BleService {
   statusMessage: string;
   setStatus: any;
   scanError: any;
-  // textEncoder: any;
+  textEncoder: any;
 
   constructor(private ble: BLE) {
     console.log("GET TO THE CHOOOPPER");
-    // this.textEncoder = new TextEncoder();
+    this.textEncoder = new encoding.TextEncoder();
   }
 
   start() {
@@ -89,20 +90,19 @@ export class BleService {
   }
 
   send(msg) {
-    console.log("sending nothing. textencoder commented out");
-    // console.log("Sending Gunnar är sämst: " + msg);
-    // // let buffer = new Uint8Array([msg]).buffer;
-    // let buffer = this.textEncoder.encode(msg).buffer;
-    // if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
-    //   console.error("device, service or characteristic are not set!!");
-    //   return;
-    // }
-    // this.ble.write(
-    //   this.peripheral.id,
-    //   this.uartService,
-    //   this.uartRXCharacteristic,
-    //   buffer
-    // );
+    console.log("Sending Gunnar är sämst: " + msg);
+    // let buffer = new Uint8Array([msg]).buffer;
+    let buffer = this.textEncoder.encode(msg).buffer;
+    if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
+      console.error("device, service or characteristic are not set!!");
+      return;
+    }
+    this.ble.write(
+      this.peripheral.id,
+      this.uartService,
+      this.uartRXCharacteristic,
+      buffer
+    );
   }
   // When connection to the selected device suddenly stops.
   onDisconnected(peripheral) {

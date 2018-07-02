@@ -1,7 +1,9 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
+import { BLE } from "@ionic-native/ble";
 import { BleService } from "../../providers/bleservice/BleService";
+import encoding from 'text-encoding';
 
 @IonicPage()
 @Component({
@@ -20,9 +22,10 @@ export class RobotControlPage {
   arrowForwardActive: boolean;
   arrowRightActive: boolean;
   arrowBackwardActive: boolean;
-  // textEncoder: TextEncoder;
+  textEncoder: encoding.TextEncoder;
   constructor(
     public navCtrl: NavController,
+    private ble: BLE,
     public loading: LoadingController,
     public navParams: NavParams,
     public bleService: BleService
