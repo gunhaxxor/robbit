@@ -37,11 +37,11 @@ for (let i = 0; i <= receivedStrings.length - 1; i++) {
     setMotorPwm(1, motor1Value);
 setMotorPwm(0, motor2Value);
 })
-let motor = false
-let motor2Value = 0
-let motor1Value = 0
-let receivedStrings: string[] = []
 let receivedString = ""
+let receivedStrings: string[] = []
+let motor1Value = 0
+let motor2Value = 0
+let motor = false
 InnanConnect = true
 valueLength = 0
 basic.showLeds(`
