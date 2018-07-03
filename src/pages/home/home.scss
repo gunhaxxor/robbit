@@ -1,7 +1,25 @@
 body {
-    background-color: blue;
+  background-color: blue;
 }
 
 header {
-    background-color: blue;
+  background-color: blue;
+}
+
+#bleicon {
+  text-align: center;
+  background-color: red;
+  border-radius: 4px;
+  width: 30px;
+  padding: 5px;
+  color: #fff;
+  border: 2px solid #000;
+  position: absolute;
+  right: 10px;
+  margin-top: -7px;
+}
+
+ion-spinner {
+  position: absolute;
+  right: 50px;
 }
