@@ -17,6 +17,8 @@ import { LoadingController } from "ionic-angular";
 import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
+import { Camera } from "@ionic-native/camera";
+import { Diagnostic } from "@ionic-native/diagnostic";
 
 @NgModule({
   declarations: [
@@ -46,6 +48,8 @@ import { AndroidPermissions } from "@ionic-native/android-permissions";
     BleService,
     LoadingController,
     AndroidPermissions,
+    Camera,
+    Diagnostic,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

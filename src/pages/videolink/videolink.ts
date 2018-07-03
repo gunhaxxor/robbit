@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 
+declare var cordova: any;
 @IonicPage()
 @Component({
   selector: "page-videolink",
@@ -28,7 +29,7 @@ export class VideolinkPage {
     }
   };
 
-  //session = new cordova.plugins.phonertc.Session(this.config);
+  session = new cordova.plugins.phonertc.Session(this.config);
 
   ionViewDidLoad() {
     console.log("ionViewDidLoad VideolinkPage");

@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
 import encoding from "text-encoding";
+// import { Diagnostic } from "@ionic-native/diagnostic";
+// declare let cordova: any;
 /*
   OUR BLE SERVICE PROVIDER
 */
@@ -17,15 +19,13 @@ export class BleService {
   setStatus: any;
   scanError: any;
   textEncoder: any;
-
   constructor(private ble: BLE) {
     console.log("GET TO THE CHOOOPPER");
     this.textEncoder = new encoding.TextEncoder();
   }
-
   start() {
     this.scan();
-    console.log("Flyger till schweiz");
+    console.log("Flyger till schweiz -- kör start function  ");
   }
 
   scan() {
@@ -35,7 +35,7 @@ export class BleService {
     this.ble.scan([], 7).subscribe(device => this.devFound(device));
     setTimeout(() => {
       if (!this.connectedToDevice) {
-        this.scan();
+        this.start();
       }
     }, 10000);
   }
@@ -116,13 +116,16 @@ export class BleService {
     alert("Handshake stopped");
     this.connectedToDevice = false;
     this.ConnectedIcon();
+    this.start();
   }
 
   ConnectedIcon() {
     if (this.connectedToDevice) {
       document.getElementById("bleicon").style.backgroundColor = "green";
+      document.getElementById("spinner").style.display = "none";
     } else {
       document.getElementById("bleicon").style.backgroundColor = "red";
+      document.getElementById("spinner").style.display = "block";
     }
   }
 }

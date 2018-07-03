@@ -3,7 +3,7 @@
     <name>social-robot-ionic</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.86.60:8100" />
+    <content original-src="index.html" src="http://192.168.86.66:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -85,5 +85,9 @@
     <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
     <allow-navigation href="http://192.168.86.60:8100" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
-    <engine name="android" spec="7.0.0" />
+    <allow-navigation href="http://192.168.86.66:8100" />
+    <plugin name="cordova-plugin-camera" spec="^4.0.3" />
+    <plugin name="cordova.plugins.diagnostic" spec="~4.0.8" />
+    <plugin name="com.dooble.phonertc" spec="https://github.com/alongubkin/phonertc.git" />
+    <engine name="android" spec="6.4.0" />
 </widget>

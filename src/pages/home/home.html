@@ -2,17 +2,24 @@
   <ion-header>
     <ion-navbar>
       <ion-title>Social-robot
-        <ion-spinner *ngIf="!connectedToDevice" id="spinner " name="bubbles"></ion-spinner>
-        <ion-icon id="bleicon" name="bluetooth"></ion-icon>
+        <ion-spinner id="spinner" name="bubbles"></ion-spinner>
+        <ion-icon id="bleicon" name="bluetooth" (click)="this.bleService.onDisconnected(peripheral)"></ion-icon>
         <span id="bluetooth"></span>
       </ion-title>
     </ion-navbar>
   </ion-header>
 
+
   <ion-content padding>
     <h2>Instruktioner!</h2>
     <p>1. Starta din microbit
     </p>
+    <!-- <p>localproperty status:{{localproperty?"ja":"nej"}}</p> -->
+    <button (click)="cameraAuthCheck()"></button>
+    <!-- <p item-right [ngSwitch]="diagnosticService.cameraAuthorized">
+      <span class="on" *ngSwitchCase="true">AUTHORIZED</span>
+      <span class="off" *ngSwitchCase="false">UNAUTHORIZED</span>
+    </p> -->
     <p>
       2. Klicka på "sök" knappen och klicka på enheten du önskar koppla till
     </p>
