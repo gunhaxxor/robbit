@@ -32,7 +32,12 @@ export class BleService {
     this.setStatus = "Skannar efter bluetooth apparater";
     console.log(this.setStatus);
     this.devices = [];
-    this.ble.scan([], 5).subscribe(device => this.devFound(device));
+    this.ble.scan([], 7).subscribe(device => this.devFound(device));
+    setTimeout(() => {
+      if (!this.connectedToDevice) {
+        this.scan();
+      }
+    }, 10000);
   }
   // When a device is discovered
   devFound(device) {
@@ -66,8 +71,9 @@ export class BleService {
 
   onConnected(peripheral) {
     console.log("Ansluten till enhet");
-    this.selectedDevice = peripheral;
     this.connectedToDevice = true;
+    this.ConnectedIcon();
+    this.selectedDevice = peripheral;
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
@@ -108,6 +114,15 @@ export class BleService {
   onDisconnected(peripheral) {
     this.peripheral = undefined;
     alert("Handshake stopped");
-    //  this.connecteddd = false;
+    this.connectedToDevice = false;
+    this.ConnectedIcon();
+  }
+
+  ConnectedIcon() {
+    if (this.connectedToDevice) {
+      document.getElementById("bleicon").style.backgroundColor = "green";
+    } else {
+      document.getElementById("bleicon").style.backgroundColor = "red";
+    }
   }
 }

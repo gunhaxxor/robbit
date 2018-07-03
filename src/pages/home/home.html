@@ -1,7 +1,11 @@
 <body>
   <ion-header>
     <ion-navbar>
-      <ion-title>Social-robot</ion-title>
+      <ion-title>Social-robot
+        <ion-spinner *ngIf="!connectedToDevice" id="spinner " name="bubbles"></ion-spinner>
+        <ion-icon id="bleicon" name="bluetooth"></ion-icon>
+        <span id="bluetooth"></span>
+      </ion-title>
     </ion-navbar>
   </ion-header>
 
