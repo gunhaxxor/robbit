@@ -17,6 +17,13 @@
 
 
 <ion-content padding>
+  <p>userId: {{userId}}</p>
+  <p>peerId: {{peerId}}</p>
+  <p>isCalling: {{isCalling?"ja":"nej"}}</p>
+  <p>callInProgress: {{callInProgress?"ja":"nej"}}</p>
+  <p>callIgnored: {{callIgnored?"ja":"nej"}}</p>
+  <p>callEnded: {{callEnded?"ja":"nej"}}</p>
+  <button (click)="startCall()">Start call</button>
+
   <div id="video-container"></div>
-  <button (click)="messagesender()">hello</button>
 </ion-content>

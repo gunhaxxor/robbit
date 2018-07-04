@@ -11,6 +11,7 @@ declare var cordova: any;
 })
 export class VideolinkPage {
   session: any;
+  isCalling: boolean = false;
   callInProgress: boolean = false;
   callIgnored: boolean = false;
   callEnded: boolean = false;
@@ -26,13 +27,8 @@ export class VideolinkPage {
   ) {
     this.userId = Math.floor(1000 * Math.random());
 
-    // this.socket.on("messageReceived", this.onVideoMessageReceived);
-    this.socket.on("onMessage", message => {
-      this.session.receiveMessage(message);
-    });
-  }
+    this.socket.on("messageReceived", this.onMessageReceive);
 
-  login() {
     this.socket.emit("login", { id: this.userId });
   }
 
@@ -41,16 +37,15 @@ export class VideolinkPage {
     this.callIgnored = false;
     this.callEnded = false;
 
-    SocketService.emit("sendMessage", {
-      id: id,
-      peer_id: this.peer_id, // peerId?
+    this.socket.emit("sendMessage", {
+      id: this.userId,
+      peer_id: this.peerId, // peerId?
       type: "call"
     });
   }
 
-  config: any;
-  call(isInitiator, peerId) {
-    this.config = {
+  call(isInitiator) {
+    let config = {
       isInitiator: isInitiator, // True eller false på Isinitiator
       stun: {
         host: "stun:stun.l.google.com:19302"
@@ -61,7 +56,7 @@ export class VideolinkPage {
       }
     };
 
-    this.session = new cordova.plugins.phonertc.Session(this.config);
+    this.session = new cordova.plugins.phonertc.Session(config);
     cordova.plugins.phonertc.setVideoView({
       container: document.getElementById("video-container"),
       local: {
@@ -73,7 +68,7 @@ export class VideolinkPage {
     this.session.on("sendMessage", data => {
       this.socket.emit("sendMessage", {
         id: this.userId,
-        peer_id: peerId,
+        peer_id: this.peerId,
         type: "phonertc_handshake",
         data: JSON.stringify(data)
       });
@@ -82,12 +77,89 @@ export class VideolinkPage {
     this.session.on("disconnect", () => {
       this.socket.emit("sendMessage", {
         id: this.userId,
-        peer_id: peerId,
+        peer_id: this.peerId,
         type: "ignore"
       });
     });
 
     this.session.call();
+  }
+
+  ignore() {
+    if (JSON.stringify(this.session) === "{}") {
+      this.session.disconnect();
+    } else {
+      this.socket.emit("sendMessage", {
+        id: this.userId,
+        peer_id: this.peerId,
+        type: "ignore"
+      });
+    }
+  }
+
+  end() {
+    this.session.close();
+    this.session = {};
+
+    this.socket.emit("sendMessage", {
+      is: this.userId,
+      peer_id: this.peerId,
+      type: "end"
+    });
+
+    this.callInProgress = false;
+    this.callEnded = true;
+  }
+
+  answer() {
+    if (this.callInProgress) {
+      return;
+    }
+
+    this.callInProgress = true;
+
+    this.call(false);
+
+    setTimeout(function() {
+      this.socket.emit("sendMessage", {
+        id: this.userId,
+        peer_id: this.peerId,
+        type: "answer"
+      });
+    }, 1500);
+  }
+
+  onMessageReceive(message) {
+    switch (message.type) {
+      case "answer":
+        this.callInProgress = true;
+        this.peerId = message.id;
+        this.call(true);
+        break;
+
+      case "ignore":
+        this.callInProgress = false;
+        this.callIgnored = true;
+        this.callEnded = false;
+        break;
+
+      case "phonertc_handshake":
+        this.session.receiveMessage(JSON.parse(message.data));
+        break;
+
+      case "call":
+        this.isCalling = false;
+        this.callIgnored = false;
+        this.callEnded = false;
+        this.peerId = message.id;
+        break;
+
+      case "end":
+        this.callInProgress = false;
+        this.callEnded = true;
+        this.callIgnored = false;
+        break;
+    }
   }
 
   // onVideoMessageReceived(message) {
@@ -108,10 +180,6 @@ export class VideolinkPage {
     this.bleService.ConnectedIcon();
     console.log("ionViewDidLoad VideolinkPage");
     // console.log(JSON.stringify(cordova.plugins), null, 2);
-    this.socket.on("message", msg => {
-      console.log("Recieved message: " + msg);
-    });
-    this.socket.emit("message", "teeeestar");
   }
 
   // messagesender() {

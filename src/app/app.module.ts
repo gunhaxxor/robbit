@@ -22,7 +22,7 @@ import { Diagnostic } from "@ionic-native/diagnostic";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 
 const config: SocketIoConfig = {
-  url: "https://social-robot-signaling-server.herokuapp.com/",
+  url: "https://social-robot-signaling-server2.herokuapp.com/",
   options: {}
 };
 
