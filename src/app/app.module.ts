@@ -19,6 +19,12 @@ import { HttpModule } from "@angular/http";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
+import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
+
+const config: SocketIoConfig = {
+  url: "https://socketio-echo.herokuapp.com/",
+  options: {}
+};
 
 @NgModule({
   declarations: [
@@ -30,7 +36,12 @@ import { Diagnostic } from "@ionic-native/diagnostic";
     VideolinkPage,
     PeerPage
   ],
-  imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpModule],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(MyApp),
+    HttpModule,
+    SocketIoModule.forRoot(config)
+  ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,

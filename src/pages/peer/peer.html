@@ -8,7 +8,8 @@
 
   <ion-navbar>
     <ion-title>John Cameron
-      <ion-icon id="bleicon" name="bluetooth"></ion-icon>
+      <ion-spinner id="spinner" name="bubbles"></ion-spinner>
+      <ion-icon id="bleicon" name="bluetooth" (click)="this.bleService.onDisconnected(peripheral)"></ion-icon>
     </ion-title>
   </ion-navbar>
 

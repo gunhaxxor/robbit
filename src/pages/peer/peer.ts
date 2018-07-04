@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Platform } from "ionic-angular";
 import { Camera, CameraOptions } from "@ionic-native/camera";
+import { BleService } from "../../providers/bleservice/BleService";
 
 @IonicPage()
 @Component({
@@ -18,7 +19,8 @@ export class PeerPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private androidPermissions: AndroidPermissions,
-    private camera: Camera
+    private camera: Camera,
+    public bleService: BleService
   ) {
     platform.ready().then(() => {
       // console.log("Startar permissions");
@@ -113,6 +115,7 @@ export class PeerPage {
   }
 
   ionViewDidLoad() {
+    this.bleService.ConnectedIcon();
     console.log("user media test page loaded");
   }
 }
