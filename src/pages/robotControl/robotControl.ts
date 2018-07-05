@@ -39,7 +39,7 @@ export class RobotControlPage {
     console.log("ionViewDidLoad SelectedPage");
 
     this.robotControlIntervalId = setInterval(() => {
-      if (this.bleService.connectedToDevice) {
+      if (this.bleService.isConnectedToDevice) {
         let forwardAmt = 0;
         let turnAmt = 0;
         ///Let's check here if we are available to send drive instructions to selected robot.

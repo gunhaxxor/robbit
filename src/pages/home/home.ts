@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
-import { Diagnostic } from "@ionic-native/diagnostic";
+// import { Diagnostic } from "@ionic-native/diagnostic";
 declare let cordova: any;
 
 @Component({
@@ -11,8 +11,7 @@ declare let cordova: any;
 export class HomePage {
   constructor(
     public navCtrl: NavController,
-    public bleService: BleService,
-    private diagnostic: Diagnostic
+    public bleService: BleService // private diagnostic: Diagnostic
   ) {}
 
   localproperty: boolean = false;
@@ -35,16 +34,16 @@ export class HomePage {
   // }, $this.onStateCheckError).catch ($this.onStateCheckError);
 
   cameraAuthCheck() {
-    this.diagnostic
-      .requestCameraAuthorization(false)
-      .then(
-        () => {
-          // this.checkState();
-          console.log("we got dice!!");
-        },
-        err => console.log("no dice!" + err)
-      )
-      .catch(err => console.log("no dice" + err));
+    // this.diagnostic
+    //   .requestCameraAuthorization(false)
+    //   .then(
+    //     () => {
+    //       // this.checkState();
+    //       console.log("we got dice!!");
+    //     },
+    //     err => console.log("no dice!" + err)
+    //   )
+    //   .catch(err => console.log("no dice" + err));
     // if (this.diagnostic.isCameraAuthorized()) {
     //   console.log(
     //     "Du har permission!" +
@@ -61,5 +60,9 @@ export class HomePage {
     //     console.log("Du har ingen ledighet!");
     //   }
     // });
+  }
+  ionViewDidLoad() {
+    console.log("hi");
+    this.bleService.ConnectedIcon();
   }
 }

@@ -30,21 +30,24 @@ export class VideolinkPage {
     this.socket.on("messageReceived", this.onMessageReceive);
 
     this.socket.emit("login", { id: this.userId });
+    console.log("loggar in på signnalservern");
   }
 
   startCall() {
+    console.log("Ringer!");
     this.isCalling = true;
     this.callIgnored = false;
     this.callEnded = false;
 
     this.socket.emit("sendMessage", {
       id: this.userId,
-      peer_id: this.peerId, // peerId?
+      peer_id: this.peerId,
       type: "call"
     });
   }
 
   call(isInitiator) {
+    console.log("Call function!");
     let config = {
       isInitiator: isInitiator, // True eller false på Isinitiator
       stun: {
@@ -66,6 +69,7 @@ export class VideolinkPage {
     });
 
     this.session.on("sendMessage", data => {
+      console.log;
       this.socket.emit("sendMessage", {
         id: this.userId,
         peer_id: this.peerId,
@@ -130,6 +134,9 @@ export class VideolinkPage {
   }
 
   onMessageReceive(message) {
+    console.log(
+      "Received message from signal server: " + JSON.stringify(message)
+    );
     switch (message.type) {
       case "answer":
         this.callInProgress = true;
@@ -152,6 +159,7 @@ export class VideolinkPage {
         this.callIgnored = false;
         this.callEnded = false;
         this.peerId = message.id;
+        this.answer();
         break;
 
       case "end":

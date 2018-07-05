@@ -10,41 +10,54 @@ import encoding from "text-encoding";
 export class BleService {
   //Should only contain found uBits
   devices: any[] = [];
-  selectedDevice: any = undefined;
-  connectedToDevice: boolean = false;
-  peripheral: any;
+  connectedDevice: any = undefined;
+  isConnectedToDevice: boolean = false;
+
   uartService: any;
   uartRXCharacteristic: any;
   statusMessage: string;
-  setStatus: any;
   scanError: any;
   textEncoder: any;
   constructor(private ble: BLE) {
-    console.log("GET TO THE CHOOOPPER");
+    console.log("bleService Started");
     this.textEncoder = new encoding.TextEncoder();
   }
-  start() {
-    this.scan();
-    console.log("Flyger till schweiz -- kör start function  ");
+
+  public start() {
+    this.scanAndAutoConnect();
+    console.log("Starting BLE scan");
   }
 
-  scan() {
-    this.setStatus = "Skannar efter bluetooth apparater";
-    console.log(this.setStatus);
+  public scan() {
+    let status = "Skannar efter uBits";
+    console.log(status);
+    this.devices = [];
+    this.ble.scan([], 10).subscribe(device => {
+      if (device.name && device.name.includes("micro")) {
+        this.devices.push(device);
+      }
+    });
+  }
+
+  public scanAndAutoConnect() {
+    let status = "Letar efter enhet att automatiskt ansluta till";
+    console.log(status);
     this.devices = [];
     this.ble.scan([], 7).subscribe(device => this.devFound(device));
     setTimeout(() => {
-      if (!this.connectedToDevice) {
-        this.start();
+      if (!this.isConnectedToDevice) {
+        this.scanAndAutoConnect();
       }
     }, 10000);
   }
+
   // When a device is discovered
-  devFound(device) {
+  private devFound(device) {
     console.log("found device: " + device.name);
     if (device.name && device.name.includes("micro")) {
       this.devices.push(device);
-      if (this.devices.length < 2) {
+      //Automatically connect to the first uBit in the list
+      if (this.devices.length < 2 && !this.isConnectedToDevice) {
         this.connectToMicrobit(device);
         console.log("Hittat och ansluter till micro:bit");
       }
@@ -52,6 +65,10 @@ export class BleService {
   }
   // Goes through found devices and attempts to connect to the first available uBit.
   connectToMicrobit(device) {
+    if (this.isConnectedToDevice) {
+      console.log("was already connected to a device. First disconnects!");
+      this.disconnect();
+    }
     console.log("Connecting to micro:bit");
     this.ble
       .connect(device.id)
@@ -61,19 +78,40 @@ export class BleService {
       );
   }
 
-  disconnect() {
-    if (!this.peripheral) {
+  public disconnect() {
+    if (!this.connectedDevice) {
       console.error("device is not set. Nothing to disconnect from!");
       return;
     }
-    this.ble.disconnect(this.peripheral.id);
+    console.log("disconnecting from: " + JSON.stringify(this.connectedDevice));
+    this.ble.disconnect(this.connectedDevice.id);
   }
 
-  onConnected(peripheral) {
+  send(msg) {
+    console.log("Sending Gunnar är sämst: " + msg);
+    // let buffer = new Uint8Array([msg]).buffer;
+    let buffer = this.textEncoder.encode(msg).buffer;
+    if (
+      !this.connectedDevice ||
+      !this.uartService ||
+      !this.uartRXCharacteristic
+    ) {
+      console.error("device, service or characteristic are not set!!");
+      return;
+    }
+    this.ble.write(
+      this.connectedDevice.id,
+      this.uartService,
+      this.uartRXCharacteristic,
+      buffer
+    );
+  }
+
+  private onConnected(peripheral) {
     console.log("Ansluten till enhet");
-    this.connectedToDevice = true;
+    this.isConnectedToDevice = true;
     this.ConnectedIcon();
-    this.selectedDevice = peripheral;
+    this.connectedDevice = peripheral;
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
@@ -95,37 +133,23 @@ export class BleService {
     );
   }
 
-  send(msg) {
-    console.log("Sending Gunnar är sämst: " + msg);
-    // let buffer = new Uint8Array([msg]).buffer;
-    let buffer = this.textEncoder.encode(msg).buffer;
-    if (!this.peripheral || !this.uartService || !this.uartRXCharacteristic) {
-      console.error("device, service or characteristic are not set!!");
-      return;
-    }
-    this.ble.write(
-      this.peripheral.id,
-      this.uartService,
-      this.uartRXCharacteristic,
-      buffer
-    );
-  }
   // When connection to the selected device suddenly stops.
-  onDisconnected(peripheral) {
-    this.peripheral = undefined;
-    alert("Handshake stopped");
-    this.connectedToDevice = false;
+  private onDisconnected(peripheral) {
+    console.log("disconnected from: " + JSON.stringify(peripheral));
+    this.connectedDevice = undefined;
+    // alert("Handshake stopped");
+    this.isConnectedToDevice = false;
     this.ConnectedIcon();
     this.start();
   }
 
   ConnectedIcon() {
-    if (this.connectedToDevice) {
-      document.getElementById("bleicon").style.backgroundColor = "green";
-      document.getElementById("spinner").style.display = "none";
+    if (this.isConnectedToDevice) {
+      // document.getElementById("bleicon").style.backgroundColor = "green";
+      // document.getElementById("spinner").style.display = "none";
     } else {
-      document.getElementById("bleicon").style.backgroundColor = "red";
-      document.getElementById("spinner").style.display = "block";
+      // document.getElementById("bleicon").style.backgroundColor = "red";
+      // document.getElementById("spinner").style.display = "block";
     }
   }
 }

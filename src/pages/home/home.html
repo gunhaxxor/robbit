@@ -3,7 +3,7 @@
     <ion-navbar>
       <ion-title>Social-robot
         <ion-spinner id="spinner" name="bubbles"></ion-spinner>
-        <ion-icon id="bleicon" name="bluetooth" (click)="this.bleService.onDisconnected(peripheral)"></ion-icon>
+        <ion-icon id="bleicon" name="bluetooth" (click)="bleService.disconnect()"></ion-icon>
         <span id="bluetooth"></span>
       </ion-title>
     </ion-navbar>

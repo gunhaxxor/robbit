@@ -1,0 +1,27 @@
+<!--
+-->
+<ion-header>
+
+    <ion-navbar>
+        <ion-title>videolink
+            <ion-spinner id="spinner" name="bubbles"></ion-spinner>
+            <ion-icon id="bleicon" name="bluetooth" (click)="bleService.disconnect()"></ion-icon>
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <button (click)="refreshView()">Refresh view!</button>
+    <ion-list>
+        <button ion-item *ngFor="let device of devices" (click)="selectDevice(device)">
+            <p>{{device.name}}</p>
+            <p>connectedToDevice() =>{{connectedToDevice(device)?"yes":"no"}}</p>
+            <p>connected? {{connectedDevice.id == device.id?"yes":"no"}}</p>
+            <p>{{device.id}}</p>
+            <p>{{device.rssi}}</p>
+
+        </button>
+    </ion-list>
+</ion-content>
