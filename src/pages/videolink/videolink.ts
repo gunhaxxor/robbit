@@ -27,7 +27,9 @@ export class VideolinkPage {
   ) {
     this.userId = Math.floor(1000 * Math.random());
 
-    this.socket.on("messageReceived", this.onMessageReceive);
+    this.socket.on("messageReceived", msg => {
+      this.onMessageReceive(msg);
+    });
 
     this.socket.emit("login", { id: this.userId });
     console.log("loggar in på signnalservern");
@@ -47,12 +49,13 @@ export class VideolinkPage {
   }
 
   call(isInitiator) {
-    console.log("Call function!");
+    console.log("Call function triggered. isInitiator=" + isInitiator);
     let config = {
       isInitiator: isInitiator, // True eller false på Isinitiator
       stun: {
         host: "stun:stun.l.google.com:19302"
       },
+      turn: {},
       streams: {
         audio: true,
         video: true
@@ -117,6 +120,7 @@ export class VideolinkPage {
 
   answer() {
     if (this.callInProgress) {
+      console.log("can't answer since callInProgress is true");
       return;
     }
 
@@ -124,7 +128,7 @@ export class VideolinkPage {
 
     this.call(false);
 
-    setTimeout(function() {
+    setTimeout(() => {
       this.socket.emit("sendMessage", {
         id: this.userId,
         peer_id: this.peerId,
@@ -170,32 +174,10 @@ export class VideolinkPage {
     }
   }
 
-  // onVideoMessageReceived(message) {
-  //   switch (message.type) {
-  //     case "call":
-  //       break;
-  //     case "answer": // Lägga till så man kan svara!
-  //       this.call(true, this.peerId);
-  //       break;
-  //     case "phonertc_handshake":
-  //       // run this only once during the start of a call
-  //       this.session.receiveMessage(JSON.parse(message.data));
-  //       break;
-  //   }
-  // }
-
   ionViewDidLoad() {
     this.bleService.ConnectedIcon();
     console.log("ionViewDidLoad VideolinkPage");
-    // console.log(JSON.stringify(cordova.plugins), null, 2);
   }
-
-  // messagesender() {
-  //   // console.log(JSON.stringify(cordova.plugins), null, 2);
-  //   this.socket.on("message", msg => {
-  //     console.log("Recieved message: " + msg);
-  //   });
-  //   this.socket.emit("test", "teeeestar");
-  //   console.log("skickar meddelande");
-  // }
 }
+// c1efa933 => Samuels
+// 09882a9b028aa8e8 => Nexus 5
