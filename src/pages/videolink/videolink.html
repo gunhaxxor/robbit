@@ -23,7 +23,11 @@
   <p>callInProgress: {{callInProgress?"ja":"nej"}}</p>
   <p>callIgnored: {{callIgnored?"ja":"nej"}}</p>
   <p>callEnded: {{callEnded?"ja":"nej"}}</p>
+  <input [(ngModel)]="peerId" \>
+  <br>
   <button (click)="startCall()">Start call</button>
+
+
 
   <div id="video-container"></div>
 </ion-content>
