@@ -1,11 +1,9 @@
-<!--
--->
 <ion-header>
 
     <ion-navbar>
         <ion-title>videolink
             <ion-spinner id="spinner" name="bubbles"></ion-spinner>
-            <ion-icon id="bleicon" name="bluetooth" (click)="bleService.disconnect()"></ion-icon>
+            <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
         </ion-title>
     </ion-navbar>
 
@@ -14,14 +12,19 @@
 
 <ion-content padding>
     <button (click)="refreshView()">Refresh view!</button>
+    <!-- <ng-template *ngIf="sharedState.devices > 0; else elseBlock"> -->
+    <!-- <p>Antal enheter i devices: {{sharedState.devices.length}}</p> -->
     <ion-list>
-        <button ion-item *ngFor="let device of devices" (click)="selectDevice(device)">
+        <button ion-item *ngFor="let device of sharedState.devices" (click)="selectDevice(device)">
             <p>{{device.name}}</p>
-            <p>connectedToDevice() =>{{connectedToDevice(device)?"yes":"no"}}</p>
-            <p>connected? {{connectedDevice.id == device.id?"yes":"no"}}</p>
+            <!-- <p>connectedToDevice() =>{{connectedToDevice(device)?"yes":"no"}}</p> -->
+            <!-- <p>connected? {{sharedState.connectedDevice.id == device.id?"yes":"no"}}</p> -->
             <p>{{device.id}}</p>
             <p>{{device.rssi}}</p>
-
         </button>
     </ion-list>
+    <!-- </ng-template> -->
+    <!-- <ng-template #elseBlock>
+        <p>Inga enheter</p>
+    </ng-template> -->
 </ion-content>

@@ -2,13 +2,13 @@ import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
+import { Socket } from "ng-socket-io";
 // import encoding from 'text-encoding';
 
 @IonicPage()
 @Component({
   selector: "page-robotControl",
   templateUrl: "robotControl.html"
-  // providers: [BleService]
 })
 export class RobotControlPage {
   setStatus: any;
@@ -26,8 +26,13 @@ export class RobotControlPage {
     public navCtrl: NavController,
     public loading: LoadingController,
     public navParams: NavParams,
-    public bleService: BleService
-  ) {}
+    public bleService: BleService,
+    private socket: Socket
+  ) {
+    socket.on("robotControl", function(msgToBle) {
+      this.bleService.send(msgToBle);
+    });
+  }
 
   //user is leaving the selected page.
   ionViewWillLeave() {
@@ -39,7 +44,7 @@ export class RobotControlPage {
     console.log("ionViewDidLoad SelectedPage");
 
     this.robotControlIntervalId = setInterval(() => {
-      if (this.bleService.isConnectedToDevice) {
+      if (this.bleService.sharedState.isConnectedToDevice) {
         let forwardAmt = 0;
         let turnAmt = 0;
         ///Let's check here if we are available to send drive instructions to selected robot.
@@ -62,7 +67,7 @@ export class RobotControlPage {
         console.log(motorValue1);
         console.log(motorValue2);
         let msg = "" + motorValue1 + ";" + motorValue2 + "\n";
-        this.bleService.send(msg);
+        this.socket.emit("robotControl", msg);
       }
     }, 200);
   }
