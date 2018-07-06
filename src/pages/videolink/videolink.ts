@@ -55,10 +55,13 @@ export class VideolinkPage {
       stun: {
         host: "stun:stun.l.google.com:19302"
       },
-      turn: {},
+      turn: {
+        url: "turn:user@54.197.33.120:3478",
+        credential: "root"
+      },
       streams: {
         audio: true,
-        video: true
+        video: false
       }
     };
 
@@ -72,7 +75,7 @@ export class VideolinkPage {
     });
 
     this.session.on("sendMessage", data => {
-      console.log;
+      console.log();
       this.socket.emit("sendMessage", {
         id: this.userId,
         peer_id: this.peerId,
@@ -81,12 +84,17 @@ export class VideolinkPage {
       });
     });
 
+    this.session.on("answer", function() {
+      console.log("Other client answered!");
+    });
+
     this.session.on("disconnect", () => {
       this.socket.emit("sendMessage", {
         id: this.userId,
         peer_id: this.peerId,
         type: "ignore"
       });
+      console.log("Other client disconnected!");
     });
 
     this.session.call();
