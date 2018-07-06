@@ -31,7 +31,7 @@ export class MyApp {
           this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
         ]);
 
-        // this.bleService.start();
+        this.bleService.start();
       });
 
       // Okay, so the platform is ready and our plugins are available.

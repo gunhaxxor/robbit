@@ -21,6 +21,8 @@ export class RobotControlPage {
   arrowForwardActive: boolean;
   arrowRightActive: boolean;
   arrowBackwardActive: boolean;
+  servoUpActive: boolean;
+  servoDownActive: boolean;
   // textEncoder: encoding.TextEncoder;
   constructor(
     public navCtrl: NavController,
@@ -29,8 +31,9 @@ export class RobotControlPage {
     public bleService: BleService,
     private socket: Socket
   ) {
-    socket.on("robotControl", function(msgToBle) {
-      this.bleService.send(msgToBle);
+    socket.on("robotControl", msg => {
+      console.log("received socket msg: " + JSON.stringify(msg));
+      this.bleService.send(msg);
     });
   }
 
@@ -38,13 +41,17 @@ export class RobotControlPage {
   ionViewWillLeave() {
     clearInterval(this.robotControlIntervalId);
   }
-
-  ionViewDidLeave() {}
-  ionViewDidLoad() {
-    console.log("ionViewDidLoad SelectedPage");
-
+  ionViewDidEnter() {
+    if (this.bleService.sharedState.isConnectedToDevice) {
+      console.log(
+        "skipping socket emit interval loop because we are connected to BLE"
+      );
+      return;
+    }
+    let servo = 165;
+    console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
-      if (this.bleService.sharedState.isConnectedToDevice) {
+      if (!this.bleService.sharedState.isConnectedToDevice) {
         let forwardAmt = 0;
         let turnAmt = 0;
         ///Let's check here if we are available to send drive instructions to selected robot.
@@ -60,19 +67,34 @@ export class RobotControlPage {
         if (this.arrowBackwardActive) {
           forwardAmt -= 1023;
         }
+
+        if (this.servoUpActive) {
+          servo += 15;
+        }
+        if (this.servoDownActive) {
+          servo -= 15;
+        }
+
+        servo = Math.max(85, Math.min(165, servo));
+
         let motorValue1 = forwardAmt / 2 + turnAmt / 2;
         let motorValue2 = forwardAmt / 2 - turnAmt / 2;
         motorValue1 = Math.floor(motorValue1);
         motorValue2 = Math.floor(motorValue2);
-        console.log(motorValue1);
-        console.log(motorValue2);
-        let msg = "" + motorValue1 + ";" + motorValue2 + "\n";
+        let msg = "" + motorValue1 + ";" + motorValue2 + ";" + servo + "\n";
+
+        console.log("sending robot data to socket");
         this.socket.emit("robotControl", msg);
       }
     }, 200);
   }
 
-  logButtonPress(state: boolean) {
-    console.log("button " + state);
+  ionViewDidLeave() {}
+  ionViewDidLoad() {
+    console.log("ionViewDidLoad SelectedPage");
   }
+
+  // logButtonPress(state: boolean) {
+  //   console.log("button " + state);
+  // }
 }

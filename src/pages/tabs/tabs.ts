@@ -14,6 +14,7 @@ export class TabsPage {
   tab2Root = VideolinkPage;
   tab3Root = PeerPage;
   tab4Root = BlePage;
+
   tab5Root = RobotControlPage;
   constructor() {}
 }

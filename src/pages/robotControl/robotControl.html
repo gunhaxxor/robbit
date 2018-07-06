@@ -23,4 +23,12 @@
   <button id="warning" (click)="stop()">
     <ion-icon name="warning"></ion-icon>
   </button>
+
+  <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
+    <ion-icon name="undo"></ion-icon>
+  </button>
+  <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
+    <ion-icon name="redo"></ion-icon>
+  </button>
+
 </ion-content>
