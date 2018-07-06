@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
 import encoding from "text-encoding";
 // import { Diagnostic } from "@ionic-native/diagnostic";
@@ -8,17 +8,20 @@ import encoding from "text-encoding";
 */
 @Injectable()
 export class BleService {
-  //Should only contain found uBits
-  devices: any[] = [];
-  connectedDevice: any = undefined;
-  isConnectedToDevice: boolean = false;
-
-  uartService: any;
-  uartRXCharacteristic: any;
   statusMessage: string;
   scanError: any;
   textEncoder: any;
-  constructor(private ble: BLE) {
+
+  public sharedState: any = {
+    //Should only contain found uBits
+    devices: <any[]>[],
+    connectedDevice: <any>undefined,
+    isConnectedToDevice: <boolean>false
+  };
+  uartService: any;
+  uartRXCharacteristic: any;
+
+  constructor(private ble: BLE, private zone: NgZone) {
     console.log("bleService Started");
     this.textEncoder = new encoding.TextEncoder();
   }
@@ -29,23 +32,23 @@ export class BleService {
   }
 
   public scan() {
-    let status = "Skannar efter uBits";
-    console.log(status);
-    this.devices = [];
-    this.ble.scan([], 10).subscribe(device => {
+    console.log("Skannar efter uBits");
+    this.sharedState.devices = [];
+    this.ble.scan([], 7).subscribe(device => {
       if (device.name && device.name.includes("micro")) {
-        this.devices.push(device);
+        console.log("found device: " + device.name);
+        this.sharedState.devices.push(device);
       }
     });
   }
 
   public scanAndAutoConnect() {
-    let status = "Letar efter enhet att automatiskt ansluta till";
-    console.log(status);
-    this.devices = [];
+    console.log("Letar efter enhet att automatiskt ansluta till");
+    this.sharedState.devices = [];
     this.ble.scan([], 7).subscribe(device => this.devFound(device));
     setTimeout(() => {
-      if (!this.isConnectedToDevice) {
+      if (!this.sharedState.isConnectedToDevice) {
+        console.log("Ska nu skanna igen från timeout");
         this.scanAndAutoConnect();
       }
     }, 10000);
@@ -55,9 +58,14 @@ export class BleService {
   private devFound(device) {
     console.log("found device: " + device.name);
     if (device.name && device.name.includes("micro")) {
-      this.devices.push(device);
+      this.zone.run(() => {
+        this.sharedState.devices.push(device);
+      });
       //Automatically connect to the first uBit in the list
-      if (this.devices.length < 2 && !this.isConnectedToDevice) {
+      if (
+        this.sharedState.devices.length < 2 &&
+        !this.sharedState.isConnectedToDevice
+      ) {
         this.connectToMicrobit(device);
         console.log("Hittat och ansluter till micro:bit");
       }
@@ -65,7 +73,7 @@ export class BleService {
   }
   // Goes through found devices and attempts to connect to the first available uBit.
   connectToMicrobit(device) {
-    if (this.isConnectedToDevice) {
+    if (this.sharedState.isConnectedToDevice) {
       console.log("was already connected to a device. First disconnects!");
       this.disconnect();
     }
@@ -79,20 +87,24 @@ export class BleService {
   }
 
   public disconnect() {
-    if (!this.connectedDevice) {
+    if (!this.sharedState.connectedDevice) {
       console.error("device is not set. Nothing to disconnect from!");
       return;
     }
-    console.log("disconnecting from: " + JSON.stringify(this.connectedDevice));
-    this.ble.disconnect(this.connectedDevice.id);
+    console.log(
+      "disconnecting from: " + JSON.stringify(this.sharedState.connectedDevice)
+    );
+    this.ble.disconnect(this.sharedState.connectedDevice.id);
+    this.sharedState.isConnectedToDevice = false;
+    this.ConnectedIcon();
   }
 
-  send(msg) {
+  public send(msg) {
     console.log("Sending Gunnar är sämst: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (
-      !this.connectedDevice ||
+      !this.sharedState.connectedDevice ||
       !this.uartService ||
       !this.uartRXCharacteristic
     ) {
@@ -100,7 +112,7 @@ export class BleService {
       return;
     }
     this.ble.write(
-      this.connectedDevice.id,
+      this.sharedState.connectedDevice.id,
       this.uartService,
       this.uartRXCharacteristic,
       buffer
@@ -108,11 +120,12 @@ export class BleService {
   }
 
   private onConnected(peripheral) {
-    console.log("Ansluten till enhet");
-    this.isConnectedToDevice = true;
+    console.log("Ansluten till enhet " + peripheral.id);
+    this.sharedState.isConnectedToDevice = true;
     this.ConnectedIcon();
-    this.connectedDevice = peripheral;
+    this.sharedState.connectedDevice = peripheral;
     this.uartService = peripheral.services.find(element => {
+      console.log("didn't find the uart service!");
       return element.includes("b5a");
     });
     console.log("uartservice:" + JSON.stringify(this.uartService));
@@ -136,20 +149,20 @@ export class BleService {
   // When connection to the selected device suddenly stops.
   private onDisconnected(peripheral) {
     console.log("disconnected from: " + JSON.stringify(peripheral));
-    this.connectedDevice = undefined;
+    this.sharedState.connectedDevice = undefined;
     // alert("Handshake stopped");
-    this.isConnectedToDevice = false;
+    this.sharedState.isConnectedToDevice = false;
     this.ConnectedIcon();
-    this.start();
   }
 
-  ConnectedIcon() {
-    if (this.isConnectedToDevice) {
-      // document.getElementById("bleicon").style.backgroundColor = "green";
-      // document.getElementById("spinner").style.display = "none";
+  // TODO: This should be replaced later with a proper state change detection instead of manually tiggering changes
+  public ConnectedIcon() {
+    if (this.sharedState.isConnectedToDevice) {
+      document.getElementById("bleicon").style.backgroundColor = "green";
+      document.getElementById("spinner").style.display = "none";
     } else {
-      // document.getElementById("bleicon").style.backgroundColor = "red";
-      // document.getElementById("spinner").style.display = "block";
+      document.getElementById("bleicon").style.backgroundColor = "red";
+      document.getElementById("spinner").style.display = "block";
     }
   }
 }

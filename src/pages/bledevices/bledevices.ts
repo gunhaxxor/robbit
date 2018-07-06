@@ -4,27 +4,37 @@ import { BleService } from "../../providers/bleservice/BleService";
   templateUrl: "bledevices.html"
 })
 export class BlePage {
-  devices: any;
-  isConnectedToDevice: any;
-  connectedDevice: any;
-  constructor(private bleservice: BleService, private zone: NgZone) {}
+  // devices: any;
+  // isConnectedToDevice: any;
+  // connectedDevice: any;
+  sharedState: any;
+  constructor(private bleservice: BleService, private zone: NgZone) {
+    this.zone.run(() => {
+      this.sharedState = this.bleservice.sharedState;
+    });
+  }
 
-  ionViewDidLoad() {
-    this.devices = this.bleservice.devices;
-    this.isConnectedToDevice = this.bleservice.isConnectedToDevice;
-    this.connectedDevice = this.bleservice.connectedDevice;
-    console.log("DeviceList" + this.devices);
-    console.log("started scan!");
-    this.bleservice.ConnectedIcon();
+  ionViewWillEnter() {
+    console.log("ska öppna devicelist page");
     this.bleservice.scan();
+
+    // this.zone.run(() => {
+    //   this.devices = this.bleservice.devices;
+    //   this.isConnectedToDevice = this.bleservice.isConnectedToDevice;
+    //   this.connectedDevice = this.bleservice.connectedDevice;
+    // });
+    // console.log("DeviceList" + this.sharedState.devices);
+    this.bleservice.ConnectedIcon();
   }
 
   refreshView() {
     console.log("Refreshing view");
+    console.log(JSON.stringify(this.sharedState));
     this.zone.run(() => {
-      this.connectedDevice = this.bleservice.connectedDevice;
-      this.isConnectedToDevice = this.bleservice.isConnectedToDevice;
-      this.devices = this.bleservice.devices;
+      this.sharedState = this.bleservice.sharedState;
+      // this.sharedState.connectedDevice = this.bleservice.sharedState.connectedDevice;
+      // this.sharedState.isConnectedToDevice = this.bleservice.sharedState.isConnectedToDevice;
+      // this.sharedState.devices = this.bleservice.sharedState.devices;
     });
   }
 
@@ -36,6 +46,6 @@ export class BlePage {
 
   connectedToDevice(device) {
     console.log("checking if connected to: " + JSON.stringify(device));
-    return device == this.connectedDevice;
+    return device == this.sharedState.connectedDevice;
   }
 }

@@ -9,8 +9,4 @@ import { BleService } from "../../providers/bleservice/BleService";
 })
 export class DeviceListPage {
   constructor(public navCtrl: NavController, public bleService: BleService) {}
-
-  scan() {
-    this.bleService.start();
-  }
 }
