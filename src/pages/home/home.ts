@@ -1,8 +1,7 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
-// import { Diagnostic } from "@ionic-native/diagnostic";
-declare let cordova: any;
+// declare let cordova: any;
 
 @Component({
   selector: "page-home",
