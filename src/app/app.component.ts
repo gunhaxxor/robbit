@@ -25,6 +25,7 @@ export class MyApp {
       document.addEventListener("deviceready", () => {
         this.androidPermissions.requestPermissions([
           this.androidPermissions.PERMISSION.CAMERA,
+          this.androidPermissions.PERMISSION.RECORD_AUDIO,
           this.androidPermissions.PERMISSION.CALL_PHONE,
           this.androidPermissions.PERMISSION.GET_ACCOUNTS,
           this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE,

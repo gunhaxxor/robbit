@@ -136,7 +136,7 @@ export class RobotControlPage {
   ionViewDidLoad() {
     // get video/voice stream
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" }, audio: false }) //permission saknas??
+      .getUserMedia({ video: { facingMode: "environment" }, audio: true }) //permission saknas??
       .then(stream => {
         console.log("got local media as a stream");
         this.localStream = stream;
