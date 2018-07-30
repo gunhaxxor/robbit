@@ -100,7 +100,20 @@ export class RobotControlPage {
   //videolink / test
 
   initiateListen() {
-    this.peer = new Peer({ initiator: false, stream: this.localStream });
+    this.peer = new Peer({
+      initiator: false,
+      stream: this.localStream, 
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          {
+            urls: 'turn:54.197.33.120:3478',
+            username: 'greger',
+            credential: 'bajsmannen'
+          }
+        ]
+      } 
+    });
 
     this.peer.on("signal", data => {
       console.log("got signal data locally. Passing it on to signaling server");
