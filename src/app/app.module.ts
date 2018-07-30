@@ -8,7 +8,6 @@ import { HomePage } from "../pages/home/home";
 import { TabsPage } from "../pages/tabs/tabs";
 import { RobotControlPage } from "../pages/robotControl/robotControl";
 import { VideolinkPage } from "../pages/videolink/videolink";
-import { PeerPage } from "../pages/peer/peer";
 import { BlePage } from "../pages/bledevices/bledevices";
 
 import { StatusBar } from "@ionic-native/status-bar";
@@ -22,7 +21,7 @@ import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 
-const config: SocketIoConfig = {
+const socketConfig: SocketIoConfig = {
   url: "https://social-robot-signaling-server.herokuapp.com/",
   options: {}
 };
@@ -35,14 +34,13 @@ const config: SocketIoConfig = {
     TabsPage,
     RobotControlPage,
     VideolinkPage,
-    PeerPage,
     BlePage
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
-    SocketIoModule.forRoot(config)
+    SocketIoModule.forRoot(socketConfig)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -52,7 +50,6 @@ const config: SocketIoConfig = {
     TabsPage,
     RobotControlPage,
     VideolinkPage,
-    PeerPage,
     BlePage
   ],
   providers: [

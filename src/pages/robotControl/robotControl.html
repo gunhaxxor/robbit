@@ -8,6 +8,15 @@
 </ion-header>
 
 <ion-content padding>
+  <video class="video-container" autoplay>
+  </video>
+  <br>
+  <button (click)="initiateCall()">Call</button>
+  <br>
+  <button (click)="initiateListen()">Listen</button>
+  <br>
+
+
   <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
     <ion-icon name="arrow-round-back"></ion-icon>
   </button>

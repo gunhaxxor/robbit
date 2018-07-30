@@ -3,7 +3,8 @@ import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
-declare var cordova: any;
+
+// declare var cordova: any;
 
 @IonicPage()
 @Component({
@@ -52,7 +53,7 @@ export class VideolinkPage {
   ionViewDidLoad() {
     // get video/voice stream
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" }, audio: true })
+      .getUserMedia({ video: { facingMode: "environment" }, audio: false }) //permission saknas??
       .then(stream => {
         console.log("got local media as a stream");
         this.localStream = stream;

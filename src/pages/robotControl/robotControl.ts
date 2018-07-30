@@ -1,8 +1,9 @@
 import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams } from "ionic-angular";
+import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
 import { Socket } from "ng-socket-io";
+import * as Peer from "simple-peer";
 // import encoding from 'text-encoding';
 
 @IonicPage()
@@ -11,6 +12,12 @@ import { Socket } from "ng-socket-io";
   templateUrl: "robotControl.html"
 })
 export class RobotControlPage {
+  peer: any;
+  localStream: MediaStream;
+  remoteStream: MediaStream;
+
+  //Robot controll variablar
+
   setStatus: any;
   peripheral: any;
   connecteddd: boolean = false;
@@ -23,8 +30,9 @@ export class RobotControlPage {
   arrowBackwardActive: boolean;
   servoUpActive: boolean;
   servoDownActive: boolean;
-  // textEncoder: encoding.TextEncoder;
+
   constructor(
+    public platform: Platform,
     public navCtrl: NavController,
     public loading: LoadingController,
     public navParams: NavParams,
@@ -89,12 +97,57 @@ export class RobotControlPage {
     }, 200);
   }
 
-  ionViewDidLeave() {}
-  ionViewDidLoad() {
-    console.log("ionViewDidLoad SelectedPage");
+  //videolink / test
+
+  initiateListen() {
+    this.peer = new Peer({ initiator: false, stream: this.localStream });
+
+    this.peer.on("signal", data => {
+      console.log("got signal data locally. Passing it on to signaling server");
+      this.socket.emit("signal", data);
+    });
+
+    this.peer.on("stream", stream => {
+      console.log("received stream from remote peer");
+      // got remote video stream, now let's show it in a video tag
+      var video = document.querySelector("video");
+      video.srcObject = stream;
+      video.play();
+    });
   }
 
-  // logButtonPress(state: boolean) {
-  //   console.log("button " + state);
-  // }
+  initiateCall() {
+    console.log("starting call as initiator");
+    this.peer = new Peer({ initiator: true, stream: this.localStream });
+    this.peer.on("signal", data => {
+      console.log("got signal data locally. Passing it on to signaling server");
+      this.socket.emit("signal", data);
+    });
+
+    this.peer.on("stream", stream => {
+      console.log("received stream from remote peer");
+      // got remote video stream, now let's show it in a video tag
+      var video = document.querySelector("video");
+      video.srcObject = stream;
+      video.play();
+    });
+  }
+
+  ionViewDidLoad() {
+    // get video/voice stream
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment" }, audio: false }) //permission saknas??
+      .then(stream => {
+        console.log("got local media as a stream");
+        this.localStream = stream;
+      })
+      .catch(err => console.log("error: " + err));
+
+    this.socket.on("signal", data => {
+      console.log("received signal message from socket");
+      console.log(data);
+
+      this.peer.signal(data);
+    });
+  }
 }
