@@ -17,8 +17,6 @@ import { LoadingController } from "ionic-angular";
 import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
-import { Camera } from "@ionic-native/camera";
-import { Diagnostic } from "@ionic-native/diagnostic";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 
 const socketConfig: SocketIoConfig = {
@@ -59,8 +57,6 @@ const socketConfig: SocketIoConfig = {
     BleService,
     LoadingController,
     AndroidPermissions,
-    Camera,
-    Diagnostic,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
