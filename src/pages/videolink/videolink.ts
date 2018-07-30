@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
 import { Socket } from "ng-socket-io";
+import * as Peer from "simple-peer";
 declare var cordova: any;
 
 @IonicPage()
@@ -10,13 +11,9 @@ declare var cordova: any;
   templateUrl: "videolink.html"
 })
 export class VideolinkPage {
-  session: any;
-  isCalling: boolean = false;
-  callInProgress: boolean = false;
-  callIgnored: boolean = false;
-  callEnded: boolean = false;
-  userId: number;
-  peerId: number;
+  peer: any;
+  localStream: MediaStream;
+  remoteStream: MediaStream;
 
   constructor(
     public navCtrl: NavController,
@@ -24,168 +21,53 @@ export class VideolinkPage {
     public platform: Platform,
     public bleService: BleService,
     private socket: Socket
-  ) {
-    this.userId = Math.floor(1000 * Math.random());
+  ) {}
 
-    this.socket.on("messageReceived", msg => {
-      this.onMessageReceive(msg);
+  initiateListen() {
+    this.peer = new Peer();
+
+    this.peer.on("signal", data => {
+      console.log("got signal data locally. Passing it on to signaling server");
+      this.socket.emit("signal", data);
     });
 
-    this.socket.emit("login", { id: this.userId });
-    console.log("loggar in på signnalservern");
-  }
-
-  startCall() {
-    console.log("Ringer!");
-    this.isCalling = true;
-    this.callIgnored = false;
-    this.callEnded = false;
-
-    this.socket.emit("sendMessage", {
-      id: this.userId,
-      peer_id: this.peerId,
-      type: "call"
+    this.peer.on("stream", stream => {
+      console.log("received stream from remote peer");
+      // got remote video stream, now let's show it in a video tag
+      var video = document.querySelector("video");
+      video.srcObject = stream;
+      video.play();
     });
   }
 
-  call(isInitiator) {
-    console.log("Call function triggered. isInitiator=" + isInitiator);
-    let config = {
-      isInitiator: isInitiator, // True eller false på Isinitiator
-      stun: {
-        host: "stun:stun.l.google.com:19302"
-      },
-      turn: {
-        url: "turn:user@54.197.33.120:3478",
-        credential: "root"
-      },
-      streams: {
-        audio: true,
-        video: false
-      }
-    };
-
-    this.session = new cordova.plugins.phonertc.Session(config);
-    cordova.plugins.phonertc.setVideoView({
-      container: document.getElementById("video-container"),
-      local: {
-        position: [0, 0],
-        size: [100, 100]
-      }
+  initiateCall() {
+    console.log("starting call as initiator");
+    this.peer = new Peer({ initiator: true, stream: this.localStream });
+    this.peer.on("signal", data => {
+      console.log("got signal data locally. Passing it on to signaling server");
+      this.socket.emit("signal", data);
     });
-
-    this.session.on("sendMessage", data => {
-      console.log();
-      this.socket.emit("sendMessage", {
-        id: this.userId,
-        peer_id: this.peerId,
-        type: "phonertc_handshake",
-        data: JSON.stringify(data)
-      });
-    });
-
-    this.session.on("answer", function() {
-      console.log("Other client answered!");
-    });
-
-    this.session.on("disconnect", () => {
-      this.socket.emit("sendMessage", {
-        id: this.userId,
-        peer_id: this.peerId,
-        type: "ignore"
-      });
-      console.log("Other client disconnected!");
-    });
-
-    this.session.call();
-  }
-
-  ignore() {
-    if (JSON.stringify(this.session) === "{}") {
-      this.session.disconnect();
-    } else {
-      this.socket.emit("sendMessage", {
-        id: this.userId,
-        peer_id: this.peerId,
-        type: "ignore"
-      });
-    }
-  }
-
-  end() {
-    this.session.close();
-    this.session = {};
-
-    this.socket.emit("sendMessage", {
-      is: this.userId,
-      peer_id: this.peerId,
-      type: "end"
-    });
-
-    this.callInProgress = false;
-    this.callEnded = true;
-  }
-
-  answer() {
-    if (this.callInProgress) {
-      console.log("can't answer since callInProgress is true");
-      return;
-    }
-
-    this.callInProgress = true;
-
-    this.call(false);
-
-    setTimeout(() => {
-      this.socket.emit("sendMessage", {
-        id: this.userId,
-        peer_id: this.peerId,
-        type: "answer"
-      });
-    }, 1500);
-  }
-
-  onMessageReceive(message) {
-    console.log(
-      "Received message from signal server: " + JSON.stringify(message)
-    );
-    switch (message.type) {
-      case "answer":
-        this.callInProgress = true;
-        this.peerId = message.id;
-        this.call(true);
-        break;
-
-      case "ignore":
-        this.callInProgress = false;
-        this.callIgnored = true;
-        this.callEnded = false;
-        break;
-
-      case "phonertc_handshake":
-        this.session.receiveMessage(JSON.parse(message.data));
-        break;
-
-      case "call":
-        this.isCalling = false;
-        this.callIgnored = false;
-        this.callEnded = false;
-        this.peerId = message.id;
-        this.answer();
-        break;
-
-      case "end":
-        this.callInProgress = false;
-        this.callEnded = true;
-        this.callIgnored = false;
-        break;
-    }
   }
 
   ionViewDidLoad() {
-    this.bleService.ConnectedIcon();
-    console.log("ionViewDidLoad VideolinkPage");
+    // get video/voice stream
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment" }, audio: true })
+      .then(stream => {
+        console.log("got local media as a stream");
+        this.localStream = stream;
+      })
+      .catch(err => console.log("error: " + err));
+
+    this.socket.on("signal", data => {
+      console.log("received signal message from socket");
+      console.log(data);
+
+      this.peer.signal(data);
+    });
   }
 }
+
 // c1efa933 => Samuels
-// 09882a9b028aa8e8 => Nexus 5
+// 09882a9b028aa8e8 => Nexus 5gunnar är bäst
+// 09862476028bc6af => Mhp02

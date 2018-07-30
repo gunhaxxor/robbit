@@ -1,34 +1,18 @@
-<!--
-  Generated template for the VideolinkPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
   <ion-navbar>
-    <ion-title>videolink
-      <ion-spinner id="spinner" name="bubbles"></ion-spinner>
-      <ion-icon id="bleicon" name="bluetooth" (click)="this.bleService.onDisconnected(peripheral)"></ion-icon>
+    <ion-title>VideoLiiink!!!
+
     </ion-title>
   </ion-navbar>
 
 </ion-header>
 
-
 <ion-content padding>
-  <p>userId: {{userId}}</p>
-  <p>peerId: {{peerId}}</p>
-  <p>isCalling: {{isCalling?"ja":"nej"}}</p>
-  <p>callInProgress: {{callInProgress?"ja":"nej"}}</p>
-  <p>callIgnored: {{callIgnored?"ja":"nej"}}</p>
-  <p>callEnded: {{callEnded?"ja":"nej"}}</p>
-  <input [(ngModel)]="peerId" \>
+  <video class="video-container" autoplay>
+  </video>
   <br>
-  <button (click)="startCall()">Start call</button>
-
-
-
-  <div id="video-container"></div>
-  <p>LIVEFEED</p>
+  <button (click)="initiateCall()">Call</button>
+  <br>
+  <button (click)="initiateListen()">Listen</button>
 </ion-content>
