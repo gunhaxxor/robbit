@@ -111,6 +111,7 @@ control.inBackground(() => {
     basic.clearScreen();
     led.plot(0, pins.map(motor1Value, -1023, 1023, 4, 0));
     led.plot(4, pins.map(motor2Value, -1023, 1023, 4, 0));
+    led.plot(2, pins.map(Servo, 0, 180, 0, 4))
     checkRadioStamp = input.runningTime();
     checked = checkRadioStamp - radioStamp;
     if (checked > 1000) {
