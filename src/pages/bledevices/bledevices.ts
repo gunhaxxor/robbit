@@ -16,7 +16,7 @@ export class BlePage {
 
   ionViewWillEnter() {
     console.log("ska öppna devicelist page");
-    this.bleservice.scan();
+    // this.bleservice.scan();
 
     // this.zone.run(() => {
     //   this.devices = this.bleservice.devices;

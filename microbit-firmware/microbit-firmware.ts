@@ -1,7 +1,10 @@
 let valueLength = 0;
 let InnanConnect = false;
 let Servo = 0;
+let checked = 0;
+let checkRadioStamp = 0;
 let receivedValues: number[] = [];
+let radioStamp = 0;
 input.onButtonPressed(Button.A, () => {
   pins.servoWritePin(AnalogPin.P1, 165);
 });
@@ -17,6 +20,7 @@ bluetooth.onBluetoothDisconnected(() => {
   basic.clearScreen();
 });
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
+  radioStamp = input.runningTime();
   receivedValues = [];
   receivedString = bluetooth.uartReadUntil(
     serial.delimiters(Delimiters.NewLine)
@@ -107,6 +111,12 @@ control.inBackground(() => {
     basic.clearScreen();
     led.plot(0, pins.map(motor1Value, -1023, 1023, 4, 0));
     led.plot(4, pins.map(motor2Value, -1023, 1023, 4, 0));
+    checkRadioStamp = input.runningTime();
+    checked = checkRadioStamp - radioStamp;
+    if (checked > 1000) {
+      setMotorPwm(1, 0);
+      setMotorPwm(0, 0);
+    }
     basic.pause(200);
   }
 });
