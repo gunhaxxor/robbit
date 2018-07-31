@@ -63,50 +63,50 @@ export class RobotControlPage {
     let servo = 165;
     console.log("ionViewWillEnter triggered");
 
-    // this.robotControlIntervalId = setInterval(() => {
-    //   if (!this.bleService.sharedState.isConnectedToDevice) {
-    //     let forwardAmt = 0;
-    //     let turnAmt = 0;
-    //     let motorValue1;
-    //     let motorValue2;
-    //     ///Let's check here if we are available to send drive instructions to selected robot.
-    //     if (this.arrowLeftActive) {
-    //       turnAmt -= 1023;
-    //     }
-    //     if (this.arrowForwardActive) {
-    //       forwardAmt += 1023;
-    //     }
-    //     if (this.arrowRightActive) {
-    //       turnAmt += 1023;
-    //     }
-    //     if (this.arrowBackwardActive) {
-    //       forwardAmt -= 1023;
-    //     }
+    this.robotControlIntervalId = setInterval(() => {
+      if (!this.bleService.sharedState.isConnectedToDevice) {
+        let forwardAmt = 0;
+        let turnAmt = 0;
+        let motorValue1;
+        let motorValue2;
+        ///Let's check here if we are available to send drive instructions to selected robot.
+        if (this.arrowLeftActive) {
+          turnAmt -= 1023;
+        }
+        if (this.arrowForwardActive) {
+          forwardAmt += 1023;
+        }
+        if (this.arrowRightActive) {
+          turnAmt += 1023;
+        }
+        if (this.arrowBackwardActive) {
+          forwardAmt -= 1023;
+        }
 
-    //     if (this.servoUpActive) {
-    //       servo += 15;
-    //     }
-    //     if (this.servoDownActive) {
-    //       servo -= 15;
-    //     }
+        if (this.servoUpActive) {
+          servo += 15;
+        }
+        if (this.servoDownActive) {
+          servo -= 15;
+        }
 
-    //     servo = Math.max(85, Math.min(165, servo));
+        servo = Math.max(85, Math.min(165, servo));
 
-    //     if (turnAmt == 0) {
-    //       motorValue1 = forwardAmt;
-    //       motorValue2 = forwardAmt;
-    //     } else {
-    //       motorValue1 = forwardAmt / 2 + turnAmt / 2;
-    //       motorValue2 = forwardAmt / 2 - turnAmt / 2;
-    //     }
-    //     motorValue1 = Math.floor(motorValue1);
-    //     motorValue2 = Math.floor(motorValue2);
-    //     let msg = "" + motorValue1 + ";" + motorValue2 + ";" + servo + "\n";
+        if (turnAmt == 0) {
+          motorValue1 = forwardAmt;
+          motorValue2 = forwardAmt;
+        } else {
+          motorValue1 = forwardAmt / 2 + turnAmt / 2;
+          motorValue2 = forwardAmt / 2 - turnAmt / 2;
+        }
+        motorValue1 = Math.floor(motorValue1);
+        motorValue2 = Math.floor(motorValue2);
+        let msg = "" + motorValue1 + ";" + motorValue2 + ";" + servo + "\n";
 
-    //     console.log("sending robot data to socket");
-    //     this.socket.emit("robotControl", msg);
-    //   }
-    // }, 200);
+        console.log("sending robot data to socket");
+        this.socket.emit("robotControl", msg);
+      }
+    }, 300);
   }
 
   //videolink / test

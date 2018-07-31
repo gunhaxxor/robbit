@@ -4,14 +4,24 @@ ion-content {
   height: 100%;
 }
 ion-content button {
+  z-index: 3;
   width: 75px;
   height: 75px;
 }
 #warning {
   background-color: red;
 }
-#video-container {
+#remote-video {
+  position: absolute;
+  z-index: 0;
   width: 300px;
   height: 300px;
   background-color: #000;
+}
+
+#local-video {
+  position: absolute;
+  z-index: 2;
+  width: 100px;
+  height: 100px;
 }
