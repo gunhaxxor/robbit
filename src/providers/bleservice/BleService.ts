@@ -100,7 +100,7 @@ export class BleService {
   }
 
   public send(msg) {
-    console.log("Sending Gunnar är sämst: " + msg);
+    console.log("skickar till uBit: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (
