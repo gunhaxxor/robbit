@@ -12,34 +12,38 @@
   </video>
   <video id="local-video" autoplay>
   </video>
+
+  <br>
+  <br>
+  <div id="control">
+    <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
+      <ion-icon name="arrow-round-back"></ion-icon>
+    </button>
+    <button id="forward" (touchstart)="arrowForwardActive = true" (touchend)="arrowForwardActive = false">
+      <ion-icon name="arrow-round-up"></ion-icon>
+    </button>
+    <button (touchstart)="arrowRightActive = true" (touchend)="arrowRightActive = false">
+      <ion-icon name="arrow-round-forward"></ion-icon>
+    </button>
+    <button id="backward" (touchstart)="arrowBackwardActive = true" (touchend)="arrowBackwardActive = false">
+      <ion-icon name="arrow-round-down"></ion-icon>
+    </button>
+    <button id="warning" (click)="stop()">
+      <ion-icon name="warning"></ion-icon>
+    </button>
+
+    <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
+      <ion-icon name="undo"></ion-icon>
+    </button>
+    <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
+      <ion-icon name="redo"></ion-icon>
+    </button>
+  </div>
+
   <br>
   <button (click)="initiateCall()">Call</button>
   <br>
   <button (click)="initiateListen()">Listen</button>
   <br>
-
-
-  <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
-    <ion-icon name="arrow-round-back"></ion-icon>
-  </button>
-  <button id="forward" (touchstart)="arrowForwardActive = true" (touchend)="arrowForwardActive = false">
-    <ion-icon name="arrow-round-up"></ion-icon>
-  </button>
-  <button (touchstart)="arrowRightActive = true" (touchend)="arrowRightActive = false">
-    <ion-icon name="arrow-round-forward"></ion-icon>
-  </button>
-  <button id="backward" (touchstart)="arrowBackwardActive = true" (touchend)="arrowBackwardActive = false">
-    <ion-icon name="arrow-round-down"></ion-icon>
-  </button>
-  <button id="warning" (click)="stop()">
-    <ion-icon name="warning"></ion-icon>
-  </button>
-
-  <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
-    <ion-icon name="undo"></ion-icon>
-  </button>
-  <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
-    <ion-icon name="redo"></ion-icon>
-  </button>
 
 </ion-content>

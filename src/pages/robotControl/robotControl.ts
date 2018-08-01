@@ -49,11 +49,24 @@ export class RobotControlPage {
     });
   }
 
+  //Host or Client
+
+  Status() {
+    console.log(this.bleService.userStatus);
+    if (this.bleService.userStatus) {
+      this.initiateListen();
+    } else {
+      this.initiateCall();
+    }
+  }
+
   //user is leaving the selected page.
   ionViewWillLeave() {
     clearInterval(this.robotControlIntervalId);
   }
   ionViewDidEnter() {
+    console.log("STATUS IS COMING!");
+    this.Status();
     if (this.bleService.sharedState.isConnectedToDevice) {
       console.log(
         "skipping socket emit interval loop because we are connected to BLE"

@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
+import { RobotControlPage } from "../robotControl/robotControl";
 // declare let cordova: any;
 
 @Component({
@@ -8,30 +9,13 @@ import { BleService } from "../../providers/bleservice/BleService";
   templateUrl: "home.html"
 })
 export class HomePage {
-  constructor(
-    public navCtrl: NavController,
-    public bleService: BleService // private diagnostic: Diagnostic
-  ) {}
+  constructor(public navCtrl: NavController, public bleService: BleService) {}
 
   localproperty: boolean = false;
 
   changeLocalProperty() {
     this.localproperty = !this.localproperty;
   }
-  // ionViewDidLoad() {
-  //   console.log("Ble service startas automatiskt");
-  //   this.bleService.start();
-  // }
-
-  // $this.beginStateCheckFn();
-  // $this.diagnostic.isCameraAuthorized().then((authorized) => {
-  //   if ($this.cameraAuthorized !== authorized) {
-  //     $this.stateChanged = true;
-  //   }
-  //   $this.cameraAuthorized = authorized;
-  //   $this.endStateCheckFn();
-  // }, $this.onStateCheckError).catch ($this.onStateCheckError);
-
   cameraAuthCheck() {
     // this.diagnostic
     //   .requestCameraAuthorization(false)
@@ -62,6 +46,25 @@ export class HomePage {
   }
   ionViewDidLoad() {
     console.log("hi");
-    this.bleService.ConnectedIcon();
+  }
+
+  public toggleValue: boolean = false;
+  changed() {
+    if (!this.toggleValue) {
+      console.log("Control mode on");
+      this.bleService.sharedState.isConnectedToDevice = true;
+    } else {
+      console.log("Buetooth mode on");
+      this.bleService.sharedState.isConnectedToDevice = false;
+    }
+  }
+
+  btn1() {
+    this.bleService.userStatus = true;
+    this.navCtrl.push(RobotControlPage);
+  }
+  btn2() {
+    this.bleService.userStatus = false;
+    this.navCtrl.push(RobotControlPage);
   }
 }

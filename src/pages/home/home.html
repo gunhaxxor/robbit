@@ -1,30 +1,26 @@
-<body>
-  <ion-header>
-    <ion-navbar>
-      <ion-title>Social-robot
-        <ion-spinner id="spinner" name="bubbles"></ion-spinner>
-        <ion-icon id="bleicon" name="bluetooth" (click)="bleService.disconnect()"></ion-icon>
-        <span id="bluetooth"></span>
-      </ion-title>
-    </ion-navbar>
-  </ion-header>
-
-
-  <ion-content padding>
-    <h2>Instruktioner!</h2>
-    <p>1. Starta din microbit
-    </p>
-    <!-- <p>localproperty status:{{localproperty?"ja":"nej"}}</p> -->
-    <button (click)="cameraAuthCheck()"></button>
-    <!-- <p item-right [ngSwitch]="diagnosticService.cameraAuthorized">
-      <span class="on" *ngSwitchCase="true">AUTHORIZED</span>
-      <span class="off" *ngSwitchCase="false">UNAUTHORIZED</span>
-    </p> -->
-    <p>
-      2. Klicka på "sök" knappen och klicka på enheten du önskar koppla till
-    </p>
-    <p>3. Styr roboten</p>
-    <p>4. ???</p>
-    <p>5. PROFIT!!!</p>
-  </ion-content>
-</body>
+<ion-header>
+  <ion-navbar>
+    <ion-title>Social Robot
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <div id="container">
+    <br>
+    <div id="button1" (click)="btn1()">
+    </div>
+    <div id="h1">
+      <h1>ROBOT</h1>
+      <p>Mobilen kopplad till robot.</p>
+    </div>
+  </div>
+  <div id="container1">
+    <br>
+    <div id="button2" (click)="btn2()">
+    </div>
+    <div id="h2">
+      <h1>ELEV</h1>
+      <p>Styr roboten</p>
+    </div>
+  </div>
+</ion-content>
