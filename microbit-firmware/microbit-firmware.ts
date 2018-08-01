@@ -1,73 +1,72 @@
-let valueLength = 0;
-let InnanConnect = false;
-let Servo = 0;
-let checked = 0;
-let checkRadioStamp = 0;
-let receivedValues: number[] = [];
-let radioStamp = 0;
+let valueLength = 0
+let InnanConnect = false
+let checked = 0
+let servoValue = 0
+let checkRadioStamp = 0
+let receivedValues: number[] = []
+let radioStamp = 0
 input.onButtonPressed(Button.A, () => {
-  pins.servoWritePin(AnalogPin.P1, 165);
-});
+  pins.servoWritePin(AnalogPin.P1, 165)
+})
 input.onButtonPressed(Button.AB, () => {
   setMotorPwm(0, 0);
   setMotorPwm(1, 0);
-});
+})
 bluetooth.onBluetoothDisconnected(() => {
   setMotorPwm(0, 0);
   setMotorPwm(1, 0);
-  basic.showIcon(IconNames.No);
-  basic.pause(1000);
-  basic.clearScreen();
-});
+  basic.showIcon(IconNames.No)
+  basic.pause(1000)
+  basic.clearScreen()
+})
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
-  radioStamp = input.runningTime();
-  receivedValues = [];
-  receivedString = bluetooth.uartReadUntil(
-    serial.delimiters(Delimiters.NewLine)
-  );
+  radioStamp = input.runningTime()
+  receivedValues = []
+  receivedString = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
   receivedStrings = split(receivedString, ";");
   for (let i = 0; i <= receivedStrings.length - 1; i++) {
-    receivedValues.push(parseInt(receivedStrings[i]));
+    receivedValues.push(parseInt(receivedStrings[i]))
   }
   // valueLength = 4 for (let i = 0, k = 0; k <
   // receivedString.length; i++ , k += valueLength) {
   // receivedValues[i] =
   // parseInt(receivedString.substr(k, valueLength))
   // -1023; }
-  motor1Value = receivedValues[0];
-  motor2Value = receivedValues[1];
-  Servo = receivedValues[2];
-  pins.servoWritePin(AnalogPin.P1, Servo);
+  motor1Value = receivedValues[0]
+  motor2Value = receivedValues[1]
+  servoValue = receivedValues[2]
+  pins.servoWritePin(AnalogPin.P1, servoValue)
   setMotorPwm(1, motor1Value);
   setMotorPwm(0, motor2Value);
-});
+})
 bluetooth.onBluetoothConnected(() => {
   setMotorPwm(0, 0);
   setMotorPwm(1, 0);
-  basic.showIcon(IconNames.Yes);
-});
+  basic.showIcon(IconNames.Yes)
+  basic.pause(500)
+})
 input.onButtonPressed(Button.B, () => {
-  pins.servoWritePin(AnalogPin.P1, 85);
-});
-let motor = false;
-let motor2Value = 0;
-let motor1Value = 0;
-let receivedStrings: string[] = [];
-let receivedString = "";
-Servo = 165;
-InnanConnect = true;
-valueLength = 0;
+  pins.servoWritePin(AnalogPin.P1, 85)
+})
+bluetooth.startUartService()
 basic.showLeds(`
     . . . . .
     # . # . #
     # # # . #
     # . # . #
     . . . . .
-    `);
-bluetooth.startUartService();
-motor2Value = 0;
-motor1Value = 0;
-receivedValues = [];
+    `)
+let receivedString = ""
+let receivedStrings: string[] = []
+let motor1Value = 0
+let motor2Value = 0
+let motor = false
+servoValue = 165
+InnanConnect = true
+valueLength = 0
+motor2Value = 0
+motor1Value = 0
+receivedValues = []
 function setMotorPwm(motor: number, value: number) {
   if (motor == 0) {
     if (value > 0) {
@@ -108,16 +107,34 @@ function split(inputString: string, delimiter: string): Array<string> {
 }
 control.inBackground(() => {
   while (true) {
-    basic.clearScreen();
-    led.plot(0, pins.map(motor1Value, -1023, 1023, 4, 0));
-    led.plot(4, pins.map(motor2Value, -1023, 1023, 4, 0));
-    led.plot(2, pins.map(Servo, 0, 180, 0, 4))
-    checkRadioStamp = input.runningTime();
-    checked = checkRadioStamp - radioStamp;
+    basic.clearScreen()
+    led.plot(0, pins.map(
+      motor1Value,
+      -1023,
+      1023,
+      4,
+      0
+    ))
+    led.plot(4, pins.map(
+      motor2Value,
+      -1023,
+      1023,
+      4,
+      0
+    ))
+    led.plot(2, pins.map(
+      servoValue,
+      0,
+      180,
+      4,
+      0
+    ))
+    checkRadioStamp = input.runningTime()
+    checked = checkRadioStamp - radioStamp
     if (checked > 1000) {
       setMotorPwm(1, 0);
       setMotorPwm(0, 0);
     }
-    basic.pause(200);
+    basic.pause(400)
   }
-});
+})
