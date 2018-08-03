@@ -7,6 +7,9 @@
     <div *ngIf="this.bleService.isRobot" id="ble">
       <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
     </div>
+    <button (click)="whichCamera()">
+      Change Kamera!
+    </button>
     <div *ngIf="!this.bleService.isRobot" id="call">
       <button (click)="initiateCall()">
         <ion-icon name="call"></ion-icon>

@@ -34,6 +34,8 @@ export class RobotControlPage {
   arrowBackwardActive: boolean;
   servoUpActive: boolean;
   servoDownActive: boolean;
+  cameraOption: string = "constraint";
+
   constructor(
     public platform: Platform,
     public navCtrl: NavController,
@@ -72,6 +74,9 @@ export class RobotControlPage {
     clearInterval(this.robotControlIntervalId);
   }
   ionViewDidEnter() {
+    console.log("STATUS IS COMING!");
+    this.Status();
+
     let leftMotor = 0;
     let rightMotor = 0;
     let options = {
@@ -117,15 +122,13 @@ export class RobotControlPage {
           }
         });
       })
-      .on("removed", function(evt, nipple) {
+      .on("removed", (evt, nipple) => {
         rightMotor = 0;
         leftMotor = 0;
         console.log("removed");
         nipple.off("move");
       });
 
-    console.log("STATUS IS COMING!");
-    this.Status();
     if (this.bleService.sharedState.isConnectedToDevice) {
       console.log(
         "skipping socket emit interval loop because we are connected to BLE"
@@ -235,11 +238,22 @@ export class RobotControlPage {
     });
   }
 
+  whichCamera() {
+    if (this.cameraOption == "environment") {
+      this.cameraOption = "constraint";
+    } else {
+      this.cameraOption = "environment";
+    }
+    let video: HTMLVideoElement = document.querySelector("#local-video");
+    video.pause();
+    this.retrieveCamera();
+  }
+
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" }, audio: false })
+      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: false })
       .then(stream => {
         console.log("got local media as a stream");
         this.localStream = stream;
