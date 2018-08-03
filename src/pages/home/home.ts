@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
 import { RobotControlPage } from "../robotControl/robotControl";
+import { testPage } from "../test/test";
 // declare let cordova: any;
 
 @Component({
@@ -44,9 +45,8 @@ export class HomePage {
     //   }
     // });
   }
-  ionViewDidLoad() {
-    console.log("hi");
-  }
+
+  ionViewDidLoad() {}
 
   public toggleValue: boolean = false;
   changed() {
@@ -60,11 +60,11 @@ export class HomePage {
   }
 
   btn1() {
-    this.bleService.userStatus = true;
+    this.bleService.isRobot = true;
     this.navCtrl.push(RobotControlPage);
   }
   btn2() {
-    this.bleService.userStatus = false;
+    this.bleService.isRobot = false;
     this.navCtrl.push(RobotControlPage);
   }
 }

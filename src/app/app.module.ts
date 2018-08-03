@@ -7,6 +7,7 @@ import { DeviceListPage } from "../pages/deviceList/deviceList";
 import { HomePage } from "../pages/home/home";
 import { TabsPage } from "../pages/tabs/tabs";
 import { RobotControlPage } from "../pages/robotControl/robotControl";
+import { testPage } from "../pages/test/test";
 import { VideolinkPage } from "../pages/videolink/videolink";
 import { BlePage } from "../pages/bledevices/bledevices";
 
@@ -32,6 +33,7 @@ const socketConfig: SocketIoConfig = {
     HomePage,
     TabsPage,
     RobotControlPage,
+    testPage,
     VideolinkPage,
     BlePage
   ],
@@ -48,6 +50,7 @@ const socketConfig: SocketIoConfig = {
     HomePage,
     TabsPage,
     RobotControlPage,
+    testPage,
     VideolinkPage,
     BlePage
   ],

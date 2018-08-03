@@ -21,7 +21,7 @@ export class BleService {
   uartService: any;
   uartRXCharacteristic: any;
 
-  userStatus: boolean = false; // False = Client, True = Host
+  isRobot: boolean = false; // False = Client, True = Host
 
   constructor(private ble: BLE, private zone: NgZone) {
     console.log("bleService Started");
@@ -163,11 +163,9 @@ export class BleService {
   // TODO: This should be replaced later with a proper state change detection instead of manually tiggering changes
   public ConnectedIcon() {
     if (this.sharedState.isConnectedToDevice) {
-      document.getElementById("bleicon").style.backgroundColor = "green";
-      document.getElementById("spinner").style.display = "none";
+      document.getElementById("ble").style.backgroundColor = "green";
     } else {
-      document.getElementById("bleicon").style.backgroundColor = "red";
-      document.getElementById("spinner").style.display = "block";
+      document.getElementById("ble").style.backgroundColor = "red";
     }
   }
 }

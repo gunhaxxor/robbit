@@ -4,6 +4,7 @@ import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/BleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
+import nipplejs from "nipplejs";
 import { Camera } from "@ionic-native/camera";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import "webrtc-adapter";
@@ -52,19 +53,77 @@ export class RobotControlPage {
   //Host or Client
 
   Status() {
-    console.log(this.bleService.userStatus);
-    if (this.bleService.userStatus) {
+    console.log("isRobot:", this.bleService.isRobot);
+    if (this.bleService.isRobot) {
+      console.log("Listening on calls!");
+      this.bleService.start();
       this.initiateListen();
     } else {
-      this.initiateCall();
+      console.log("Click on call to start!");
     }
   }
-
+  loggarn() {
+    console.log(
+      "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
+    );
+  }
   //user is leaving the selected page.
   ionViewWillLeave() {
     clearInterval(this.robotControlIntervalId);
   }
   ionViewDidEnter() {
+    let leftMotor = 0;
+    let rightMotor = 0;
+    let options = {
+      zone: document.getElementById("zone_joystick")
+    };
+
+    let manager = nipplejs.create(options);
+    console.log("hi");
+
+    manager
+      .on("added", (evt, nipple) => {
+        console.log("added");
+        nipple.on("move", (evt, data) => {
+          if (data.angle) {
+            // px, py are between max distance and -1 * max distans
+
+            let px = -Math.cos(data.angle.radian) * data.distance;
+            let py = Math.sin(data.angle.radian) * data.distance;
+
+            console.log("px: " + px);
+            console.log("py: " + py);
+            let JOYSTICK_MAX_DIST = 50;
+            let MOTOR_SCALE = 20;
+            // Source of algorithm:
+            // http://home.kendra.com/mauser/Joystick.html
+            // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
+            let v =
+              (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
+              py;
+            // Calculate R-L (Call it W): W= (100-ABS(Y)) * (X/100) + X
+            let w =
+              (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
+              px;
+            // Calculate R: R = (V+W) /2
+            rightMotor = (v + w) / 2;
+            // Calculate L: L= (V-W)/2
+            leftMotor = (v - w) / 2;
+            // Do any scaling on R and L your hardware may require.
+            rightMotor *= MOTOR_SCALE;
+            leftMotor *= MOTOR_SCALE;
+            // Send those values to your Robot.
+            console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
+          }
+        });
+      })
+      .on("removed", function(evt, nipple) {
+        rightMotor = 0;
+        leftMotor = 0;
+        console.log("removed");
+        nipple.off("move");
+      });
+
     console.log("STATUS IS COMING!");
     this.Status();
     if (this.bleService.sharedState.isConnectedToDevice) {
@@ -75,51 +134,59 @@ export class RobotControlPage {
     }
     let servo = 165;
     console.log("ionViewWillEnter triggered");
+    if (!this.bleService.isRobot) {
+      this.robotControlIntervalId = setInterval(() => {
+        if (
+          !this.bleService.isRobot &&
+          !this.bleService.sharedState.isConnectedToDevice
+        ) {
+          // let forwardAmt = 0;
+          // let turnAmt = 0;
+          // let motorValue1;
+          // let motorValue2;
+          // ///Let's check here if we are available to send drive instructions to selected robot.
+          // if (this.arrowLeftActive) {
+          //   turnAmt -= 1023;
+          // }
+          // if (this.arrowForwardActive) {
+          //   forwardAmt += 1023;
+          // }
+          // if (this.arrowRightActive) {
+          //   turnAmt += 1023;
+          // }
+          // if (this.arrowBackwardActive) {
+          //   forwardAmt -= 1023;
+          // }
+          if (this.servoUpActive) {
+            servo += 15;
+          }
+          if (this.servoDownActive) {
+            servo -= 15;
+          }
+          servo = Math.max(85, Math.min(165, servo));
+          // if (turnAmt == 0) {
+          //   motorValue1 = forwardAmt;
+          //   motorValue2 = forwardAmt;
+          // } else {
+          //   motorValue1 = forwardAmt / 2 + turnAmt / 2;
+          //   motorValue2 = forwardAmt / 2 - turnAmt / 2;
+          // }
 
-    this.robotControlIntervalId = setInterval(() => {
-      if (!this.bleService.sharedState.isConnectedToDevice) {
-        let forwardAmt = 0;
-        let turnAmt = 0;
-        let motorValue1;
-        let motorValue2;
-        ///Let's check here if we are available to send drive instructions to selected robot.
-        if (this.arrowLeftActive) {
-          turnAmt -= 1023;
+          let leftMotorFloored = Math.floor(leftMotor);
+          let rightMotorFloored = Math.floor(rightMotor);
+          let msg =
+            "" +
+            rightMotorFloored +
+            ";" +
+            leftMotorFloored +
+            ";" +
+            servo +
+            "\n";
+          console.log("sending robot data to socket");
+          this.socket.emit("robotControl", msg);
         }
-        if (this.arrowForwardActive) {
-          forwardAmt += 1023;
-        }
-        if (this.arrowRightActive) {
-          turnAmt += 1023;
-        }
-        if (this.arrowBackwardActive) {
-          forwardAmt -= 1023;
-        }
-
-        if (this.servoUpActive) {
-          servo += 15;
-        }
-        if (this.servoDownActive) {
-          servo -= 15;
-        }
-
-        servo = Math.max(85, Math.min(165, servo));
-
-        if (turnAmt == 0) {
-          motorValue1 = forwardAmt;
-          motorValue2 = forwardAmt;
-        } else {
-          motorValue1 = forwardAmt / 2 + turnAmt / 2;
-          motorValue2 = forwardAmt / 2 - turnAmt / 2;
-        }
-        motorValue1 = Math.floor(motorValue1);
-        motorValue2 = Math.floor(motorValue2);
-        let msg = "" + motorValue1 + ";" + motorValue2 + ";" + servo + "\n";
-
-        console.log("sending robot data to socket");
-        this.socket.emit("robotControl", msg);
-      }
-    }, 300);
+      }, 300);
+    }
   }
 
   //videolink / test
@@ -139,12 +206,10 @@ export class RobotControlPage {
       //   ]
       // }
     });
-
     this.peer.on("signal", data => {
       console.log("got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
     });
-
     this.peer.on("stream", stream => {
       console.log("I am listener. Received stream from initiating peer");
       // got remote video stream, now let's show it in a video tag
@@ -161,7 +226,6 @@ export class RobotControlPage {
       console.log("got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
     });
-
     this.peer.on("stream", stream => {
       console.log("I am initiator. Received stream from listening peer");
       // got remote video stream, now let's show it in a video tag

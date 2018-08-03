@@ -1,49 +1,39 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title> Micro:bit ? </ion-title>
-    <ion-icon [ngStyle]="{'color': statusColor}" name="bluetooth">
-    </ion-icon>
+    <ion-title> Facetime </ion-title>
+    <!-- <ion-icon [ngStyle]="{'color': statusColor}" name="bluetooth"> -->
+    <!-- </ion-icon> -->
+    <div *ngIf="this.bleService.isRobot" id="ble">
+      <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
+    </div>
+    <div *ngIf="!this.bleService.isRobot" id="call">
+      <button (click)="initiateCall()">
+        <ion-icon name="call"></ion-icon>
+      </button>
+    </div>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+  <!-- <div id="zone_joystick"></div> -->
   <video id="remote-video" autoplay>
   </video>
   <video id="local-video" autoplay>
   </video>
-
   <br>
   <br>
-  <div id="control">
-    <button (touchstart)="arrowLeftActive = true" (touchend)="arrowLeftActive = false">
-      <ion-icon name="arrow-round-back"></ion-icon>
-    </button>
-    <button id="forward" (touchstart)="arrowForwardActive = true" (touchend)="arrowForwardActive = false">
-      <ion-icon name="arrow-round-up"></ion-icon>
-    </button>
-    <button (touchstart)="arrowRightActive = true" (touchend)="arrowRightActive = false">
-      <ion-icon name="arrow-round-forward"></ion-icon>
-    </button>
-    <button id="backward" (touchstart)="arrowBackwardActive = true" (touchend)="arrowBackwardActive = false">
-      <ion-icon name="arrow-round-down"></ion-icon>
-    </button>
-    <button id="warning" (click)="stop()">
-      <ion-icon name="warning"></ion-icon>
-    </button>
+  <div id="control" *ngIf="!this.bleService.isRobot">
+    <div id="zone_joystick"></div>
+    <div id="servo">
+      <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
+        <ion-icon name="undo"></ion-icon>
+      </button>
+      <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
+        <ion-icon name="redo"></ion-icon>
+      </button>
+    </div>
 
-    <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
-      <ion-icon name="undo"></ion-icon>
-    </button>
-    <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
-      <ion-icon name="redo"></ion-icon>
-    </button>
   </div>
-
   <br>
-  <button (click)="initiateCall()">Call</button>
-  <br>
-  <button (click)="initiateListen()">Listen</button>
-  <br>
-
 </ion-content>
