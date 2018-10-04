@@ -1,3 +1,7 @@
+$primary-color: #fff;
+$secondary-color: #fff;
+$third-color: #fff;
+
 body {
   background-color: blue;
 }
@@ -6,20 +10,95 @@ header {
   background-color: blue;
 }
 
-#bleicon {
-  text-align: center;
-  background-color: red;
-  border-radius: 4px;
-  width: 30px;
-  padding: 5px;
-  color: #fff;
-  border: 2px solid #000;
-  position: absolute;
-  right: 10px;
-  margin-top: -7px;
-}
-
 ion-spinner {
   position: absolute;
   right: 50px;
+}
+
+.scroll-content {
+  // background: linear-gradient(to right, #b64ce0 50%, #774ee6 50%);
+  color: #61ada0;
+}
+.toolbar-title-md {
+  text-align: center;
+  // header Title!
+}
+.content-md {
+  // för allt
+}
+#button1 {
+  margin: 0 auto;
+  z-index: 12;
+  height: 150px;
+  width: 150px;
+  background-color: #fff;
+  border-radius: 100%;
+}
+#button2 {
+  margin: 0 auto;
+  z-index: 12;
+  height: 150px;
+  width: 150px;
+  background-color: #fff;
+  border-radius: 100%;
+}
+
+#separator {
+  z-index: 11;
+  height: 100%;
+  width: 2px;
+  background-color: #fff;
+  margin: 0 auto;
+}
+.tab-button-text {
+  font-size: 50pt;
+  font-weight: bold;
+}
+.toolbar-background-md {
+  background-color: #eff3cd;
+}
+.toolbar-title-md {
+  color: #fff;
+}
+.tabs-md .tab-button[aria-selected="true"] {
+  color: #fff;
+}
+.tabs-md .tabbar {
+  background-color: #000;
+  display: none;
+}
+#h1 {
+  margin: 0 auto;
+  z-index: 12;
+  color: white;
+  width: 100px;
+}
+#h2 {
+  margin: 0 auto;
+  z-index: 12;
+  color: white;
+  width: 100px;
+}
+p {
+  font-size: 12pt;
+  color: #fff;
+}
+
+#container {
+  width: 50%;
+  z-index: 11;
+  height: 100%;
+  background: linear-gradient(to bottom, #bbd8c0, #b4dfbc, #8ec99c);
+  //background-color: #b2d5ba;
+}
+
+#container1 {
+  position: absolute;
+  width: 50%;
+  right: 0;
+  z-index: 11;
+  height: 100%;
+  top: 0;
+  background: linear-gradient(to bottom left, #6baaa0, #61ada0, #61ada0);
+  //background-color: #61ada0;
 }
