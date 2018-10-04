@@ -22,7 +22,7 @@ export class BleService {
   uartRXCharacteristic: any;
 
   constructor(private ble: BLE, private zone: NgZone) {
-    console.log("bleService Started");
+    console.log("bleService instantiated");
     this.textEncoder = new encoding.TextEncoder();
   }
 

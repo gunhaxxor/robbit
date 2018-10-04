@@ -5,7 +5,7 @@ import { BleService } from "../../providers/bleservice/BleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 import { Camera } from "@ionic-native/camera";
-import { AndroidPermissions } from "@ionic-native/android-permissions";
+import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
@@ -40,8 +40,8 @@ export class RobotControlPage {
     public navParams: NavParams,
     public bleService: BleService,
     private socket: Socket,
-    private androidPermissions: AndroidPermissions,
-    private camera: Camera
+    private camera: Camera,
+    private diagnostic: Diagnostic
   ) {
     socket.on("robotControl", msg => {
       console.log("received socket msg: " + JSON.stringify(msg));
@@ -162,7 +162,7 @@ export class RobotControlPage {
     // get video/voice stream
     console.log("retrieving camera!");
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" }, audio: false })
+      .getUserMedia({ video: { facingMode: "environment" }, audio: true })
       .then(stream => {
         console.log("got local media as a stream");
         this.localStream = stream;
@@ -170,70 +170,98 @@ export class RobotControlPage {
         video.srcObject = stream;
         video.play();
       })
-      .catch(err => console.log("error: " + err));
+      .catch(err => {
+        console.log("error: " + err);
+      });
   }
 
-  permissionCheck(permission, name) {
-    this.androidPermissions.checkPermission(permission).then(res => {
-      console.log(name + " permission: " + res.hasPermission);
-      if (!res.hasPermission) {
-        return Promise.reject("no permission for " + name + "!");
-      }
+  // permissionCheck(permission, name) {
+  //   this.androidPermissions.checkPermission(permission).then(res => {
+  //     console.log(name + " permission: " + res.hasPermission);
+  //     if (!res.hasPermission) {
+  //       return Promise.reject("no permission for " + name + "!");
+  //     }
+  //     return Promise.resolve();
+  //   });
+  // }
+
+  checkNeededPermissions(){
+    // let returnPromise = new Promise();
+    if(this.diagnostic.isCameraAuthorized(false) && this.diagnostic.isMicrophoneAuthorized()){
       return Promise.resolve();
-    });
+    }
+    return Promise.reject("Du är ful!");
   }
 
   ionViewDidLoad() {
-    Promise.all([
-      this.permissionCheck(this.androidPermissions.PERMISSION.CAMERA, "camera"),
-      this.permissionCheck(
-        this.androidPermissions.PERMISSION.RECORD_AUDIO,
-        "record audio"
-      ),
-      this.permissionCheck(
-        this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT,
-        "capture audio output"
-      ),
-      this.permissionCheck(
-        this.androidPermissions.PERMISSION.CALL_PHONE,
-        "phone calls"
-      )
-    ])
-      // this.androidPermissions
-      //   .checkPermission(this.androidPermissions.PERMISSION.CAMERA)
-      //   // .then((res)=> {return res.hasPermission})
-      //   // .then((res) => {return res}
+    // let cameraPromise = this.diagnostic.requestCameraAuthorization(false)
+    //   .then(res => console.log("camera request result: " + res))
+    //   .catch(err => console.log("camera request failed: " + err));
 
-      .then(
-        () => {
-          console.log("had all permissions. wuuuhuuu!");
-          this.retrieveCamera();
-          // console.log("Has permission? ", result.hasPermission);
-          // if (result.hasPermission) {
+    
+    // let microphonePromise = this.diagnostic.requestMicrophoneAuthorization()
+    // .then(res => console.log("microphone request result: " + res))
+    // .catch(err => console.log("microphone request failed: " + err));
 
-          // } else {
-          //   this.androidPermissions
-          //     .requestPermissions([
-          //       this.androidPermissions.PERMISSION.CAMERA,
-          //       this.androidPermissions.PERMISSION.RECORD_AUDIO
-          //     ])
-          //     .then(() => {
-          //       this.retrieveCamera();
-          //     });
-          // }
-        },
-        err => {
-          console.log("didn't have the permissions. requesting now!");
-          this.androidPermissions
-            .requestPermissions([
-              this.androidPermissions.PERMISSION.CAMERA,
-              this.androidPermissions.PERMISSION.RECORD_AUDIO,
-              this.androidPermissions.PERMISSION.CALL_PHONE,
-              this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT
-            ])
-            .then(() => this.retrieveCamera());
-        }
-      );
+    this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
+      .then((statuses) => {
+        this.retrieveCamera();
+      })
+      .catch((err) => console.log("permissions request rejected: " + err));
+
+    // Promise.all([cameraPromise, microphonePromise]).then(() => {
+    //   this.retrieveCamera();
+    // })
+    // Promise.all([
+    //   this.permissionCheck(this.androidPermissions.PERMISSION.CAMERA, "camera"),
+    //   this.permissionCheck(
+    //     this.androidPermissions.PERMISSION.RECORD_AUDIO,
+    //     "record audio"
+    //   ),
+    //   this.permissionCheck(
+    //     this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT,
+    //     "capture audio output"
+    //   ),
+    //   this.permissionCheck(
+    //     this.androidPermissions.PERMISSION.CALL_PHONE,
+    //     "phone calls"
+    //   )
+    // ])
+    //   // this.androidPermissions
+    //   //   .checkPermission(this.androidPermissions.PERMISSION.CAMERA)
+    //   //   // .then((res)=> {return res.hasPermission})
+    //   //   // .then((res) => {return res}
+
+    // .then(
+    //   () => {
+    //     console.log("had all permissions. wuuuhuuu!");
+    //     this.retrieveCamera();
+    //     // console.log("Has permission? ", result.hasPermission);
+    //     // if (result.hasPermission) {
+
+    //     // } else {
+    //     //   this.androidPermissions
+    //     //     .requestPermissions([
+    //     //       this.androidPermissions.PERMISSION.CAMERA,
+    //     //       this.androidPermissions.PERMISSION.RECORD_AUDIO
+    //     //     ])
+    //     //     .then(() => {
+    //     //       this.retrieveCamera();
+    //     //     });
+    //     // }
+    //   },
+    //   err => {
+    //     console.log("didn't have the permissions. requesting now!");
+    //     this.androidPermissions
+    //       .requestPermissions([
+    //         this.androidPermissions.PERMISSION.CAMERA,
+    //         this.androidPermissions.PERMISSION.RECORD_AUDIO,
+    //         this.androidPermissions.PERMISSION.CALL_PHONE,
+    //         this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT
+    //       ])
+    //       .then(() => this.retrieveCamera());
+    //   }
+    // );
 
     this.socket.on("signal", data => {
       console.log("received signal message from socket");

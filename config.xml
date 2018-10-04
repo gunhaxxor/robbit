@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>social-robot-ionic</name>
-    <description>An awesome Ionic/Cordova app.</description>
+    <description>Gunnar är bäst!</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
     <content src="index.html" />
     <access origin="*" />
@@ -20,6 +20,10 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
+        <custom-config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+        </custom-config-file>
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -86,6 +90,7 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
     <allow-navigation href="http://192.168.86.66:8100" />
     <plugin name="cordova-plugin-camera" spec="^4.0.3" />
-    <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
+    <plugin name="cordova.plugins.diagnostic" spec="^4.0.10" />
+    <plugin name="cordova-custom-config" spec="*" />
     <engine name="android" spec="7.0.0" />
 </widget>
