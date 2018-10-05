@@ -5,8 +5,9 @@ let servoValue = 0
 let checkRadioStamp = 0
 let receivedValues: number[] = []
 let radioStamp = 0
+let SERVO_PIN = AnalogPin.P13
 input.onButtonPressed(Button.A, () => {
-  pins.servoWritePin(AnalogPin.P1, 165)
+  pins.servoWritePin(SERVO_PIN, 165)
 })
 input.onButtonPressed(Button.AB, () => {
   setMotorPwm(0, 0);
@@ -35,7 +36,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
   motor1Value = receivedValues[0]
   motor2Value = receivedValues[1]
   servoValue = receivedValues[2]
-  pins.servoWritePin(AnalogPin.P1, servoValue)
+  pins.servoWritePin(SERVO_PIN, servoValue)
   setMotorPwm(1, motor1Value);
   setMotorPwm(0, motor2Value);
 })
@@ -46,7 +47,7 @@ bluetooth.onBluetoothConnected(() => {
   basic.pause(500)
 })
 input.onButtonPressed(Button.B, () => {
-  pins.servoWritePin(AnalogPin.P1, 85)
+  pins.servoWritePin(SERVO_PIN, 85)
 })
 bluetooth.startUartService()
 basic.showLeds(`
