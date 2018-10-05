@@ -5,12 +5,25 @@ let servoValue = 0
 let checkRadioStamp = 0
 let receivedValues: number[] = []
 let radioStamp = 0
+let SERVO_START_VALUE = 100
+let SERVO_MAX_VALUE = 155
+let SERVO_MIN_VALUE = 75
+
 input.onButtonPressed(Button.A, () => {
-  pins.servoWritePin(AnalogPin.P1, 165)
+  pins.servoWritePin(AnalogPin.P1, SERVO_START_VALUE)
+})
+input.onButtonPressed(Button.B, () => {
+  pins.servoWritePin(AnalogPin.P1, SERVO_MIN_VALUE)
 })
 input.onButtonPressed(Button.AB, () => {
   setMotorPwm(0, 0);
   setMotorPwm(1, 0);
+})
+bluetooth.onBluetoothConnected(() => {
+  setMotorPwm(0, 0);
+  setMotorPwm(1, 0);
+  basic.showIcon(IconNames.Yes)
+  basic.pause(500)
 })
 bluetooth.onBluetoothDisconnected(() => {
   setMotorPwm(0, 0);
@@ -39,15 +52,6 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
   setMotorPwm(1, motor1Value);
   setMotorPwm(0, motor2Value);
 })
-bluetooth.onBluetoothConnected(() => {
-  setMotorPwm(0, 0);
-  setMotorPwm(1, 0);
-  basic.showIcon(IconNames.Yes)
-  basic.pause(500)
-})
-input.onButtonPressed(Button.B, () => {
-  pins.servoWritePin(AnalogPin.P1, 85)
-})
 bluetooth.startUartService()
 basic.showLeds(`
     . . . . .
@@ -61,12 +65,13 @@ let receivedStrings: string[] = []
 let motor1Value = 0
 let motor2Value = 0
 let motor = false
-servoValue = 165
+servoValue = SERVO_START_VALUE
 InnanConnect = true
 valueLength = 0
 motor2Value = 0
 motor1Value = 0
 receivedValues = []
+
 function setMotorPwm(motor: number, value: number) {
   if (motor == 0) {
     if (value > 0) {
@@ -86,6 +91,7 @@ function setMotorPwm(motor: number, value: number) {
     }
   }
 }
+
 function split(inputString: string, delimiter: string): Array<string> {
   let splittedStrings: string[] = [];
   let prevDelimiterIndex = 0;
@@ -105,6 +111,7 @@ function split(inputString: string, delimiter: string): Array<string> {
   );
   return splittedStrings;
 }
+
 control.inBackground(() => {
   while (true) {
     basic.clearScreen()

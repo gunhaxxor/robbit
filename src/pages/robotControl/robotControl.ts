@@ -35,6 +35,9 @@ export class RobotControlPage {
   servoUpActive: boolean;
   servoDownActive: boolean;
   cameraOption: string = "constraint";
+  SERVO_START_VALUE: number = 100;
+  SERVO_MAX_VALUE: number = 155;
+  SERVO_MIN_VALUE: number = 75;
 
   constructor(
     public platform: Platform,
@@ -74,6 +77,11 @@ export class RobotControlPage {
     clearInterval(this.robotControlIntervalId);
   }
   ionViewDidEnter() {
+    console.log("trying to fetch camera");
+    this.checkNeededPermissions().then(() => {
+      this.retrieveCamera();
+    }).catch((err) => console.log("failed to get permissions: " + err));
+
     console.log("STATUS IS COMING!");
     this.Status();
 
@@ -135,7 +143,7 @@ export class RobotControlPage {
       );
       return;
     }
-    let servo = 165;
+    let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     if (!this.bleService.isRobot) {
       this.robotControlIntervalId = setInterval(() => {
@@ -166,7 +174,7 @@ export class RobotControlPage {
           if (this.servoDownActive) {
             servo -= 15;
           }
-          servo = Math.max(85, Math.min(165, servo));
+          servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
           // if (turnAmt == 0) {
           //   motorValue1 = forwardAmt;
           //   motorValue2 = forwardAmt;
@@ -253,7 +261,7 @@ export class RobotControlPage {
     // get video/voice stream
     console.log("retrieving camera!");
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: false })
+      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
       .then(stream => {
         console.log("got local media as a stream");
         this.localStream = stream;
@@ -294,11 +302,11 @@ export class RobotControlPage {
     // .then(res => console.log("microphone request result: " + res))
     // .catch(err => console.log("microphone request failed: " + err));
 
-    this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
-      .then((statuses) => {
-        this.retrieveCamera();
-      })
-      .catch((err) => console.log("permissions request rejected: " + err));
+    // this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
+    //   .then((statuses) => {
+    //     this.retrieveCamera();
+    //   })
+    //   .catch((err) => console.log("permissions request rejected: " + err));
 
     // Promise.all([cameraPromise, microphonePromise]).then(() => {
     //   this.retrieveCamera();

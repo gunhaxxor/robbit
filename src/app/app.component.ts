@@ -5,6 +5,7 @@ import { SplashScreen } from "@ionic-native/splash-screen";
 import { TabsPage } from "../pages/tabs/tabs";
 import { BLE } from "@ionic-native/ble";
 import { BleService } from "../providers/bleservice/BleService";
+import { Diagnostic } from "@ionic-native/diagnostic";
 
 @Component({
   templateUrl: "app.html"
@@ -18,8 +19,14 @@ export class MyApp {
     splashScreen: SplashScreen,
     public ble: BLE,
     private bleService: BleService,
+    private diagnostic: Diagnostic
   ) {
     platform.ready().then(() => {
+      this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
+      .then(() => {
+        console.log("runtime permission requests were approved");
+      })
+      .catch((err) => console.log("permissions request rejected: " + err));
       // document.addEventListener("deviceready", () => {
       //   this.androidPermissions.requestPermissions([
       //     this.androidPermissions.PERMISSION.CAMERA,
