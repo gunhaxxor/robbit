@@ -19,7 +19,7 @@ import { BleService } from "../providers/bleservice/BleService";
 import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
-import { AndroidPermissions } from "@ionic-native/android-permissions";
+import { Diagnostic } from "@ionic-native/diagnostic"
 
 const socketConfig: SocketIoConfig = {
   url: "https://social-robot-signaling-server.herokuapp.com/",
@@ -61,7 +61,7 @@ const socketConfig: SocketIoConfig = {
     BleService,
     LoadingController,
     Camera,
-    AndroidPermissions,
+    Diagnostic,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

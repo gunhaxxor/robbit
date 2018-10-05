@@ -24,7 +24,7 @@ export class BleService {
   isRobot: boolean = false; // False = Client, True = Host
 
   constructor(private ble: BLE, private zone: NgZone) {
-    console.log("bleService Started");
+    console.log("bleService instantiated");
     this.textEncoder = new encoding.TextEncoder();
   }
 
