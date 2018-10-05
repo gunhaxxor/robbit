@@ -48,7 +48,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
   motor1Value = receivedValues[0]
   motor2Value = receivedValues[1]
   servoValue = receivedValues[2]
-  pins.servoWritePin(AnalogPin.P1, servoValue)
+  pins.servoWritePin(SERVO_PIN, servoValue)
   setMotorPwm(1, motor1Value);
   setMotorPwm(0, motor2Value);
 })
