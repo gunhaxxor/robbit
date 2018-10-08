@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { BleService } from "../../providers/bleservice/BleService";
-import { RobotControlPage } from "../robotControl/robotControl";
+import { BleService } from "../../providers/bleservice/bleService";
+import { DriverInterfacePage } from "../driverInterface/driverInterface";
+import { RobotInterfacePage } from "../robotInterface/robotInterface";
 import { testPage } from "../test/test";
 // declare let cordova: any;
 
@@ -12,59 +13,24 @@ import { testPage } from "../test/test";
 export class HomePage {
   constructor(public navCtrl: NavController, public bleService: BleService) {}
 
-  localproperty: boolean = false;
-
-  changeLocalProperty() {
-    this.localproperty = !this.localproperty;
-  }
-  cameraAuthCheck() {
-    // this.diagnostic
-    //   .requestCameraAuthorization(false)
-    //   .then(
-    //     () => {
-    //       // this.checkState();
-    //       console.log("we got dice!!");
-    //     },
-    //     err => console.log("no dice!" + err)
-    //   )
-    //   .catch(err => console.log("no dice" + err));
-    // if (this.diagnostic.isCameraAuthorized()) {
-    //   console.log(
-    //     "Du har permission!" +
-    //       JSON.stringify(this.diagnostic.isCameraAuthorized())
-    //   );
-    // } else {
-    //   this.diagnostic.requestCameraAuthorization();
-    //   console.log("Ansöker om ledighet");
-    // }
-    // cordova.plugins.diagnostic.getCameraAuthorizationStatus(status => {
-    //   if (status === cordova.plugins.diagnostic.permissionStatus.GRANTED) {
-    //     console.log("Camera use is authorized");
-    //   } else {
-    //     console.log("Du har ingen ledighet!");
-    //   }
-    // });
-  }
-
   ionViewDidLoad() {}
 
-  public toggleValue: boolean = false;
-  changed() {
-    if (!this.toggleValue) {
-      console.log("Control mode on");
-      this.bleService.sharedState.isConnectedToDevice = true;
-    } else {
-      console.log("Buetooth mode on");
-      this.bleService.sharedState.isConnectedToDevice = false;
-    }
-  }
+  // changed() {
+  //   if (!this.toggleValue) {
+  //     console.log("Control mode on");
+  //     this.bleService.sharedState.isConnectedToDevice = true;
+  //   } else {
+  //     console.log("Buetooth mode on");
+  //     this.bleService.sharedState.isConnectedToDevice = false;
+  //   }
+  // }
 
-  btn1() {
+  goToDriverInterface() {
     this.bleService.isRobot = true;
-    this.navCtrl.push(RobotControlPage);
+    this.navCtrl.push(DriverInterfacePage);
   }
-  btn2() {
+  goToRobotInterface() {
     this.bleService.isRobot = false;
-    this.navCtrl.push(RobotControlPage);
+    this.navCtrl.push(RobotInterfacePage);
   }
 }

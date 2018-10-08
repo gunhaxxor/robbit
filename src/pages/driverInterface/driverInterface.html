@@ -1,14 +1,14 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title> Facetime </ion-title>
+    <ion-title> IN YOUR Facetime </ion-title>
     <!-- <ion-icon [ngStyle]="{'color': statusColor}" name="bluetooth"> -->
     <!-- </ion-icon> -->
     <div *ngIf="this.bleService.isRobot" id="ble">
       <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
     </div>
     <button (click)="whichCamera()">
-      Change Kamera!
+      Change Camera!
     </button>
     <div *ngIf="!this.bleService.isRobot" id="call">
       <button (click)="initiateCall()">
@@ -22,7 +22,7 @@
   <!-- <div id="zone_joystick"></div> -->
   <video id="remote-video" autoplay>
   </video>
-  <video id="local-video" autoplay>
+  <video id="local-video" autoplay muted>
   </video>
   <br>
   <br>

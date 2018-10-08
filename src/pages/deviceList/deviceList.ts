@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 //import { RobotControlPage } from "../robotControl/robotControl";
-import { BleService } from "../../providers/bleservice/BleService";
+import { BleService } from "../../providers/bleservice/bleService";
 
 @Component({
   selector: "page-contact",

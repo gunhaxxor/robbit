@@ -1,21 +1,21 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
-import { BleService } from "../../providers/bleservice/BleService";
+import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 import nipplejs from "nipplejs";
-import { Camera } from "@ionic-native/camera";
+// import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
-@IonicPage()
+// @IonicPage()
 @Component({
-  selector: "page-robotControl",
-  templateUrl: "robotControl.html"
+  selector: "page-robotInterface",
+  templateUrl: "robotInterface.html"
 })
-export class RobotControlPage {
+export class RobotInterfacePage {
   peer: any;
   localStream: MediaStream;
   remoteStream: MediaStream;
@@ -57,7 +57,7 @@ export class RobotControlPage {
 
   //Host or Client
 
-  Status() {
+  startWebRTCAndBLE() {
     console.log("isRobot:", this.bleService.isRobot);
     if (this.bleService.isRobot) {
       console.log("Listening on calls!");
@@ -67,11 +67,11 @@ export class RobotControlPage {
       console.log("Click on call to start!");
     }
   }
-  loggarn() {
-    console.log(
-      "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
-    );
-  }
+  // loggarn() {
+  //   console.log(
+  //     "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
+  //   );
+  // }
   //user is leaving the selected page.
   ionViewWillLeave() {
     clearInterval(this.robotControlIntervalId);
@@ -80,10 +80,10 @@ export class RobotControlPage {
     console.log("trying to fetch camera");
     this.checkNeededPermissions().then(() => {
       this.retrieveCamera();
+      this.startWebRTCAndBLE();
     }).catch((err) => console.log("failed to get permissions: " + err));
 
-    console.log("STATUS IS COMING!");
-    this.Status();
+    
 
     let leftMotor = 0;
     let rightMotor = 0;
@@ -92,7 +92,6 @@ export class RobotControlPage {
     };
 
     let manager = nipplejs.create(options);
-    console.log("hi");
 
     manager
       .on("added", (evt, nipple) => {
@@ -137,7 +136,8 @@ export class RobotControlPage {
         nipple.off("move");
       });
 
-    if (this.bleService.sharedState.isConnectedToDevice) {
+    //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
+    if (this.bleService.isConnectedToDevice) {
       console.log(
         "skipping socket emit interval loop because we are connected to BLE"
       );
@@ -149,7 +149,7 @@ export class RobotControlPage {
       this.robotControlIntervalId = setInterval(() => {
         if (
           !this.bleService.isRobot &&
-          !this.bleService.sharedState.isConnectedToDevice
+          !this.bleService.isConnectedToDevice
         ) {
           // let forwardAmt = 0;
           // let turnAmt = 0;
@@ -169,10 +169,10 @@ export class RobotControlPage {
           //   forwardAmt -= 1023;
           // }
           if (this.servoUpActive) {
-            servo += 15;
+            servo += 5;
           }
           if (this.servoDownActive) {
-            servo -= 15;
+            servo -= 5;
           }
           servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
           // if (turnAmt == 0) {
@@ -205,17 +205,17 @@ export class RobotControlPage {
   initiateListen() {
     this.peer = new Peer({
       initiator: false,
-      stream: this.localStream
-      // config: {
-      //   iceServers: [
-      //     { urls: "stun:stun.l.google.com:19302" },
-      //     {
-      //       urls: "turn:54.197.33.120:3478",
-      //       username: "greger",
-      //       credential: "bajsmannen"
-      //     }
-      //   ]
-      // }
+      stream: this.localStream,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: "turn:54.197.33.120:3478",
+            username: "greger",
+            credential: "bajsmannen"
+          }
+        ]
+      }
     });
     this.peer.on("signal", data => {
       console.log("got signal data locally. Passing it on to signaling server");
@@ -289,79 +289,10 @@ export class RobotControlPage {
     if(this.diagnostic.isCameraAuthorized(false) && this.diagnostic.isMicrophoneAuthorized()){
       return Promise.resolve();
     }
-    return Promise.reject("Du är ful!");
+    return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
   ionViewDidLoad() {
-    // let cameraPromise = this.diagnostic.requestCameraAuthorization(false)
-    //   .then(res => console.log("camera request result: " + res))
-    //   .catch(err => console.log("camera request failed: " + err));
-
-    
-    // let microphonePromise = this.diagnostic.requestMicrophoneAuthorization()
-    // .then(res => console.log("microphone request result: " + res))
-    // .catch(err => console.log("microphone request failed: " + err));
-
-    // this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
-    //   .then((statuses) => {
-    //     this.retrieveCamera();
-    //   })
-    //   .catch((err) => console.log("permissions request rejected: " + err));
-
-    // Promise.all([cameraPromise, microphonePromise]).then(() => {
-    //   this.retrieveCamera();
-    // })
-    // Promise.all([
-    //   this.permissionCheck(this.androidPermissions.PERMISSION.CAMERA, "camera"),
-    //   this.permissionCheck(
-    //     this.androidPermissions.PERMISSION.RECORD_AUDIO,
-    //     "record audio"
-    //   ),
-    //   this.permissionCheck(
-    //     this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT,
-    //     "capture audio output"
-    //   ),
-    //   this.permissionCheck(
-    //     this.androidPermissions.PERMISSION.CALL_PHONE,
-    //     "phone calls"
-    //   )
-    // ])
-    //   // this.androidPermissions
-    //   //   .checkPermission(this.androidPermissions.PERMISSION.CAMERA)
-    //   //   // .then((res)=> {return res.hasPermission})
-    //   //   // .then((res) => {return res}
-
-    // .then(
-    //   () => {
-    //     console.log("had all permissions. wuuuhuuu!");
-    //     this.retrieveCamera();
-    //     // console.log("Has permission? ", result.hasPermission);
-    //     // if (result.hasPermission) {
-
-    //     // } else {
-    //     //   this.androidPermissions
-    //     //     .requestPermissions([
-    //     //       this.androidPermissions.PERMISSION.CAMERA,
-    //     //       this.androidPermissions.PERMISSION.RECORD_AUDIO
-    //     //     ])
-    //     //     .then(() => {
-    //     //       this.retrieveCamera();
-    //     //     });
-    //     // }
-    //   },
-    //   err => {
-    //     console.log("didn't have the permissions. requesting now!");
-    //     this.androidPermissions
-    //       .requestPermissions([
-    //         this.androidPermissions.PERMISSION.CAMERA,
-    //         this.androidPermissions.PERMISSION.RECORD_AUDIO,
-    //         this.androidPermissions.PERMISSION.CALL_PHONE,
-    //         this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT
-    //       ])
-    //       .then(() => this.retrieveCamera());
-    //   }
-    // );
-
     this.socket.on("signal", data => {
       console.log("received signal message from socket");
       console.log(data);

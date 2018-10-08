@@ -15,7 +15,7 @@ import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
-import { BleService } from "../providers/bleservice/BleService";
+import { BleService } from "../providers/bleservice/bleService";
 import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";

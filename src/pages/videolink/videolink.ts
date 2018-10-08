@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
-import { BleService } from "../../providers/bleservice/BleService";
+import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 

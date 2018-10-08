@@ -2,18 +2,23 @@ let valueLength = 0
 let InnanConnect = false
 let checked = 0
 let servoValue = 0
+let servoTargetValue = 0
 let checkRadioStamp = 0
 let receivedValues: number[] = []
 let radioStamp = 0
+let SERVO_PIN = AnalogPin.P13
 let SERVO_START_VALUE = 100
 let SERVO_MAX_VALUE = 155
 let SERVO_MIN_VALUE = 75
+let SERVO_Q = 0.8
 
 input.onButtonPressed(Button.A, () => {
-  pins.servoWritePin(AnalogPin.P1, SERVO_START_VALUE)
+  servoTargetValue = SERVO_START_VALUE
+  servoValue = SERVO_START_VALUE
 })
 input.onButtonPressed(Button.B, () => {
-  pins.servoWritePin(AnalogPin.P1, SERVO_MIN_VALUE)
+  servoTargetValue = SERVO_MIN_VALUE
+  servoValue = SERVO_MIN_VALUE
 })
 input.onButtonPressed(Button.AB, () => {
   setMotorPwm(0, 0);
@@ -47,8 +52,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
   // -1023; }
   motor1Value = receivedValues[0]
   motor2Value = receivedValues[1]
-  servoValue = receivedValues[2]
-  pins.servoWritePin(SERVO_PIN, servoValue)
+  servoTargetValue = receivedValues[2]
   setMotorPwm(1, motor1Value);
   setMotorPwm(0, motor2Value);
 })
@@ -114,6 +118,10 @@ function split(inputString: string, delimiter: string): Array<string> {
 
 control.inBackground(() => {
   while (true) {
+    // slowly go towards the target servo value
+    servoValue = servoValue * SERVO_Q + servoTargetValue * (1 - SERVO_Q)
+
+    pins.servoWritePin(SERVO_PIN, servoValue)
     basic.clearScreen()
     led.plot(0, pins.map(
       motor1Value,

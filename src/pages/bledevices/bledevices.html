@@ -1,21 +1,19 @@
 <ion-header>
-
     <ion-navbar>
-        <ion-title>videolink
+        <ion-title>Hittade uBits!
             <ion-spinner id="spinner" name="bubbles"></ion-spinner>
             <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
         </ion-title>
     </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
-    <button (click)="refreshView()">Refresh view!</button>
+    <!-- <button (click)="refreshView()">Refresh view!</button> -->
     <!-- <ng-template *ngIf="sharedState.devices > 0; else elseBlock"> -->
     <!-- <p>Antal enheter i devices: {{sharedState.devices.length}}</p> -->
     <ion-list>
-        <button ion-item *ngFor="let device of sharedState.devices" (click)="selectDevice(device)">
+        <button ion-item *ngFor="let device of bleService.devices" (click)="selectDevice(device)">
             <p>{{device.name}}</p>
             <!-- <p>connectedToDevice() =>{{connectedToDevice(device)?"yes":"no"}}</p> -->
             <!-- <p>connected? {{sharedState.connectedDevice.id == device.id?"yes":"no"}}</p> -->
