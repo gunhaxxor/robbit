@@ -46,7 +46,7 @@ export class DriverInterfacePage {
     public navParams: NavParams,
     public bleService: BleService,
     private socket: Socket,
-    private camera: Camera,
+    // private camera: Camera,
     private diagnostic: Diagnostic
   ) {
     socket.on("robotControl", msg => {
@@ -90,8 +90,8 @@ export class DriverInterfacePage {
     let options = {
       zone: document.getElementById("zone_joystick"),
       mode: 'static',
-      position: {left: '50%', top: '50%'},
-      color: 'blue'
+      position: {right: '5%', top: '50%'},
+      color: 'white'
     };
 
     let manager = nipplejs.create(options);
