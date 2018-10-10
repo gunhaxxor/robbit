@@ -57,14 +57,9 @@ export class RobotInterfacePage {
   //Host or Client
 
   startWebRTCAndBLE() {
-    console.log("isRobot:", this.bleService.isRobot);
-    if (this.bleService.isRobot) {
-      console.log("Listening on calls!");
-      this.bleService.start();
-      this.initiateListen();
-    } else {
-      console.log("Click on call to start!");
-    }
+    console.log("Listening on calls!");
+    this.bleService.start();
+    this.initiateListen();
   }
   // loggarn() {
   //   console.log(
