@@ -1,23 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { BleService } from "../../providers/bleservice/bleService";
 
-/**
- * Generated class for the BleButtonComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'ble-button',
-  templateUrl: 'ble-button.html',
-  styleUrls: ['./ble-button.component.scss']
+  templateUrl: 'ble-button.html'
 })
 export class BleButtonComponent {
 
-  text: string;
-
-  constructor() {
+  constructor(public bleService: BleService) {
     console.log('Hello BleButtonComponent Component');
-    this.text = 'Hello World';
+    console.log("this.bleService");
+    console.log(this.bleService);
   }
 
 }

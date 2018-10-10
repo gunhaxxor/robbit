@@ -9,6 +9,8 @@ import { DriverInterfacePage } from "../pages/driverInterface/driverInterface";
 import { RobotInterfacePage } from "../pages/robotInterface/robotInterface";
 import { BlePage } from "../pages/bledevices/bledevices";
 
+import { BleButtonComponent } from "../components/ble-button/ble-button";
+
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
@@ -31,7 +33,8 @@ const socketConfig: SocketIoConfig = {
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
-    BlePage
+    BlePage,
+    BleButtonComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ const socketConfig: SocketIoConfig = {
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
-    BlePage
+    BlePage,
+    BleButtonComponent
   ],
   providers: [
     StatusBar,

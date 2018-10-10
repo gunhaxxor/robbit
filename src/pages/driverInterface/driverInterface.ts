@@ -57,15 +57,8 @@ export class DriverInterfacePage {
 
   //Host or Client
 
-  startWebRTCAndBLE() {
-    console.log("isRobot:", this.bleService.isRobot);
-    if (this.bleService.isRobot) {
-      console.log("Listening on calls!");
-      this.bleService.start();
-      this.initiateListen();
-    } else {
-      console.log("Click on call to start!");
-    }
+  startWebRTCAndBLE() {    
+    console.log("Click on call to start!");
   }
   // loggarn() {
   //   console.log(
