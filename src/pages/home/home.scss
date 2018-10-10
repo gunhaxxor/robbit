@@ -26,30 +26,7 @@ ion-spinner {
 .content-md {
   // för allt
 }
-#button1 {
-  margin: 0 auto;
-  z-index: 12;
-  height: 150px;
-  width: 150px;
-  background-color: #fff;
-  border-radius: 100%;
-}
-#button2 {
-  margin: 0 auto;
-  z-index: 12;
-  height: 150px;
-  width: 150px;
-  background-color: #fff;
-  border-radius: 100%;
-}
 
-#separator {
-  z-index: 11;
-  height: 100%;
-  width: 2px;
-  background-color: #fff;
-  margin: 0 auto;
-}
 .tab-button-text {
   font-size: 50pt;
   font-weight: bold;
@@ -67,38 +44,31 @@ ion-spinner {
   background-color: #000;
   display: none;
 }
-#h1 {
+
+
+
+
+.side-button {
   margin: 0 auto;
   z-index: 12;
+  height: 100%;
+  width: 50%;
   color: white;
-  width: 100px;
-}
-#h2 {
-  margin: 0 auto;
-  z-index: 12;
-  color: white;
-  width: 100px;
-}
-p {
-  font-size: 12pt;
-  color: #fff;
+  float: left;
+  padding: 5%;
 }
 
-#container {
-  width: 50%;
-  z-index: 11;
-  height: 100%;
+
+.side-button p {
+  font-size: 12pt;
+}
+
+#robot-button {
   background: linear-gradient(to bottom, #bbd8c0, #b4dfbc, #8ec99c);
   //background-color: #b2d5ba;
 }
 
-#container1 {
-  position: absolute;
-  width: 50%;
-  right: 0;
-  z-index: 11;
-  height: 100%;
-  top: 0;
+#driver-button {
   background: linear-gradient(to bottom left, #6baaa0, #61ada0, #61ada0);
   //background-color: #61ada0;
 }

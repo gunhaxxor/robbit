@@ -88,7 +88,10 @@ export class DriverInterfacePage {
     let leftMotor = 0;
     let rightMotor = 0;
     let options = {
-      zone: document.getElementById("zone_joystick")
+      zone: document.getElementById("zone_joystick"),
+      mode: 'static',
+      position: {left: '50%', top: '50%'},
+      color: 'blue'
     };
 
     let manager = nipplejs.create(options);
@@ -145,62 +148,53 @@ export class DriverInterfacePage {
     }
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
-    if (!this.bleService.isRobot) {
-      this.robotControlIntervalId = setInterval(() => {
-        if (
-          !this.bleService.isRobot &&
-          !this.bleService.isConnectedToDevice
-        ) {
-          // let forwardAmt = 0;
-          // let turnAmt = 0;
-          // let motorValue1;
-          // let motorValue2;
-          // ///Let's check here if we are available to send drive instructions to selected robot.
-          // if (this.arrowLeftActive) {
-          //   turnAmt -= 1023;
-          // }
-          // if (this.arrowForwardActive) {
-          //   forwardAmt += 1023;
-          // }
-          // if (this.arrowRightActive) {
-          //   turnAmt += 1023;
-          // }
-          // if (this.arrowBackwardActive) {
-          //   forwardAmt -= 1023;
-          // }
-          if (this.servoUpActive) {
-            servo += 5;
-          }
-          if (this.servoDownActive) {
-            servo -= 5;
-          }
-          servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
-          // if (turnAmt == 0) {
-          //   motorValue1 = forwardAmt;
-          //   motorValue2 = forwardAmt;
-          // } else {
-          //   motorValue1 = forwardAmt / 2 + turnAmt / 2;
-          //   motorValue2 = forwardAmt / 2 - turnAmt / 2;
-          // }
+    this.robotControlIntervalId = setInterval(() => {
+      // let forwardAmt = 0;
+      // let turnAmt = 0;
+      // let motorValue1;
+      // let motorValue2;
+      // ///Let's check here if we are available to send drive instructions to selected robot.
+      // if (this.arrowLeftActive) {
+      //   turnAmt -= 1023;
+      // }
+      // if (this.arrowForwardActive) {
+      //   forwardAmt += 1023;
+      // }
+      // if (this.arrowRightActive) {
+      //   turnAmt += 1023;
+      // }
+      // if (this.arrowBackwardActive) {
+      //   forwardAmt -= 1023;
+      // }
+      if (this.servoUpActive) {
+        servo += 5;
+      }
+      if (this.servoDownActive) {
+        servo -= 5;
+      }
+      servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
+      // if (turnAmt == 0) {
+      //   motorValue1 = forwardAmt;
+      //   motorValue2 = forwardAmt;
+      // } else {
+      //   motorValue1 = forwardAmt / 2 + turnAmt / 2;
+      //   motorValue2 = forwardAmt / 2 - turnAmt / 2;
+      // }
 
-          let leftMotorFloored = Math.floor(leftMotor);
-          let rightMotorFloored = Math.floor(rightMotor);
-          let msg =
-            "" +
-            rightMotorFloored +
-            ";" +
-            leftMotorFloored +
-            ";" +
-            servo +
-            "\n";
-          console.log("sending robot data to socket");
-          this.socket.emit("robotControl", msg);
-        }
-      }, 300);
-    }
+      let leftMotorFloored = Math.floor(leftMotor);
+      let rightMotorFloored = Math.floor(rightMotor);
+      let msg =
+        "" +
+        rightMotorFloored +
+        ";" +
+        leftMotorFloored +
+        ";" +
+        servo +
+        "\n";
+      console.log("sending robot data to socket");
+      this.socket.emit("robotControl", msg);
+    }, 300);
   }
-
-  //videolink / test
 
   initiateListen() {
     this.peer = new Peer({

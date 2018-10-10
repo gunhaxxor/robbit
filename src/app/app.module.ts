@@ -5,10 +5,8 @@ import { MyApp } from "./app.component";
 
 import { DeviceListPage } from "../pages/deviceList/deviceList";
 import { HomePage } from "../pages/home/home";
-import { TabsPage } from "../pages/tabs/tabs";
-import { RobotControlPage } from "../pages/robotControl/robotControl";
-import { testPage } from "../pages/test/test";
-import { VideolinkPage } from "../pages/videolink/videolink";
+import { DriverInterfacePage } from "../pages/driverInterface/driverInterface";
+import { RobotInterfacePage } from "../pages/robotInterface/robotInterface";
 import { BlePage } from "../pages/bledevices/bledevices";
 
 import { StatusBar } from "@ionic-native/status-bar";
@@ -31,10 +29,8 @@ const socketConfig: SocketIoConfig = {
     MyApp,
     DeviceListPage,
     HomePage,
-    TabsPage,
-    RobotControlPage,
-    testPage,
-    VideolinkPage,
+    DriverInterfacePage,
+    RobotInterfacePage,
     BlePage
   ],
   imports: [
@@ -48,10 +44,8 @@ const socketConfig: SocketIoConfig = {
     MyApp,
     DeviceListPage,
     HomePage,
-    TabsPage,
-    RobotControlPage,
-    testPage,
-    VideolinkPage,
+    DriverInterfacePage,
+    RobotInterfacePage,
     BlePage
   ],
   providers: [

@@ -1,16 +1,11 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title> IN YOUR Facetime </ion-title>
-    <!-- <ion-icon [ngStyle]="{'color': statusColor}" name="bluetooth"> -->
-    <!-- </ion-icon> -->
-    <div *ngIf="this.bleService.isRobot" id="ble">
-      <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
-    </div>
+    <ion-title>Fjärrstyrd robot</ion-title>
     <button (click)="whichCamera()">
-      Change Camera!
+      <ion-icon name="repeat"></ion-icon>
     </button>
-    <div *ngIf="!this.bleService.isRobot" id="call">
+    <div id="call">
       <button (click)="initiateCall()">
         <ion-icon name="call"></ion-icon>
       </button>
@@ -19,24 +14,17 @@
 </ion-header>
 
 <ion-content padding>
-  <!-- <div id="zone_joystick"></div> -->
-  <video id="remote-video" autoplay>
+  <video id="remote-video" autoplay muted>
   </video>
   <video id="local-video" autoplay muted>
   </video>
-  <br>
-  <br>
-  <div id="control" *ngIf="!this.bleService.isRobot">
+  <div id="control-panel">
     <div id="zone_joystick"></div>
-    <div id="servo">
-      <button id="servoup" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
-        <ion-icon name="undo"></ion-icon>
-      </button>
-      <button id="servodown" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
-        <ion-icon name="redo"></ion-icon>
-      </button>
-    </div>
-
+    <button id="servo-up" class="servo-button" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
+      <ion-icon name="arrow-round-up"></ion-icon>
+    </button>
+    <button id="servo-down" class="servo-button" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
+      <ion-icon name="arrow-round-down"></ion-icon>
+    </button>
   </div>
-  <br>
 </ion-content>

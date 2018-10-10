@@ -5,22 +5,14 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <div id="container">
-    <br>
-    <div id="button1" (click)="goToDriverInterface()">
-    </div>
-    <div id="h1">
-      <h1>ROBOT</h1>
-      <p>Den mobil som är kopplad till roboten.</p>
-    </div>
-  </div>
-  <div id="container1">
-    <br>
-    <div id="button2" (click)="goToRobotInterface()">
-    </div>
-    <div id="h2">
-      <h1>ELEV</h1>
-      <p>Tryck här för att styra roboten</p>
-    </div>
-  </div>
+  <button ionic full class="side-button" id="robot-button" (click)="goToRobotInterface()">
+    <ion-icon name="car"></ion-icon>
+    <h1>ROBOT</h1>
+    <p>Den mobil som är kopplad till roboten.</p>
+  </button>
+  <button ionic full class="side-button" id="driver-button" (click)="goToDriverInterface()">
+    <ion-icon name="person"></ion-icon>
+    <h1>ELEV</h1>
+    <p>Tryck här för att styra roboten</p>
+  </button>
 </ion-content>

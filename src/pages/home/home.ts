@@ -3,7 +3,6 @@ import { NavController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/bleService";
 import { DriverInterfacePage } from "../driverInterface/driverInterface";
 import { RobotInterfacePage } from "../robotInterface/robotInterface";
-import { testPage } from "../test/test";
 // declare let cordova: any;
 
 @Component({

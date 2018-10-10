@@ -4,7 +4,6 @@ import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
-import nipplejs from "nipplejs";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
@@ -46,7 +45,7 @@ export class RobotInterfacePage {
     public navParams: NavParams,
     public bleService: BleService,
     private socket: Socket,
-    private camera: Camera,
+    // private camera: Camera,
     private diagnostic: Diagnostic
   ) {
     socket.on("robotControl", msg => {
@@ -87,54 +86,49 @@ export class RobotInterfacePage {
 
     let leftMotor = 0;
     let rightMotor = 0;
-    let options = {
-      zone: document.getElementById("zone_joystick")
-    };
 
-    let manager = nipplejs.create(options);
+    // manager
+    //   .on("added", (evt, nipple) => {
+    //     console.log("added");
+    //     nipple.on("move", (evt, data) => {
+    //       if (data.angle) {
+    //         // px, py are between max distance and -1 * max distans
 
-    manager
-      .on("added", (evt, nipple) => {
-        console.log("added");
-        nipple.on("move", (evt, data) => {
-          if (data.angle) {
-            // px, py are between max distance and -1 * max distans
+    //         let px = -Math.cos(data.angle.radian) * data.distance;
+    //         let py = Math.sin(data.angle.radian) * data.distance;
 
-            let px = -Math.cos(data.angle.radian) * data.distance;
-            let py = Math.sin(data.angle.radian) * data.distance;
-
-            console.log("px: " + px);
-            console.log("py: " + py);
-            let JOYSTICK_MAX_DIST = 50;
-            let MOTOR_SCALE = 20;
-            // Source of algorithm:
-            // http://home.kendra.com/mauser/Joystick.html
-            // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
-            let v =
-              (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
-              py;
-            // Calculate R-L (Call it W): W= (100-ABS(Y)) * (X/100) + X
-            let w =
-              (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
-              px;
-            // Calculate R: R = (V+W) /2
-            rightMotor = (v + w) / 2;
-            // Calculate L: L= (V-W)/2
-            leftMotor = (v - w) / 2;
-            // Do any scaling on R and L your hardware may require.
-            rightMotor *= MOTOR_SCALE;
-            leftMotor *= MOTOR_SCALE;
-            // Send those values to your Robot.
-            console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
-          }
-        });
-      })
-      .on("removed", (evt, nipple) => {
-        rightMotor = 0;
-        leftMotor = 0;
-        console.log("removed");
-        nipple.off("move");
-      });
+    //         console.log("px: " + px);
+    //         console.log("py: " + py);
+    //         let JOYSTICK_MAX_DIST = 50;
+    //         let MOTOR_SCALE = 20;
+    //         // Source of algorithm:
+    //         // http://home.kendra.com/mauser/Joystick.html
+    //         // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
+    //         let v =
+    //           (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
+    //           py;
+    //         // Calculate R-L (Call it W): W= (100-ABS(Y)) * (X/100) + X
+    //         let w =
+    //           (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
+    //           px;
+    //         // Calculate R: R = (V+W) /2
+    //         rightMotor = (v + w) / 2;
+    //         // Calculate L: L= (V-W)/2
+    //         leftMotor = (v - w) / 2;
+    //         // Do any scaling on R and L your hardware may require.
+    //         rightMotor *= MOTOR_SCALE;
+    //         leftMotor *= MOTOR_SCALE;
+    //         // Send those values to your Robot.
+    //         console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
+    //       }
+    //     });
+    //   })
+    //   .on("removed", (evt, nipple) => {
+    //     rightMotor = 0;
+    //     leftMotor = 0;
+    //     console.log("removed");
+    //     nipple.off("move");
+    //   });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     if (this.bleService.isConnectedToDevice) {

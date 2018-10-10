@@ -1,4 +1,8 @@
 <div *ngIf="bleService">
-    <ion-icon id="bleicon" name="bluetooth" [class.connected]="bleService.isConnectedToDevice" [class.disconnected]="!bleService.isConnectedToDevice" (click)="bleservice.disconnect()" class="connected"></ion-icon>
-    <ion-icon id="caricon" name="car" *ngIf="bleService.isRobot"></ion-icon>
+    <ion-icon id="bleicon" name="bluetooth" 
+        [class.connected]="bleService.isConnectedToDevice"
+        [class.disconnected]="!bleService.isConnectedToDevice"
+        (click)="bleservice.disconnect()"
+        class="connected">
+    </ion-icon>
 </div>
