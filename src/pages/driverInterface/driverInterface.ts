@@ -83,47 +83,44 @@ export class DriverInterfacePage {
     // TODO: design the interaction so that the joystick is for looking around rathjer than driving. Will need clever calculations/balancing between servo speed and motor speed to get smooth experience.
 
     manager
-      .on("added", (evt, nipple) => {
-        console.log("added");
-        nipple.on("move", (evt, data) => {
-          if (data.angle) {
-            // px, py are between max distance and -1 * max distans
+    .on("move", (evt, data) => {
+      if (data.angle) {
+        // // px, py are between max distance and -1 * max distans
 
-            let px = -Math.cos(data.angle.radian) * data.distance;
-            let py = Math.sin(data.angle.radian) * data.distance;
+        // let px = -Math.cos(data.angle.radian) * data.distance;
+        // let py = Math.sin(data.angle.radian) * data.distance;
 
-            console.log("px: " + px);
-            console.log("py: " + py);
-            let JOYSTICK_MAX_DIST = 50;
-            let MOTOR_SCALE = 20;
-            // Source of algorithm:
-            // http://home.kendra.com/mauser/Joystick.html
-            // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
-            let v =
-              (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
-              py;
-            // Calculate R-L (Call it W): W= (100-ABS(Y)) * (X/100) + X
-            let w =
-              (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
-              px;
-            // Calculate R: R = (V+W) /2
-            rightMotor = (v + w) / 2;
-            // Calculate L: L= (V-W)/2
-            leftMotor = (v - w) / 2;
-            // Do any scaling on R and L your hardware may require.
-            rightMotor *= MOTOR_SCALE;
-            leftMotor *= MOTOR_SCALE;
-            // Send those values to your Robot.
-            console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
-          }
-        });
-      })
-      .on("removed", (evt, nipple) => {
-        rightMotor = 0;
-        leftMotor = 0;
-        console.log("removed");
-        nipple.off("move");
-      });
+        // console.log("px: " + px);
+        // console.log("py: " + py);
+        // let JOYSTICK_MAX_DIST = 50;
+        // let MOTOR_SCALE = 20;
+        // // Source of algorithm:
+        // // http://home.kendra.com/mauser/Joystick.html
+        // // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
+        // let v =
+        //   (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
+        //   py;
+        // // Calculate R-L (Call it W): W= (100-ABS(Y)) * (X/100) + X
+        // let w =
+        //   (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
+        //   px;
+        // // Calculate R: R = (V+W) /2
+        // rightMotor = (v + w) / 2;
+        // // Calculate L: L= (V-W)/2
+        // leftMotor = (v - w) / 2;
+        // // Do any scaling on R and L your hardware may require.
+        // rightMotor *= MOTOR_SCALE;
+        // leftMotor *= MOTOR_SCALE;
+        
+        // Send those values to your Robot.
+        console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
+      }
+    })
+    .on("end", (evt, nipple) => {
+      rightMotor = 0;
+      leftMotor = 0;
+      console.log("joystick released");
+    });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let servo = this.SERVO_START_VALUE;
@@ -171,7 +168,7 @@ export class DriverInterfacePage {
         ";" +
         servo +
         "\n";
-      // console.log("sending robot data to socket");
+      console.log("sending robot data to socket: " + msg);
       this.socket.emit("robotControl", msg);
     }, 300);
   }

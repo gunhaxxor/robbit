@@ -70,7 +70,7 @@ export class BleService {
 
   // When a device is discovered
   private devFound(device) {
-    //console.log("found device named: " + device.name);
+    console.log("found device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
       // this.zone.run(() => {
         this.devices.push(device);
@@ -114,7 +114,7 @@ export class BleService {
   }
 
   public send(msg) {
-    //console.log("skickar till uBit: " + msg);
+    console.log("skickar till uBit: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (
@@ -122,7 +122,7 @@ export class BleService {
       !this.uartService ||
       !this.uartRXCharacteristic
     ) {
-      //console.error("device, service or characteristic are not set!!");
+      console.error("device, service or characteristic are not set!!");
       return;
     }
     this.ble.write(
@@ -168,15 +168,6 @@ export class BleService {
     this.connectedDevice = undefined;
     // alert("Handshake stopped");
     this.isConnectedToDevice = false;
-    // this.ConnectedIcon();
+    this.scanAndAutoConnect();
   }
-
-  // // TODO: This should be replaced later with a proper state change detection instead of manually tiggering changes
-  // public ConnectedIcon() {
-  //   if (this.isConnectedToDevice) {
-  //     document.getElementById("ble").style.backgroundColor = "green";
-  //   } else {
-  //     document.getElementById("ble").style.backgroundColor = "red";
-  //   }
-  // }
 }
