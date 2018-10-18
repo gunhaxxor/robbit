@@ -44,7 +44,7 @@ export class BleService {
     // this.sharedState.devices = [];
     this.devices = [];
     this.ble.scan([], 7).subscribe(device => {
-      console.log("found device named: " + device.name);
+      //console.log("found device named: " + device.name);
       if (device.name && device.name.includes("micro")) {
         console.log("found uBit device: " + device.name);
         // this.sharedState.devices.push(device);
@@ -70,7 +70,7 @@ export class BleService {
 
   // When a device is discovered
   private devFound(device) {
-    console.log("found device named: " + device.name);
+    //console.log("found device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
       // this.zone.run(() => {
         this.devices.push(device);
@@ -114,7 +114,7 @@ export class BleService {
   }
 
   public send(msg) {
-    console.log("skickar till uBit: " + msg);
+    //console.log("skickar till uBit: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (
@@ -122,7 +122,7 @@ export class BleService {
       !this.uartService ||
       !this.uartRXCharacteristic
     ) {
-      console.error("device, service or characteristic are not set!!");
+      //console.error("device, service or characteristic are not set!!");
       return;
     }
     this.ble.write(

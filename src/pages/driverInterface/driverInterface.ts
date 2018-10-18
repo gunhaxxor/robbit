@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
-import { BleService } from "../../providers/bleservice/bleService";
+// import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 import nipplejs from "nipplejs";
-import { Camera } from "@ionic-native/camera";
+// import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
@@ -17,16 +17,9 @@ import "webrtc-adapter";
 })
 export class DriverInterfacePage {
   peer: any;
+  videoLinkActive: boolean = false;
   localStream: MediaStream;
   remoteStream: MediaStream;
-
-  //Robotcontrol variabler
-
-  setStatus: any;
-  peripheral: any;
-  connecteddd: boolean = false;
-  uartService: any;
-  uartRXCharacteristic: any;
   robotControlIntervalId: any;
   arrowLeftActive: boolean;
   arrowForwardActive: boolean;
@@ -44,50 +37,50 @@ export class DriverInterfacePage {
     public navCtrl: NavController,
     public loading: LoadingController,
     public navParams: NavParams,
-    public bleService: BleService,
+    // public bleService: BleService,
     private socket: Socket,
     // private camera: Camera,
     private diagnostic: Diagnostic
   ) {
     socket.on("robotControl", msg => {
-      console.log("received socket msg: " + JSON.stringify(msg));
-      this.bleService.send(msg);
+      // console.log("received socket msg: " + JSON.stringify(msg));
+      // this.bleService.send(msg);
     });
   }
 
-  //Host or Client
-
-  startWebRTCAndBLE() {    
-    console.log("Click on call to start!");
-  }
   // loggarn() {
   //   console.log(
   //     "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
   //   );
   // }
+
   //user is leaving the selected page.
-  ionViewWillLeave() {
+  ionViewDidLeave() {
     clearInterval(this.robotControlIntervalId);
+
+    this.peer.destroy();
+    this.videoLinkActive = false;
   }
+
   ionViewDidEnter() {
     console.log("trying to fetch camera");
     this.checkNeededPermissions().then(() => {
       this.retrieveCamera();
-      this.startWebRTCAndBLE();
     }).catch((err) => console.log("failed to get permissions: " + err));
 
-    
 
     let leftMotor = 0;
     let rightMotor = 0;
     let options = {
-      zone: document.getElementById("zone_joystick"),
+      zone: document.getElementById("zone-joystick"),
       mode: 'static',
-      position: {right: '5%', top: '50%'},
+      position: {right: '50%', top: '50%'},
       color: 'white'
     };
 
     let manager = nipplejs.create(options);
+
+    // TODO: design the interaction so that the joystick is for looking around rathjer than driving. Will need clever calculations/balancing between servo speed and motor speed to get smooth experience.
 
     manager
       .on("added", (evt, nipple) => {
@@ -133,12 +126,6 @@ export class DriverInterfacePage {
       });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
-    if (this.bleService.isConnectedToDevice) {
-      console.log(
-        "skipping socket emit interval loop because we are connected to BLE"
-      );
-      return;
-    }
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
@@ -184,62 +171,38 @@ export class DriverInterfacePage {
         ";" +
         servo +
         "\n";
-      console.log("sending robot data to socket");
+      // console.log("sending robot data to socket");
       this.socket.emit("robotControl", msg);
     }, 300);
-  }
-
-  initiateListen() {
-    this.peer = new Peer({
-      initiator: false,
-      stream: this.localStream,
-      config: {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          {
-            urls: "turn:54.197.33.120:3478",
-            username: "greger",
-            credential: "bajsmannen"
-          }
-        ]
-      }
-    });
-    this.peer.on("signal", data => {
-      console.log("got signal data locally. Passing it on to signaling server");
-      this.socket.emit("signal", data);
-    });
-    this.peer.on("stream", stream => {
-      console.log("I am listener. Received stream from initiating peer");
-      // got remote video stream, now let's show it in a video tag
-      let video: HTMLVideoElement = document.querySelector("#remote-video");
-      video.srcObject = stream;
-      video.play();
-    });
   }
 
   initiateCall() {
     console.log("starting call as initiator");
     this.peer = new Peer({ initiator: true, stream: this.localStream });
     this.peer.on("signal", data => {
-      console.log("got signal data locally. Passing it on to signaling server");
+      console.log("Driver got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
     });
     this.peer.on("stream", stream => {
-      console.log("I am initiator. Received stream from listening peer");
+      console.log("I am Driver and I am initiator. Received stream from listening peer");
       // got remote video stream, now let's show it in a video tag
-      var video: HTMLVideoElement = document.querySelector("#remote-video");
+      var video: any = document.querySelector("#driver-remote-video");
       video.srcObject = stream;
-      video.play();
+      // video.play();
+    });
+    this.peer.on('connect', () => {
+      console.log('connection event!!!');
+      this.videoLinkActive = true;
     });
   }
 
-  whichCamera() {
+  changeCamera() {
     if (this.cameraOption == "environment") {
       this.cameraOption = "constraint";
     } else {
       this.cameraOption = "environment";
     }
-    let video: HTMLVideoElement = document.querySelector("#local-video");
+    let video: HTMLVideoElement = document.querySelector("#driver-local-video");
     video.pause();
     this.retrieveCamera();
   }
@@ -250,11 +213,12 @@ export class DriverInterfacePage {
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
       .then(stream => {
-        console.log("got local media as a stream");
+        console.log("Driver got local media as a stream");
         this.localStream = stream;
-        let video: HTMLVideoElement = document.querySelector("#local-video");
+        let video: HTMLVideoElement = document.querySelector("#driver-local-video");
         video.srcObject = stream;
-        video.play();
+        video.volume = 0;
+        // video.play();
       })
       .catch(err => {
         console.log("error: " + err);
@@ -281,10 +245,12 @@ export class DriverInterfacePage {
 
   ionViewDidLoad() {
     this.socket.on("signal", data => {
-      console.log("received signal message from socket");
+      console.log("Driver received signal message from socket");
       console.log(data);
 
-      this.peer.signal(data);
+      if(this.peer){
+        this.peer.signal(data);
+      }
     });
   }
 }

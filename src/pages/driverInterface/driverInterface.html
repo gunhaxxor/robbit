@@ -1,25 +1,27 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Fjärrstyrd robot</ion-title>
-    <button (click)="whichCamera()">
+    <ion-title>Elev</ion-title>
+    <button (click)="changeCamera()">
       <ion-icon name="repeat"></ion-icon>
     </button>
-    <div id="call">
-      <button (click)="initiateCall()">
-        <ion-icon name="call"></ion-icon>
-      </button>
-    </div>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <video id="remote-video" autoplay muted>
+  <div id="call" *ngIf="!this.videoLinkActive">
+    <button (click)="initiateCall()">
+      <ion-icon name="call"></ion-icon>
+    </button>
+  </div>
+  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
   </video>
-  <video id="local-video" autoplay muted>
+  <!-- <video id="driver-remote-video" autoplay>
+  </video> -->
+  <video id="driver-local-video" autoplay>
   </video>
   <div id="control-panel">
-    <div id="zone_joystick"></div>
+    <div id="zone-joystick"></div>
     <button id="servo-up" class="servo-button" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>
     </button>
