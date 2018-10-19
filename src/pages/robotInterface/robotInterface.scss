@@ -11,6 +11,12 @@
   background-color: #000;
 }
 
+.video-vertical-flip {
+  transform: rotateX(180deg);
+  -webkit-transform:rotateX(180deg); /* Safari and Chrome */
+  -moz-transform:rotateX(180deg); /* Firefox */
+}
+
 #robot-local-video {
   position: absolute;
   left: 0%;

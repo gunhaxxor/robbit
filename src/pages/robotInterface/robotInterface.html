@@ -5,12 +5,15 @@
     <div id="ble">
       <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
     </div>
+    <div>
+      <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
+    </div>
     <ble-button></ble-button>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <video id="robot-remote-video" autoplay>
+  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
   </video>
   <video id="robot-local-video" autoplay>
   </video>

@@ -22,10 +22,10 @@
   </video>
   <div id="control-panel">
     <div id="zone-joystick"></div>
-    <button id="servo-up" class="servo-button" (touchstart)="servoUpActive = true" (touchend)="servoUpActive = false">
+    <button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>
     </button>
-    <button id="servo-down" class="servo-button" (touchstart)="servoDownActive = true" (touchend)="servoDownActive = false">
+    <button id="servo-down" class="servo-button" (touchstart)="reverseActive = true" (touchend)="reverseActive = false">
       <ion-icon name="arrow-round-down"></ion-icon>
     </button>
   </div>

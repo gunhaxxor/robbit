@@ -21,12 +21,12 @@ export class DriverInterfacePage {
   localStream: MediaStream;
   remoteStream: MediaStream;
   robotControlIntervalId: any;
-  arrowLeftActive: boolean;
-  arrowForwardActive: boolean;
-  arrowRightActive: boolean;
-  arrowBackwardActive: boolean;
-  servoUpActive: boolean;
-  servoDownActive: boolean;
+  // arrowLeftActive: boolean;
+  // arrowForwardActive: boolean;
+  // arrowRightActive: boolean;
+  // arrowBackwardActive: boolean;
+  forwardActive: boolean;
+  reverseActive: boolean;
   cameraOption: string = "constraint";
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
@@ -69,13 +69,16 @@ export class DriverInterfacePage {
     }).catch((err) => console.log("failed to get permissions: " + err));
 
 
-    let leftMotor = 0;
-    let rightMotor = 0;
+    // Let's divide the motorvariables into drive and look components.
+    let robotThrottle = 0;
+    let robotRotation = 0;
+    let servoSpeed = 0;
     let options = {
       zone: document.getElementById("zone-joystick"),
       mode: 'static',
       position: {right: '50%', top: '50%'},
-      color: 'white'
+      color: 'white',
+      size: 100
     };
 
     let manager = nipplejs.create(options);
@@ -87,16 +90,22 @@ export class DriverInterfacePage {
       if (data.angle) {
         // // px, py are between max distance and -1 * max distans
 
-        // let px = -Math.cos(data.angle.radian) * data.distance;
-        // let py = Math.sin(data.angle.radian) * data.distance;
+        let px = -Math.cos(data.angle.radian) * data.distance;
+        let py = Math.sin(data.angle.radian) * data.distance;
 
-        // console.log("px: " + px);
-        // console.log("py: " + py);
-        // let JOYSTICK_MAX_DIST = 50;
-        // let MOTOR_SCALE = 20;
-        // // Source of algorithm:
-        // // http://home.kendra.com/mauser/Joystick.html
-        // // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
+        console.log("px: " + px);
+        console.log("py: " + py);
+        let joystickMaxDistance = options.size/2;
+
+        let x = px / joystickMaxDistance;
+        let y = py / joystickMaxDistance;
+
+        robotRotation = x;
+        servoSpeed = y;
+
+        // Source of algorithm:
+        // http://home.kendra.com/mauser/Joystick.html
+        // Calculate R+L (Call it V): V =(100-ABS(X)) * (Y/100) + Y
         // let v =
         //   (JOYSTICK_MAX_DIST - Math.abs(px)) * (py / JOYSTICK_MAX_DIST) +
         //   py;
@@ -104,7 +113,7 @@ export class DriverInterfacePage {
         // let w =
         //   (JOYSTICK_MAX_DIST - Math.abs(py)) * (px / JOYSTICK_MAX_DIST) +
         //   px;
-        // // Calculate R: R = (V+W) /2
+        // Calculate R: R = (V+W) /2
         // rightMotor = (v + w) / 2;
         // // Calculate L: L= (V-W)/2
         // leftMotor = (v - w) / 2;
@@ -112,44 +121,50 @@ export class DriverInterfacePage {
         // rightMotor *= MOTOR_SCALE;
         // leftMotor *= MOTOR_SCALE;
         
-        // Send those values to your Robot.
-        console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
+        // // Send those values to your Robot.
+        // console.log(" leftMotor:" + leftMotor + "rightMotor:" + rightMotor);
       }
     })
     .on("end", (evt, nipple) => {
-      rightMotor = 0;
-      leftMotor = 0;
+      robotRotation = 0;
+      servoSpeed = 0;
       console.log("joystick released");
     });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
+    let ROBOT_MOTOR_MAX_THROTTLE = 1000;
+    let TURN_MOTOR_SCALE = 400;
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
-      // let forwardAmt = 0;
-      // let turnAmt = 0;
-      // let motorValue1;
-      // let motorValue2;
-      // ///Let's check here if we are available to send drive instructions to selected robot.
-      // if (this.arrowLeftActive) {
-      //   turnAmt -= 1023;
-      // }
-      // if (this.arrowForwardActive) {
-      //   forwardAmt += 1023;
-      // }
-      // if (this.arrowRightActive) {
-      //   turnAmt += 1023;
-      // }
-      // if (this.arrowBackwardActive) {
-      //   forwardAmt -= 1023;
-      // }
-      if (this.servoUpActive) {
-        servo += 5;
+
+      if (this.forwardActive) {
+        robotThrottle = ROBOT_MOTOR_MAX_THROTTLE;
       }
-      if (this.servoDownActive) {
-        servo -= 5;
+      else if (this.reverseActive) {
+        robotThrottle = -ROBOT_MOTOR_MAX_THROTTLE;
+      }else{
+        robotThrottle = 0;
       }
+
+      let rotationMotorAdjustment = robotRotation * TURN_MOTOR_SCALE; // -20 to +20
+
+      let leftMotor = robotThrottle - rotationMotorAdjustment;
+      let rightMotor = robotThrottle + rotationMotorAdjustment;
+
+      let ratio = 1;
+      if(Math.abs(leftMotor) > ROBOT_MOTOR_MAX_THROTTLE || Math.abs(rightMotor) > ROBOT_MOTOR_MAX_THROTTLE){
+        ratio = ROBOT_MOTOR_MAX_THROTTLE / Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
+      }
+      leftMotor *= ratio;
+      rightMotor *= ratio;
+
+      let leftMotorFloored = Math.floor(leftMotor);
+      let rightMotorFloored = Math.floor(rightMotor);
+
+      servo += servoSpeed;
       servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
+      let servoFloored = Math.floor(servo);
       // if (turnAmt == 0) {
       //   motorValue1 = forwardAmt;
       //   motorValue2 = forwardAmt;
@@ -158,15 +173,14 @@ export class DriverInterfacePage {
       //   motorValue2 = forwardAmt / 2 - turnAmt / 2;
       // }
 
-      let leftMotorFloored = Math.floor(leftMotor);
-      let rightMotorFloored = Math.floor(rightMotor);
+      
       let msg =
         "" +
         rightMotorFloored +
         ";" +
         leftMotorFloored +
         ";" +
-        servo +
+        servoFloored +
         "\n";
       console.log("sending robot data to socket: " + msg);
       this.socket.emit("robotControl", msg);
