@@ -19,6 +19,7 @@ export class RobotInterfacePage {
   remoteStream: MediaStream;
   cameraOption: string = "constraint";
   videoLinkActive: boolean = false;
+  videoVerticalFlipped: boolean = false;
 
   constructor(
     public platform: Platform,

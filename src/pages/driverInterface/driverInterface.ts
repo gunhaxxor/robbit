@@ -31,6 +31,7 @@ export class DriverInterfacePage {
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
+  videoVerticalFlipped: boolean = false;
 
   constructor(
     public platform: Platform,
@@ -101,7 +102,7 @@ export class DriverInterfacePage {
         let y = py / joystickMaxDistance;
 
         robotRotation = x;
-        servoSpeed = y;
+        servoSpeed = y*5;
 
         // Source of algorithm:
         // http://home.kendra.com/mauser/Joystick.html
@@ -133,7 +134,7 @@ export class DriverInterfacePage {
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let ROBOT_MOTOR_MAX_THROTTLE = 1000;
-    let TURN_MOTOR_SCALE = 400;
+    let TURN_MOTOR_SCALE = 800;
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {

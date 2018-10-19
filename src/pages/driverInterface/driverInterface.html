@@ -5,6 +5,9 @@
     <button (click)="changeCamera()">
       <ion-icon name="repeat"></ion-icon>
     </button>
+    <button>
+      <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
 
@@ -14,7 +17,7 @@
       <ion-icon name="call"></ion-icon>
     </button>
   </div>
-  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
+  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
   </video>
   <!-- <video id="driver-remote-video" autoplay>
   </video> -->
