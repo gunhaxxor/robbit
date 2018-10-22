@@ -1,8 +1,7 @@
-<button>
-  <ion-icon id="bleicon" name="bluetooth" 
-      [class.connected]="bleService.isConnectedToDevice"
-      [class.disconnected]="!bleService.isConnectedToDevice"
-      (click)="bleService.disconnect()"
-      class="connected">
+<button id="bleicon" 
+        class="robot-nav-button"
+        [class.connected]="bleService.isConnectedToDevice"
+        [class.disconnected]="!bleService.isConnectedToDevice" >
+  <ion-icon name="bluetooth">
   </ion-icon>
 </button>

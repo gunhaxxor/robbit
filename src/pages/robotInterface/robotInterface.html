@@ -2,10 +2,7 @@
 
   <ion-navbar>
     <ion-title> Robot </ion-title>
-    <button id="ble">
-      <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
-    </button>
-    <button>
+    <button class="robot-nav-button">
       <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
     </button>
     <ble-button></ble-button>
