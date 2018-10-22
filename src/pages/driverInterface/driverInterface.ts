@@ -134,6 +134,7 @@ export class DriverInterfacePage {
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let ROBOT_MOTOR_MAX_THROTTLE = 1000;
     let TURN_MOTOR_SCALE = 400;
+    let SERVO_SCALE = 10;
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
@@ -162,7 +163,7 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      servo += servoSpeed;
+      servo += servoSpeed * SERVO_SCALE;
       servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
       let servoFloored = Math.floor(servo);
       // if (turnAmt == 0) {
@@ -222,7 +223,7 @@ export class DriverInterfacePage {
     // get video/voice stream
     console.log("retrieving camera!");
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
+      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate: 15 }, audio: true })
       .then(stream => {
         console.log("Driver got local media as a stream");
         this.localStream = stream;

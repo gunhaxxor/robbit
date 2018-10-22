@@ -19,6 +19,7 @@ export class RobotInterfacePage {
   remoteStream: MediaStream;
   cameraOption: string = "constraint";
   videoLinkActive: boolean = false;
+  videoVerticalFlipped: boolean = false;
 
   constructor(
     public platform: Platform,
@@ -117,7 +118,7 @@ export class RobotInterfacePage {
     // get video/voice stream
     console.log("retrieving camera!");
     let promise = navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
+      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate:15 }, audio: true })
       .then(stream => {
         console.log("Robot got local media as a stream");
         this.localStream = stream;
