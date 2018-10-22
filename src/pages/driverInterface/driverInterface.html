@@ -12,8 +12,8 @@
 </ion-header>
 
 <ion-content padding>
-  <div id="call" *ngIf="!this.videoLinkActive" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
-    <button (click)="initiateCall()">
+  <div id="call" *ngIf="!this.videoLinkActive" [class.ready-to-call]="!this.videoLinkWaitingForAnswer" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
+    <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
       <ion-icon name="call"></ion-icon>
     </button>
   </div>

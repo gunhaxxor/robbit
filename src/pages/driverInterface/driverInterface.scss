@@ -92,48 +92,50 @@
   transform: translate(-50%, -50%);
   width: 150px;
   height: 150px;
-  background-color: #0e0;
   border-radius: 20px;
 }
 #call button {
   padding: 0px;
   margin: auto;
   width:100%;
-  background-color: #0e0;
   border-radius: 20px;
 }
 #call ion-icon {
-  font-size: 60pt;
   text-align: center;
   vertical-align: middle;
   line-height: 150px;
-  color: #fff;
-  background-color: #0e0;
   margin: auto;
 }
 
 
-#call-waiting {
-  position: absolute; 
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px;
-  height: 150px;
-  border-radius: 20px;
+.ready-to-call {
+  background-color: #0e0;
 }
 
-#waiting-for-answer {
-  background-color: none;
+.ready-to-call button {
+  background-color: #0e0;
+  }
+
+.ready-to-call ion-icon {
+  font-size: 60pt;
+  color: #fff;
+  background-color: #0e0;
 }
 
-#waiting-for-answer button {
-  background-color: none;
+
+.waiting-for-answer {
+  background-color: transparent;
 }
 
-#waiting-for-answer ion-icon {
-  font-size: 120pt;
+.waiting-for-answer button {
+  background-color: transparent;
+  opacity: 1;
+}
+
+.waiting-for-answer ion-icon {
+  font-size: 100pt;
   color: #0e0;
+  background-color: transparent;
   -webkit-animation:shake 1s linear infinite;
   -moz-animation:shake 1s linear infinite;
   animation:shake 1s linear infinite;
