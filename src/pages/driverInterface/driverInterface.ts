@@ -31,6 +31,7 @@ export class DriverInterfacePage {
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
+  videoVerticalFlipped: boolean = false;
 
   constructor(
     public platform: Platform,
@@ -101,7 +102,7 @@ export class DriverInterfacePage {
         let y = py / joystickMaxDistance;
 
         robotRotation = x;
-        servoSpeed = y;
+        servoSpeed = y*5;
 
         // Source of algorithm:
         // http://home.kendra.com/mauser/Joystick.html
@@ -133,8 +134,7 @@ export class DriverInterfacePage {
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let ROBOT_MOTOR_MAX_THROTTLE = 1000;
-    let TURN_MOTOR_SCALE = 400;
-    let SERVO_SCALE = 10;
+    let TURN_MOTOR_SCALE = 800;
     let servo = this.SERVO_START_VALUE;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
@@ -163,7 +163,7 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      servo += servoSpeed * SERVO_SCALE;
+      servo += servoSpeed;
       servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
       let servoFloored = Math.floor(servo);
       // if (turnAmt == 0) {
@@ -223,7 +223,7 @@ export class DriverInterfacePage {
     // get video/voice stream
     console.log("retrieving camera!");
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate: 15 }, audio: true })
+      .getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
       .then(stream => {
         console.log("Driver got local media as a stream");
         this.localStream = stream;

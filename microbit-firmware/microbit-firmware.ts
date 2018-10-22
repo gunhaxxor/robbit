@@ -34,7 +34,7 @@ valueLength = 0
 motor2Value = 0
 motor1Value = 0
 receivedValues = []
-gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Fastest)
+gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Normal)
 
 
 input.onButtonPressed(Button.A, () => {
@@ -88,7 +88,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
 function setMotorPwm(motor: number, value: number) {
     if (motor == 0) {
 
-        gigglebot.motorPowerAssign(gigglebotWhichMotor.Right, Math.constrain(value / 10, -100, 100))
+        gigglebot.motorPowerAssign(gigglebotWhichMotor.Right, Math.constrain(value / -10, -100, 100))
         if (value > 0) {
             // pins.analogWritePin(AnalogPin.P16, value);
             // pins.analogWritePin(AnalogPin.P0, 0);
@@ -97,7 +97,7 @@ function setMotorPwm(motor: number, value: number) {
             // pins.analogWritePin(AnalogPin.P0, Math.abs(value));
         }
     } else {
-        gigglebot.motorPowerAssign(gigglebotWhichMotor.Left, Math.constrain(value / 10, -100, 100))
+        gigglebot.motorPowerAssign(gigglebotWhichMotor.Left, Math.constrain(value / -10, -100, 100))
         if (value > 0) {
             // pins.analogWritePin(AnalogPin.P12, value);
             // pins.analogWritePin(AnalogPin.P8, 0);
