@@ -123,13 +123,17 @@
   border-radius: 20px;
 }
 
-#call-waiting ion-icon {
-  font-size: 60pt;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 150px;
-  color: rgb(98, 54, 218);
-  margin: auto;
+#waiting-for-answer {
+  background-color: none;
+}
+
+#waiting-for-answer button {
+  background-color: none;
+}
+
+#waiting-for-answer ion-icon {
+  font-size: 120pt;
+  color: #0e0;
   -webkit-animation:shake 1s linear infinite;
   -moz-animation:shake 1s linear infinite;
   animation:shake 1s linear infinite;

@@ -62,6 +62,11 @@ export class RobotInterfacePage {
     console.log("Trying to fetch camera");
     this.checkNeededPermissions().then(() => {
       this.retrieveCamera().then( () => {
+        navigator.mediaDevices.enumerateDevices().then(function(devices) {
+          devices.forEach(function(device) {
+              console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
+          });
+        });
         this.startWebRTCAndBLE();
       });
     }).catch((err) => console.log("failed to get permissions: " + err));
@@ -117,9 +122,6 @@ export class RobotInterfacePage {
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
-    navigator.mediaDevices.enumerateDevices().then((devices)=> {
-      console.log(devices);
-    })
     let promise = navigator.mediaDevices
       .getUserMedia({ video: { facingMode: this.cameraOption, frameRate:15 }, audio: true })
       .then(stream => {

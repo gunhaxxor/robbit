@@ -12,13 +12,10 @@
 </ion-header>
 
 <ion-content padding>
-  <div id="call" *ngIf="!this.videoLinkActive && !this.videoLinkWaitingForAnswer">
+  <div id="call" *ngIf="!this.videoLinkActive" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
     <button (click)="initiateCall()">
       <ion-icon name="call"></ion-icon>
     </button>
-  </div>
-  <div id="call-waiting" *ngIf="this.videoLinkWaitingForAnswer">
-      <ion-icon name="call"></ion-icon>
   </div>
   <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
   </video>
