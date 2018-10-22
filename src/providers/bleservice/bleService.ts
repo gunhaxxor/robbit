@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
 import encoding from "text-encoding";
+import { Subject } from "rxjs/Subject";
 // import { Diagnostic } from "@ionic-native/diagnostic";
 // declare let cordova: any;
 /*
@@ -24,19 +25,33 @@ export class BleService {
 
   devices: any[] = [];
   connectedDevice: any = undefined;
+  public connectionStatusChange: Subject<boolean> = new Subject<boolean>();
   public isConnectedToDevice: boolean = false;
+  private started: boolean = false;
 
-
-  public isRobot: boolean = false; // False = Client, True = Host
+  private scanIntervalId: number;
 
   constructor(private ble: BLE, private zone: NgZone) {
     console.log("bleService instantiated");
     this.textEncoder = new encoding.TextEncoder();
+    this.connectionStatusChange.subscribe(connected => {
+      this.isConnectedToDevice = connected;
+      console.log('subscription triggered in service: ' + connected);
+    });
   }
 
   public start() {
+    this.started = true;
     this.scanAndAutoConnect();
     console.log("Starting BLE scan");
+  }
+
+  public stop() {
+    this.started = false;
+    // clearTimeout(this.scanIntervalId);
+    
+    this.ble.stopScan();
+    this.disconnect();
   }
 
   public scanAndPopulateDeviceArray() {
@@ -58,13 +73,16 @@ export class BleService {
     // Tillagt för att inte påbörja skanningen av bluetooth devices om lärarmode inte är aktiverat!
     console.log("Letar efter enhet att automatiskt ansluta till");
     this.devices = [];
-    this.ble.scan([], 7).subscribe(device => this.devFound(device));
-    setTimeout(() => {
-      if (!this.isConnectedToDevice) {
-        console.log("Ska nu skanna igen från timeout");
-        this.scanAndAutoConnect();
-      }
-    }, 8000);
+    this.ble.startScan([]).subscribe(device => {
+      this.devFound(device);
+    });
+    // this.ble.scan([], 7).subscribe(device => this.devFound(device));
+    // this.scanIntervalId = setTimeout(() => {
+    //   if (!this.isConnectedToDevice) {
+    //     console.log("Ska nu skanna igen från timeout");
+    //     this.scanAndAutoConnect();
+    //   }
+    // }, 8000);
     // }
   }
 
@@ -80,6 +98,7 @@ export class BleService {
         this.devices.length == 1 &&
         !this.isConnectedToDevice
       ) {
+        this.ble.stopScan();
         this.connectToMicrobit(device);
         console.log("Hittat och ansluter till micro:bit");
       }
@@ -106,7 +125,7 @@ export class BleService {
       return;
     }
     console.log(
-      "disconnecting from: " + JSON.stringify(this.connectedDevice)
+      "disconnecting from: " + JSON.stringify(this.connectedDevice.name)
     );
     this.ble.disconnect(this.connectedDevice.id);
     this.isConnectedToDevice = false;
@@ -122,7 +141,7 @@ export class BleService {
       !this.uartService ||
       !this.uartRXCharacteristic
     ) {
-      console.error("device, service or characteristic are not set!!");
+      // console.error("device, service or characteristic are not set!!");
       return;
     }
     this.ble.write(
@@ -135,7 +154,10 @@ export class BleService {
 
   private onConnected(peripheral) {
     console.log("Ansluten till enhet " + peripheral.id);
-    this.isConnectedToDevice = true;
+    // this.zone.run(() => {
+      this.connectionStatusChange.next(true);    
+    // });
+    
     // this.ConnectedIcon();
     this.connectedDevice = peripheral;
     this.uartService = peripheral.services.find(element => {
@@ -167,7 +189,9 @@ export class BleService {
     console.log("disconnected from: " + JSON.stringify(peripheral));
     this.connectedDevice = undefined;
     // alert("Handshake stopped");
-    this.isConnectedToDevice = false;
-    this.scanAndAutoConnect();
+    this.connectionStatusChange.next(false);
+    if(this.started){
+      this.scanAndAutoConnect();
+    }
   }
 }

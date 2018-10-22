@@ -25,11 +25,9 @@ export class HomePage {
   // }
 
   goToDriverInterface() {
-    this.bleService.isRobot = true;
     this.navCtrl.push(DriverInterfacePage);
   }
   goToRobotInterface() {
-    this.bleService.isRobot = false;
     this.navCtrl.push(RobotInterfacePage);
   }
 }

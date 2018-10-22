@@ -44,10 +44,7 @@ export class DriverInterfacePage {
     // private camera: Camera,
     private diagnostic: Diagnostic
   ) {
-    socket.on("robotControl", msg => {
-      // console.log("received socket msg: " + JSON.stringify(msg));
-      // this.bleService.send(msg);
-    });
+    
   }
 
   // loggarn() {
@@ -58,13 +55,34 @@ export class DriverInterfacePage {
 
   //user is leaving the selected page.
   ionViewDidLeave() {
-    clearInterval(this.robotControlIntervalId);
-
-    this.peer.destroy();
     this.videoLinkActive = false;
   }
 
+  ionViewWillLeave(){
+    console.log("will leave driver interface page. Cleaning up som shit");
+    this.socket.removeAllListeners("robotControl");
+    this.socket.removeAllListeners("signal");
+    clearInterval(this.robotControlIntervalId);
+    this.peer.destroy();
+    delete this.peer;
+  }
+
   ionViewDidEnter() {
+    console.log("attaching socket events");
+    this.socket.on("robotControl", msg => {
+      // console.log("received socket msg: " + JSON.stringify(msg));
+      // this.bleService.send(msg);
+    });
+
+    this.socket.on("signal", data => {
+      console.log("Driver received signal message from socket");
+      console.log(data);
+
+      if(this.peer){
+        this.peer.signal(data);
+      }
+    });
+
     console.log("trying to fetch camera");
     this.checkNeededPermissions().then(() => {
       this.retrieveCamera();
@@ -210,6 +228,14 @@ export class DriverInterfacePage {
       this.videoLinkActive = true;
       this.videoLinkWaitingForAnswer = false;
     });
+    this.peer.on('close', () => {
+      console.log('peer connection closed');
+      console.log('this.peer: ' + this.peer); 
+      // this.peer.destroy();
+      // delete this.peer;
+      this.videoLinkActive = false;
+      this.videoLinkWaitingForAnswer = false;
+    });
   }
 
   changeCamera() {
@@ -257,16 +283,5 @@ export class DriverInterfacePage {
       return Promise.resolve();
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
-  }
-
-  ionViewDidLoad() {
-    this.socket.on("signal", data => {
-      console.log("Driver received signal message from socket");
-      console.log(data);
-
-      if(this.peer){
-        this.peer.signal(data);
-      }
-    });
   }
 }

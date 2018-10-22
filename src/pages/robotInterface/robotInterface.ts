@@ -20,6 +20,7 @@ export class RobotInterfacePage {
   cameraOption: string = "constraint";
   videoLinkActive: boolean = false;
   videoVerticalFlipped: boolean = false;
+  connected: boolean = false;
 
   constructor(
     public platform: Platform,
@@ -27,23 +28,11 @@ export class RobotInterfacePage {
     public loading: LoadingController,
     public navParams: NavParams,
     public bleService: BleService,
-    private socket: Socket,
+    public socket: Socket,
     // private camera: Camera,
-    private diagnostic: Diagnostic
+    public diagnostic: Diagnostic
   ) {
-    socket.on("robotControl", msg => {
-      //console.log("received socket msg: " + JSON.stringify(msg));
-      this.bleService.send(msg);
-    });
     
-    socket.on("signal", data => {
-      console.log("Robot received signal message from socket");
-      console.log(data);
-
-      if(this.peer){
-        this.peer.signal(data);
-      }
-    });
   }
 
   startWebRTCAndBLE() {
@@ -54,11 +43,36 @@ export class RobotInterfacePage {
   
   //user is leaving the selected page.
   ionViewWillLeave() {
+    console.log("will leave robot interface page. Cleaning up som shit");
+    this.socket.removeAllListeners("robotControl");
+    this.socket.removeAllListeners("signal");
+    this.bleService.stop();
     this.peer.destroy();
+    delete this.peer;
     this.videoLinkActive = false;
   }
 
   ionViewDidEnter() {
+    this.bleService.connectionStatusChange.subscribe(connected => {
+      this.connected = connected;
+      console.log('subscription triggered in robot page: ' + connected);
+    });
+
+    console.log("attaching socket events");
+    this.socket.on("robotControl", msg => {
+      //console.log("received socket msg: " + JSON.stringify(msg));
+      this.bleService.send(msg);
+    });
+    
+    this.socket.on("signal", data => {
+      console.log("Robot received signal message from socket");
+      console.log(data);
+
+      if(this.peer){
+        this.peer.signal(data);
+      }
+    });
+
     console.log("Trying to fetch camera");
     this.checkNeededPermissions().then(() => {
       this.retrieveCamera().then( () => {
@@ -105,6 +119,14 @@ export class RobotInterfacePage {
     this.peer.on('connect', () => {
       console.log('connection event!!!');
       this.videoLinkActive = true;
+    });
+    this.peer.on('close', () => {
+      console.log('peer connection closed');
+      console.log('this.peer: ' + this.peer); 
+      this.initiateListen();
+      // this.peer.destroy();
+      // delete this.peer;
+      this.videoLinkActive = false;
     });
   }
 
