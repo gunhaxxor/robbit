@@ -18,6 +18,7 @@ import "webrtc-adapter";
 export class DriverInterfacePage {
   peer: any;
   videoLinkActive: boolean = false;
+  videoLinkWaitingForAnswer = false;
   localStream: MediaStream;
   remoteStream: MediaStream;
   robotControlIntervalId: any;
@@ -73,7 +74,7 @@ export class DriverInterfacePage {
     // Let's divide the motorvariables into drive and look components.
     let robotThrottle = 0;
     let robotRotation = 0;
-    let servoSpeed = 0;
+    let servoAngleChange = 0;
     let options = {
       zone: document.getElementById("zone-joystick"),
       mode: 'static',
@@ -102,7 +103,7 @@ export class DriverInterfacePage {
         let y = py / joystickMaxDistance;
 
         robotRotation = x;
-        servoSpeed = y*5;
+        servoAngleChange = y;
 
         // Source of algorithm:
         // http://home.kendra.com/mauser/Joystick.html
@@ -128,14 +129,15 @@ export class DriverInterfacePage {
     })
     .on("end", (evt, nipple) => {
       robotRotation = 0;
-      servoSpeed = 0;
+      servoAngleChange = 0;
       console.log("joystick released");
     });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let ROBOT_MOTOR_MAX_THROTTLE = 1000;
     let TURN_MOTOR_SCALE = 800;
-    let servo = this.SERVO_START_VALUE;
+    let servoAngle = this.SERVO_START_VALUE;
+    let SERVO_SCALE = 5;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
 
@@ -163,9 +165,9 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      servo += servoSpeed;
-      servo = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servo));
-      let servoFloored = Math.floor(servo);
+      servoAngle += servoAngleChange * SERVO_SCALE;
+      servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servoAngle));
+      let servoFloored = Math.floor(servoAngle);
       // if (turnAmt == 0) {
       //   motorValue1 = forwardAmt;
       //   motorValue2 = forwardAmt;
@@ -190,6 +192,7 @@ export class DriverInterfacePage {
 
   initiateCall() {
     console.log("starting call as initiator");
+    this.videoLinkWaitingForAnswer = true;
     this.peer = new Peer({ initiator: true, stream: this.localStream });
     this.peer.on("signal", data => {
       console.log("Driver got signal data locally. Passing it on to signaling server");
@@ -205,6 +208,7 @@ export class DriverInterfacePage {
     this.peer.on('connect', () => {
       console.log('connection event!!!');
       this.videoLinkActive = true;
+      this.videoLinkWaitingForAnswer = false;
     });
   }
 

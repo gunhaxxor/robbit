@@ -111,3 +111,76 @@
   background-color: #0e0;
   margin: auto;
 }
+
+
+#call-waiting {
+  position: absolute; 
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
+}
+
+#call-waiting ion-icon {
+  font-size: 60pt;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 150px;
+  color: rgb(98, 54, 218);
+  margin: auto;
+  -webkit-animation:shake 1s linear infinite;
+  -moz-animation:shake 1s linear infinite;
+  animation:shake 1s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+
+@keyframes shake {
+  10%, 30% {
+    -webkit-transform: rotate(5deg);
+    transform: rotate(5deg);
+  }
+  
+  20%, 40% {
+    -webkit-transform: rotate(-5deg);
+    transform: rotate(-5deg);
+  }
+
+  50%, 100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+
+@-webkit-keyframes shake {
+  10%, 30% {
+    -webkit-transform: rotate(5deg);
+  }
+  
+  20%, 40% {
+    -webkit-transform: rotate(-5deg);
+  }
+
+  50%, 100% {
+    -webkit-transform: rotate(0deg);
+  }
+}
+
+@-moz-keyframes shake {
+  10%, 30% {
+    -moz-webkit-transform: rotate(5deg);
+  }
+  
+  20%, 40% {
+    -moz-webkit-transform: rotate(-5deg);
+  }
+
+  50%, 100% {
+    -moz-webkit-transform: rotate(0deg);
+  }
+}

@@ -117,6 +117,9 @@ export class RobotInterfacePage {
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
+    navigator.mediaDevices.enumerateDevices().then((devices)=> {
+      console.log(devices);
+    })
     let promise = navigator.mediaDevices
       .getUserMedia({ video: { facingMode: this.cameraOption, frameRate:15 }, audio: true })
       .then(stream => {
