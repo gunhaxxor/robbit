@@ -2,10 +2,7 @@
 
   <ion-navbar>
     <ion-title> Robot </ion-title>
-    <!-- <button id="ble">
-      <ion-icon id="bleicon" name="bluetooth" (click)="bleservice.disconnect()"></ion-icon>
-    </button> -->
-    <button>
+    <button class="robot-nav-button">
       <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
     </button>
     <ble-button></ble-button>
@@ -13,10 +10,8 @@
 </ion-header>
 
 <ion-content padding>
-  <video [style.display]="videoLinkActive ?  'block': 'none'" id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
+  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
   </video>
   <video id="robot-local-video" autoplay>
   </video>
-  <h2 style="margin: auto;" *ngIf="!videoLinkActive">Väntar på att någon ska ansluta</h2>
-  <p style="margin: auto;" *ngIf="connected">BLUUUUETOOTH½½!!</p>
 </ion-content>

@@ -1,7 +1,29 @@
 #bleicon.connected {
-    background-color: green;
+    color: #fff;
+    animation-name: connect;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }
 
 #bleicon.disconnected {
-    background-color: red;
+    color: #fff;
+    animation-name: disconnect;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes connect {
+    0%   {background-color:red;}
+    50%   {background-color:white;}
+    80%   {background-color:green;}
+    90%   {background-color:white;}
+    100%   {background-color:green;}
+}
+
+@keyframes disconnect {
+    0%   {background-color:green;}
+    50%   {background-color:white;}
+    80%   {background-color:red;}
+    90%   {background-color:white;}
+    100%   {background-color:red;}
 }
