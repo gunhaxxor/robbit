@@ -32,31 +32,26 @@ export class RobotInterfacePage {
     // private camera: Camera,
     public diagnostic: Diagnostic
   ) {
-    
   }
 
-  startWebRTCAndBLE() {
-    console.log("Listening on calls!");
-    this.bleService.start();
+  startWebRTC() {
+    // console.log("Listening on calls!");
     this.initiateListen();
   }
   
   //user is leaving the selected page.
   ionViewWillLeave() {
+    this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
-    this.bleService.stop();
     this.peer.destroy();
     delete this.peer;
     this.videoLinkActive = false;
   }
 
   ionViewDidEnter() {
-    this.bleService.connectionStatusChange.subscribe(connected => {
-      this.connected = connected;
-      console.log('subscription triggered in robot page: ' + connected);
-    });
+    this.bleService.start();
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
@@ -81,7 +76,7 @@ export class RobotInterfacePage {
               console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
           });
         });
-        this.startWebRTCAndBLE();
+        this.startWebRTC();
       });
     }).catch((err) => console.log("failed to get permissions: " + err));
 
@@ -124,8 +119,6 @@ export class RobotInterfacePage {
       console.log('peer connection closed');
       console.log('this.peer: ' + this.peer); 
       this.initiateListen();
-      // this.peer.destroy();
-      // delete this.peer;
       this.videoLinkActive = false;
     });
   }

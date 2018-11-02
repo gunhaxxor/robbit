@@ -1,8 +1,6 @@
-import { Injectable, NgZone } from "@angular/core";
+import { Injectable, ApplicationRef } from "@angular/core";
 import { BLE } from "@ionic-native/ble";
 import encoding from "text-encoding";
-import { Subject } from "rxjs/Subject";
-// import { Diagnostic } from "@ionic-native/diagnostic";
 // declare let cordova: any;
 /*
   OUR BLE SERVICE PROVIDER
@@ -13,34 +11,24 @@ export class BleService {
   scanError: any;
   textEncoder: any;
 
-  // public sharedState: any = {
-  //   //Should only contain found uBits
-  //   devices: <any[]>[],
-  //   connectedDevice: <any>undefined,
-  //   isConnectedToDevice: <boolean>false
-  // };
-
   uartService: any;
   uartRXCharacteristic: any;
 
   devices: any[] = [];
   connectedDevice: any = undefined;
-  public connectionStatusChange: Subject<boolean> = new Subject<boolean>();
   public isConnectedToDevice: boolean = false;
   private started: boolean = false;
 
-  private scanIntervalId: number;
-
-  constructor(private ble: BLE, private zone: NgZone) {
+  constructor(private ble: BLE, private appRef: ApplicationRef) {
     console.log("bleService instantiated");
     this.textEncoder = new encoding.TextEncoder();
-    this.connectionStatusChange.subscribe(connected => {
-      this.isConnectedToDevice = connected;
-      console.log('subscription triggered in service: ' + connected);
-    });
   }
 
   public start() {
+    if(this.started){
+      console.log("Scan already active");
+      return;
+    }
     this.started = true;
     this.scanAndAutoConnect();
     console.log("Starting BLE scan");
@@ -48,7 +36,6 @@ export class BleService {
 
   public stop() {
     this.started = false;
-    // clearTimeout(this.scanIntervalId);
     
     this.ble.stopScan();
     this.disconnect();
@@ -56,13 +43,11 @@ export class BleService {
 
   public scanAndPopulateDeviceArray() {
     console.log("Skannar efter uBits");
-    // this.sharedState.devices = [];
     this.devices = [];
     this.ble.scan([], 7).subscribe(device => {
       //console.log("found device named: " + device.name);
       if (device.name && device.name.includes("micro")) {
         console.log("found uBit device: " + device.name);
-        // this.sharedState.devices.push(device);
         this.devices.push(device);
       }
     });
@@ -76,23 +61,13 @@ export class BleService {
     this.ble.startScan([]).subscribe(device => {
       this.devFound(device);
     });
-    // this.ble.scan([], 7).subscribe(device => this.devFound(device));
-    // this.scanIntervalId = setTimeout(() => {
-    //   if (!this.isConnectedToDevice) {
-    //     console.log("Ska nu skanna igen från timeout");
-    //     this.scanAndAutoConnect();
-    //   }
-    // }, 8000);
-    // }
   }
 
   // When a device is discovered
   private devFound(device) {
     console.log("found device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
-      // this.zone.run(() => {
         this.devices.push(device);
-      // });
       //Automatically connect to the first uBit in the list
       if (
         this.devices.length == 1 &&
@@ -129,7 +104,6 @@ export class BleService {
     );
     this.ble.disconnect(this.connectedDevice.id);
     this.isConnectedToDevice = false;
-    // this.ConnectedIcon();
   }
 
   public send(msg) {
@@ -154,12 +128,8 @@ export class BleService {
 
   private onConnected(peripheral) {
     console.log("Ansluten till enhet " + peripheral.id);
-    // this.zone.run(() => {
-      this.connectionStatusChange.next(true);    
-    // });
-    
-    // this.ConnectedIcon();
     this.connectedDevice = peripheral;
+    this.isConnectedToDevice = true;
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
@@ -176,22 +146,24 @@ export class BleService {
           console.log("Setting RX chracteristic!");
           this.uartRXCharacteristic = currentCrtscs.characteristic;
         }
-        // console.log(JSON.stringify(currentCrtscs));
       }
     }
     console.log(
       "RX characteristic: " + JSON.stringify(this.uartRXCharacteristic)
     );
+
+    this.appRef.tick();
   }
 
   // When connection to the selected device suddenly stops.
   private onDisconnected(peripheral) {
     console.log("disconnected from: " + JSON.stringify(peripheral));
+    this.isConnectedToDevice = false;
     this.connectedDevice = undefined;
-    // alert("Handshake stopped");
-    this.connectionStatusChange.next(false);
     if(this.started){
       this.scanAndAutoConnect();
     }
+
+    this.appRef.tick();
   }
 }
