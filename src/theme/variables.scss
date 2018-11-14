@@ -34,12 +34,43 @@ $app-direction: ltr;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
-  secondary:  #32db64,
+  primary:    #036564,
+  secondary:  #CDB380,
+  tertiary:   #033649,
   danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222
+  approve:    #5bf43d,
+  light:      #E8DDCB,
+  dark:       #031634,
 );
+
+$primary : color($colors, primary);
+$secondary : color($colors, secondary);
+$tertiary : color($colors, tertiary);
+$danger : color($colors, danger);
+$approve : color($colors, approve);
+$light : color($colors, light);
+$dark : color($colors, dark);
+
+$primary-lighter : lighten($primary, 10);
+$primary-darker : darken($primary, 10);
+
+$secondary-lighter : lighten($secondary, 10);
+$secondary-darker : darken($secondary, 10);
+
+$tertiary-lighter : lighten($tertiary, 10);
+$tertiary-darker : darken($tertiary, 10);
+
+$danger-lighter : lighten($danger, 10);
+$danger-darker : darken($danger, 10);
+
+$approve-lighter : lighten($approve, 10);
+$approve-darker : darken($approve, 10);
+
+$light-lighter : lighten($light, 10);
+$light-darker : darken($light, 10);
+
+$dark-lighter : lighten($dark, 10);
+$dark-darker : darken($dark, 10);
 
 
 // App iOS Variables

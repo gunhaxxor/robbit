@@ -90,7 +90,7 @@
 }
 
 
-#call {
+#call-button {
   position: absolute; 
   left: 50%;
   top: 50%;
@@ -99,32 +99,45 @@
   height: 150px;
   border-radius: 20px;
 }
-#call button {
+#call-button button {
   padding: 0px;
   margin: auto;
   width:100%;
   border-radius: 20px;
 }
-#call ion-icon {
+#call-button ion-icon {
   text-align: center;
   vertical-align: middle;
   line-height: 150px;
   margin: auto;
 }
 
+#end-call-button {
+  background-color: $danger;
+  padding: 10px;
+  font-size: 14pt;
+}
+
+#end-call-button ion-icon {
+  -moz-webkit-transform: rotate(137deg);
+  -webkit-transform: rotate(137deg);
+  transform: rotate(137deg);
+  color: #fff;
+}
+
 
 .ready-to-call {
-  background-color: #0e0;
+  background-color: $approve;
 }
 
 .ready-to-call button {
-  background-color: #0e0;
+  background-color: $approve;
   }
 
 .ready-to-call ion-icon {
   font-size: 60pt;
   color: #fff;
-  background-color: #0e0;
+  background-color: $approve;
 }
 
 
@@ -139,7 +152,7 @@
 
 .waiting-for-answer ion-icon {
   font-size: 100pt;
-  color: #0e0;
+  color: $approve;
   background-color: transparent;
   -webkit-animation:shake 1s linear infinite;
   -moz-animation:shake 1s linear infinite;

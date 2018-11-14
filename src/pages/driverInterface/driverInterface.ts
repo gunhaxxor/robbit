@@ -238,6 +238,10 @@ export class DriverInterfacePage {
     });
   }
 
+  endCall() {
+    this.peer.destroy();
+  }
+
   changeCamera() {
     if (this.cameraOption == "environment") {
       this.cameraOption = "constraint";

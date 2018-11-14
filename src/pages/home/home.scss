@@ -1,15 +1,8 @@
-$primary-color: #fff;
-$secondary-color: #fff;
-$third-color: #fff;
-
 body {
-  background-color: blue;
-  background: linear-gradient(to bottom, #55f, #aaf, #33a);
+  background-color: $dark;
+  background: linear-gradient(to bottom, $tertiary-lighter, $tertiary-darker);
 }
 
-header {
-  background-color: blue;
-}
 
 ion-spinner {
   position: absolute;
@@ -33,13 +26,13 @@ ion-spinner {
   font-weight: bold;
 }
 .toolbar-background-md {
-  background-color: #eff3cd;
+  background-color: $primary;
 }
 .toolbar-title-md {
-  color: #fff;
+  color: $light;
 }
 .tabs-md .tab-button[aria-selected="true"] {
-  color: #fff;
+  color: $light;
 }
 .tabs-md .tabbar {
   background-color: #000;
@@ -54,13 +47,14 @@ ion-spinner {
   z-index: 12;
   height: 100%;
   width: 50%;
-  color: white;
+  color: $light;
   float: left;
   padding: 5%;
 }
 
 .side-button ion-icon {
   width: 10%;
+  font-size: 24pt;
   
 }
 
@@ -69,11 +63,11 @@ ion-spinner {
 }
 
 #robot-button {
-  background: linear-gradient(to bottom, #bbd8c0, #b4dfbc, #8ec99c);
+  background: linear-gradient(to bottom, $primary, $primary-lighter, $primary-darker);
   //background-color: #b2d5ba;
 }
 
 #driver-button {
-  background: linear-gradient(to bottom left, #6baaa0, #61ada0, #61ada0);
+  background: linear-gradient(to bottom, $tertiary, $tertiary-lighter, $tertiary-darker);
   //background-color: #61ada0;
 }

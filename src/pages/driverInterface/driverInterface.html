@@ -8,11 +8,14 @@
     <button class="driver-nav-button">
       <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
     </button>
+    <button (click)="endCall()" id="end-call-button" *ngIf="this.videoLinkActive">
+      <ion-icon name="call"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <div id="call" *ngIf="!this.videoLinkActive" [class.ready-to-call]="!this.videoLinkWaitingForAnswer" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
+  <div id="call-button" *ngIf="!this.videoLinkActive" [class.ready-to-call]="!this.videoLinkWaitingForAnswer" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
     <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
       <ion-icon name="call"></ion-icon>
     </button>
