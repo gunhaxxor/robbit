@@ -3,7 +3,7 @@ import { IonicPageModule } from "ionic-angular";
 import { BlePage } from "./bledevices";
 
 @NgModule({
-  declarations: [BlePage],
+  declarations: [],
   imports: [IonicPageModule.forChild(BlePage)]
 })
 export class BlePageModule {}
