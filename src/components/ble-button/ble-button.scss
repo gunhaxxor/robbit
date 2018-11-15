@@ -13,17 +13,17 @@
 }
 
 @keyframes connect {
-    0%   {background-color:red;}
+    0%   {background-color: $danger}
     50%   {background-color:white;}
-    80%   {background-color:green;}
+    80%   {background-color: $approve;}
     90%   {background-color:white;}
-    100%   {background-color:green;}
+    100%   {background-color: $approve;}
 }
 
 @keyframes disconnect {
-    0%   {background-color:green;}
+    0%   {background-color: $approve;}
     50%   {background-color:white;}
-    80%   {background-color:red;}
+    80%   {background-color: $danger;}
     90%   {background-color:white;}
-    100%   {background-color:red;}
+    100%   {background-color: $danger;}
 }
