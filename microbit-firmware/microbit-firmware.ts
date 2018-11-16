@@ -34,7 +34,7 @@ valueLength = 0
 motor2Value = 0
 motor1Value = 0
 receivedValues = []
-gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Normal)
+gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Slowest)
 
 
 input.onButtonPressed(Button.A, () => {

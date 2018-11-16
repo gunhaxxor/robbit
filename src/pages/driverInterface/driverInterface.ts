@@ -153,22 +153,23 @@ export class DriverInterfacePage {
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
     let ROBOT_MOTOR_MAX_THROTTLE = 1000;
-    let TURN_MOTOR_SCALE = 800;
+    let DRIVE_MOTOR_SCALE = 0.4;
+    let TURN_MOTOR_SCALE = 0.5;
     let servoAngle = this.SERVO_START_VALUE;
     let SERVO_SCALE = 5;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
 
       if (this.forwardActive) {
-        robotThrottle = ROBOT_MOTOR_MAX_THROTTLE;
+        robotThrottle = ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
       }
       else if (this.reverseActive) {
-        robotThrottle = -ROBOT_MOTOR_MAX_THROTTLE;
+        robotThrottle = -ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
       }else{
         robotThrottle = 0;
       }
 
-      let rotationMotorAdjustment = robotRotation * TURN_MOTOR_SCALE; // -20 to +20
+      let rotationMotorAdjustment = robotRotation * ROBOT_MOTOR_MAX_THROTTLE * TURN_MOTOR_SCALE; // -20 to +20
 
       let leftMotor = robotThrottle - rotationMotorAdjustment;
       let rightMotor = robotThrottle + rotationMotorAdjustment;
