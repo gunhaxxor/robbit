@@ -161,6 +161,10 @@ export class DriverInterfacePage {
     let SERVO_SCALE = 5;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
+      if(!this.videoLinkActive) {
+        console.log("Not sending anything because we have no connection.");
+        return;
+      }
 
       if (this.forwardActive) {
         robotThrottle = ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;

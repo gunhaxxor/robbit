@@ -29,7 +29,7 @@
   </video> -->
   <video id="driver-local-video" autoplay>
   </video>
-  <div id="control-panel">
+  <div id="control-panel" [hidden]="!this.videoLinkActive">
     <div id="zone-joystick"></div>
     <button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>
