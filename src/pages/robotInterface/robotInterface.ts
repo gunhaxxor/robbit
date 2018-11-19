@@ -20,6 +20,7 @@ export class RobotInterfacePage {
   cameraOption: string = "constraint";
   videoLinkActive: boolean = false;
   videoVerticalFlipped: boolean = false;
+  showDriver: boolean = true;
   connected: boolean = false;
 
   constructor(
@@ -44,6 +45,7 @@ export class RobotInterfacePage {
     this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
     this.socket.removeAllListeners("robotControl");
+    this.socket.removeAllListeners("callInfo");
     this.socket.removeAllListeners("signal");
     this.peer.destroy();
     delete this.peer;
@@ -58,7 +60,7 @@ export class RobotInterfacePage {
       //console.log("received socket msg: " + JSON.stringify(msg));
       this.bleService.send(msg);
     });
-    
+
     this.socket.on("signal", data => {
       console.log("Robot received signal message from socket");
       console.log(data);
@@ -120,6 +122,25 @@ export class RobotInterfacePage {
       console.log('this.peer: ' + this.peer); 
       this.initiateListen();
       this.videoLinkActive = false;
+    });
+    this.peer.on("data", msg => {
+      //console.log("received callInfo  msg: " + JSON.stringify(msg));
+      msg = String(msg);
+      console.log("received data: " + msg);
+
+      if(msg.substring(0, 10) == "callInfo: ") {
+        msg = msg.substring(10);
+        switch(msg) {
+          case "driver showCamera true":
+            this.showDriver = true;
+            break;
+          case "driver showCamera false":
+            this.showDriver = false;
+            break;
+        }
+      }
+
+      
     });
   }
 

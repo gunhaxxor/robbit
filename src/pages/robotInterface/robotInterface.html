@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content padding>
-  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive">
+  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
   </video>
   <video id="robot-local-video" autoplay>
   </video>

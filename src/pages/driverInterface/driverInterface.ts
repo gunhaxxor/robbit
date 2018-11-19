@@ -259,6 +259,7 @@ export class DriverInterfacePage {
   }
 
   endCall() {
+    this.peer.send("callInfo: endcall");
     this.peer.destroy();
   }
 
@@ -275,6 +276,7 @@ export class DriverInterfacePage {
 
   toggleCameraStream() {
     this.showCamera = !this.showCamera;
+    this.peer.send("callInfo: driver showCamera "+this.showCamera);
     if(this.showCamera) {
       this.addCameraStream();
     }
@@ -305,6 +307,7 @@ export class DriverInterfacePage {
 
   toggleAudioStream() {
     this.muteAudio = !this.muteAudio;
+    this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
     if(this.muteAudio) {
       this.removeAudioStream();
     }
