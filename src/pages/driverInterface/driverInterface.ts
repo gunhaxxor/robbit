@@ -358,6 +358,10 @@ export class DriverInterfacePage {
       });
   }
 
+  sendEmoji(text:String) {
+    this.peer.send("callInfo: emoji "+text);
+  }
+
   // permissionCheck(permission, name) {
   //   this.androidPermissions.checkPermission(permission).then(res => {
   //     console.log(name + " permission: " + res.hasPermission);

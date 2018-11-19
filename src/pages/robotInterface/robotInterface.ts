@@ -137,6 +137,16 @@ export class RobotInterfacePage {
           case "driver showCamera false":
             this.showDriver = false;
             break;
+          default:
+            console.log("default switch");
+            if(msg.substring(0,6) == "emoji "){
+              msg = msg.substring(6);
+              console.log("found emoji:"+msg);
+              let emojiDiv: HTMLElement = document.getElementById("emoji");
+              emojiDiv.innerHTML = msg;
+            }
+            
+            break;
         }
       }
 

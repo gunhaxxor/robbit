@@ -12,6 +12,9 @@
 <ion-content padding>
   <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
   </video>
+  <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
+      🙂
+  </div>
   <video id="robot-local-video" autoplay>
   </video>
   <div *ngIf="!this.videoLinkActive" class="waiting-text">

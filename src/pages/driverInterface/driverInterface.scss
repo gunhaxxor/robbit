@@ -70,10 +70,10 @@ page-driverInterface {
     // top: 0;
   }
 
-  .servo-button {
+  .servo-button, .emoji-button {
     border: 0px solid red;
-    height: 50%;
-    width: 50%;
+    height: 100%;
+    width: 100%;
   }
 
   #servo-up {
