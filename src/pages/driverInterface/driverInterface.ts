@@ -243,6 +243,17 @@ export class DriverInterfacePage {
       this.videoLinkActive = false;
       this.videoLinkWaitingForAnswer = false;
     });
+    this.peer.on('unhandledRejection', (reason, p) => {
+        console.log("!! unhandledRejection "+reason+ " "+p);
+    });
+    this.peer.on('uncaughtException', err => {
+      // HANDLE ERROR HERE
+      console.log("!! uncaughtException "+err);
+    });
+      this.peer.on('error', err => {
+      console.log("!! error "+err);
+    });
+
   }
 
   endCall() {
