@@ -21,6 +21,8 @@ export class DriverInterfacePage {
   videoLinkWaitingForAnswer = false;
   localStream: MediaStream;
   remoteStream: MediaStream;
+  localVideoTrack: any;
+  showCamera: boolean;
   robotControlIntervalId: any;
   // arrowLeftActive: boolean;
   // arrowForwardActive: boolean;
@@ -254,6 +256,36 @@ export class DriverInterfacePage {
     this.retrieveCamera();
   }
 
+  toggleCameraStream() {
+    this.showCamera = !this.showCamera;
+    if(this.showCamera) {
+      this.addCameraStream();
+    }
+    else {
+      this.removeCameraStream();
+    }
+  }
+
+  removeCameraStream() {
+    let videoTracks = this.localStream.getVideoTracks();
+    if(videoTracks.length == 0)
+    {
+      console.log("No video tracks found on local stream");
+      return;
+    }
+    this.peer.removeTrack(videoTracks[0], this.localStream);
+    console.log("Video track removed.");
+  }
+
+  addCameraStream() {
+    if(this.localVideoTrack != null)
+    {
+      console.log("Adding video track to stream.");
+      this.peer.addTrack(this.localVideoTrack, this.localStream);
+    }
+    
+  }
+
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
@@ -263,9 +295,11 @@ export class DriverInterfacePage {
         console.log("Driver got local media as a stream");
         this.localStream = stream;
         let video: HTMLVideoElement = document.querySelector("#driver-local-video");
+        this.localVideoTrack = stream.getVideoTracks()[0];
         video.srcObject = stream;
         video.volume = 0;
         // video.play();
+        this.showCamera = true;
       })
       .catch(err => {
         console.log("error: " + err);

@@ -127,6 +127,19 @@ page-driverInterface {
     color: #fff;
   }
 
+  #toggle-camera-button {
+    padding: 10px;
+    font-size: 14pt;
+  }
+
+  #toggle-camera-button.camera-enabled {
+    background-color: $approve;
+  }
+
+  #toggle-camera-button.camera-disabled {
+    background-color: $danger;
+  }
+  
 
   .ready-to-call {
     background-color: $approve;
