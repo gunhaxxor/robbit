@@ -127,16 +127,16 @@ page-driverInterface {
     color: #fff;
   }
 
-  #toggle-camera-button {
+  #toggle-camera-button, #toggle-audio-button {
     padding: 10px;
     font-size: 14pt;
   }
 
-  #toggle-camera-button.camera-enabled {
+  .toggle-button-enabled {
     background-color: $approve;
   }
 
-  #toggle-camera-button.camera-disabled {
+  .toggle-button-disabled {
     background-color: $danger;
   }
   

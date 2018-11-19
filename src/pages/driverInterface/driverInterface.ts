@@ -22,7 +22,9 @@ export class DriverInterfacePage {
   localStream: MediaStream;
   remoteStream: MediaStream;
   localVideoTrack: any;
+  localAudioTrack: any;
   showCamera: boolean;
+  muteAudio: boolean;
   robotControlIntervalId: any;
   // arrowLeftActive: boolean;
   // arrowForwardActive: boolean;
@@ -301,6 +303,36 @@ export class DriverInterfacePage {
     
   }
 
+  toggleAudioStream() {
+    this.muteAudio = !this.muteAudio;
+    if(this.muteAudio) {
+      this.removeAudioStream();
+    }
+    else {
+      this.addAudioStream();
+    }
+  }
+
+  removeAudioStream() {
+    let audioTracks = this.localStream.getAudioTracks();
+    if(audioTracks.length == 0)
+    {
+      console.log("No audio tracks found on local stream");
+      return;
+    }
+    this.peer.removeTrack(audioTracks[0], this.localStream);
+    console.log("audio track removed.");
+  }
+
+  addAudioStream() {
+    if(this.localAudioTrack != null)
+    {
+      console.log("Adding audio track to stream.");
+      this.peer.addTrack(this.localAudioTrack, this.localStream);
+    }
+    
+  }
+
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
@@ -311,10 +343,12 @@ export class DriverInterfacePage {
         this.localStream = stream;
         let video: HTMLVideoElement = document.querySelector("#driver-local-video");
         this.localVideoTrack = stream.getVideoTracks()[0];
+        this.localAudioTrack = stream.getAudioTracks()[0];
         video.srcObject = stream;
         video.volume = 0;
         // video.play();
         this.showCamera = true;
+        this.muteAudio = false;
       })
       .catch(err => {
         console.log("error: " + err);

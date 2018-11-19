@@ -11,8 +11,11 @@
     <button (click)="endCall()" id="end-call-button" *ngIf="this.videoLinkActive">
       <ion-icon name="call"></ion-icon>
     </button>
-    <button (click)="this.toggleCameraStream()" id="toggle-camera-button" *ngIf="this.videoLinkActive" [class.camera-enabled]="this.showCamera" [class.camera-disabled]="!this.showCamera">
+    <button (click)="this.toggleCameraStream()" id="toggle-camera-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="this.showCamera" [class.toggle-button-disabled]="!this.showCamera">
       <ion-icon name="videocam"></ion-icon>
+    </button>
+    <button (click)="this.toggleAudioStream()" id="toggle-audio-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="!this.muteAudio" [class.toggle-button-disabled]="this.muteAudio">
+      <ion-icon name="mic"></ion-icon>
     </button>
   </ion-navbar>
 </ion-header>
