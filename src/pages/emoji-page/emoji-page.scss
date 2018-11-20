@@ -1,0 +1,23 @@
+// ion-content {
+//   text-align: center;
+//   width: 100%;
+//   height: 100%;
+// }
+// ion-content button {
+//   z-index: 3;
+//   width: 75px;
+//   height: 75px;
+// }
+
+page-emoji {
+
+  .scroll-content {
+    background: linear-gradient(to bottom, $light, $light-darker);
+  }
+
+  .emoji-button {
+    width: 40pt;
+    height: 40pt;
+    font-size: 40pt;
+  }
+}

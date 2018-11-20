@@ -8,6 +8,7 @@ import { HomePage } from "../pages/home/home";
 import { DriverInterfacePage } from "../pages/driverInterface/driverInterface";
 import { RobotInterfacePage } from "../pages/robotInterface/robotInterface";
 import { BlePage } from "../pages/bledevices/bledevices";
+import { EmojiPage } from "../pages/emoji-page/emoji-page";
 
 import { BleButtonComponent } from "../components/ble-button/ble-button";
 
@@ -34,7 +35,8 @@ const socketConfig: SocketIoConfig = {
     DriverInterfacePage,
     RobotInterfacePage,
     BlePage,
-    BleButtonComponent
+    BleButtonComponent,
+    EmojiPage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +52,8 @@ const socketConfig: SocketIoConfig = {
     DriverInterfacePage,
     RobotInterfacePage,
     BlePage,
-    BleButtonComponent
+    BleButtonComponent,
+    EmojiPage
   ],
   providers: [
     StatusBar,

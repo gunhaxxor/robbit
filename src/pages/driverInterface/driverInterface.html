@@ -40,11 +40,7 @@
     <button id="servo-down" class="servo-button" (touchstart)="reverseActive = true" (touchend)="reverseActive = false">
       <ion-icon name="arrow-round-down"></ion-icon>
     </button>
-    <button (click)="this.sendEmoji('🙂')" id="emoji-button-1" class="emoji-button" >
-        🙂
-    </button>
-    <button (click)="this.sendEmoji('🙁')" id="emoji-button-1" class="emoji-button" >
-        🙁
+    <button (click)="this.presentEmojiPopover($event)" id="emoji-button-1" class="emoji-button" [innerHTML]="this.currentEmoji">
     </button>
   </div>
 </ion-content>

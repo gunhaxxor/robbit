@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
-import { LoadingController } from "ionic-angular";
+import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
+import { EmojiPage } from '../emoji-page/emoji-page';
 // import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
@@ -25,6 +25,7 @@ export class DriverInterfacePage {
   localAudioTrack: any;
   showCamera: boolean;
   muteAudio: boolean;
+  currentEmoji: string = "🙂";
   robotControlIntervalId: any;
   // arrowLeftActive: boolean;
   // arrowForwardActive: boolean;
@@ -46,7 +47,8 @@ export class DriverInterfacePage {
     // public bleService: BleService,
     private socket: Socket,
     // private camera: Camera,
-    private diagnostic: Diagnostic
+    private diagnostic: Diagnostic,
+    public popoverEmojiCtrl: PopoverController
   ) {
     
   }
@@ -356,6 +358,17 @@ export class DriverInterfacePage {
       .catch(err => {
         console.log("error: " + err);
       });
+  }
+
+  presentEmojiPopover(myEvent) {
+    let popover = this.popoverEmojiCtrl.create(EmojiPage);
+    popover.present({
+      ev: myEvent
+    });
+    popover.onDidDismiss(text => {
+      this.currentEmoji = text;
+      this.sendEmoji(text);
+    });
   }
 
   sendEmoji(text:String) {
