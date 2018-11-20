@@ -32,6 +32,8 @@
   </video> -->
   <video id="driver-local-video" autoplay>
   </video>
+  <button (click)="this.presentEmojiPopover($event)" class="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="!this.videoLinkActive || this.showCamera">
+  </button>
   <div id="control-panel" [hidden]="!this.videoLinkActive">
     <div id="zone-joystick"></div>
     <button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
@@ -39,8 +41,6 @@
     </button>
     <button id="servo-down" class="servo-button" (touchstart)="reverseActive = true" (touchend)="reverseActive = false">
       <ion-icon name="arrow-round-down"></ion-icon>
-    </button>
-    <button (click)="this.presentEmojiPopover($event)" id="emoji-button-1" class="emoji-button" [innerHTML]="this.currentEmoji">
     </button>
   </div>
 </ion-content>

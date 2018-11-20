@@ -29,16 +29,23 @@ page-driverInterface {
     background-color: #000;
   }
 
-  #driver-local-video {
+  #driver-local-video, .choose-emoji-button {
     position: absolute;
     left: 0%;
     top: 0%;
     z-index: 2;
     width: 100px;
     height: 100px;
+  }
+
+  #driver-local-video {
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
     -moz-transform:rotateY(180deg); /* Firefox */
+  }
+
+  .choose-emoji-button {
+    font-size: 40pt;
   }
 
   #control-panel {
@@ -70,7 +77,7 @@ page-driverInterface {
     // top: 0;
   }
 
-  .servo-button, .emoji-button {
+  .servo-button {
     border: 0px solid red;
     height: 100%;
     width: 100%;
