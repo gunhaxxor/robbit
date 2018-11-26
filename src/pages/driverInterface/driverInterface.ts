@@ -109,8 +109,6 @@ export class DriverInterfacePage {
 
     let manager = nipplejs.create(options);
 
-    // TODO: design the interaction so that the joystick is for looking around rathjer than driving. Will need clever calculations/balancing between servo speed and motor speed to get smooth experience.
-
     manager
     .on("move", (evt, data) => {
       if (data.angle) {

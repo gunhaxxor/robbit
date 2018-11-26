@@ -34,7 +34,7 @@
   </video>
   <button (click)="this.presentEmojiPopover($event)" class="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="!this.videoLinkActive || this.showCamera">
   </button>
-  <div id="control-panel" [hidden]="!this.videoLinkActive">
+  <div id="control-panel" [class.invisible]="!this.videoLinkActive">
     <div id="zone-joystick"></div>
     <button ion-button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>
