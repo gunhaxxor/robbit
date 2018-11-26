@@ -11,6 +11,7 @@ let SERVO_START_VALUE = 100
 let SERVO_MAX_VALUE = 155
 let SERVO_MIN_VALUE = 75
 let SERVO_Q = 0.8
+let MOTOR_RECEIVED_MAX = 1000;
 
 
 bluetooth.startUartService()
@@ -23,18 +24,16 @@ basic.showLeds(`
     `)
 let receivedString = ""
 let receivedStrings: string[] = []
-let motor1Value = 0
-let motor2Value = 0
+let currentMotorValues: number[] = [];
+let previousMotorValues: number[] = [];
 let motor = false
 let isConnected = false
 servoValue = SERVO_START_VALUE
 servoTargetValue = SERVO_START_VALUE
 InnanConnect = true
 valueLength = 0
-motor2Value = 0
-motor1Value = 0
 receivedValues = []
-gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Slowest)
+//gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Slowest)
 
 
 input.onButtonPressed(Button.A, () => {
@@ -77,35 +76,39 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
     // receivedValues[i] =
     // parseInt(receivedString.substr(k, valueLength))
     // -1023; }
-    motor1Value = receivedValues[0]
-    motor2Value = receivedValues[1]
     servoTargetValue = receivedValues[2]
-    setMotorPwm(1, motor1Value);
-    setMotorPwm(0, motor2Value);
+
+    //We expect received motorValues to be between -1000 and 1000
+    setMotorPwm(0, receivedValues[0]);
+    setMotorPwm(1, receivedValues[1]);
 })
 
+let minMotorPowerAtLowBatteryVoltage = 36;
+let minMotorPowerAtHighBatteryVoltage = 25;
 
 function setMotorPwm(motor: number, value: number) {
-    if (motor == 0) {
-
-        gigglebot.motorPowerAssign(gigglebotWhichMotor.Right, Math.constrain(value / -10, -100, 100))
-        if (value > 0) {
-            // pins.analogWritePin(AnalogPin.P16, value);
-            // pins.analogWritePin(AnalogPin.P0, 0);
-        } else {
-            // pins.analogWritePin(AnalogPin.P16, 0);
-            // pins.analogWritePin(AnalogPin.P0, Math.abs(value));
-        }
-    } else {
-        gigglebot.motorPowerAssign(gigglebotWhichMotor.Left, Math.constrain(value / -10, -100, 100))
-        if (value > 0) {
-            // pins.analogWritePin(AnalogPin.P12, value);
-            // pins.analogWritePin(AnalogPin.P8, 0);
-        } else {
-            // pins.analogWritePin(AnalogPin.P12, 0);
-            // pins.analogWritePin(AnalogPin.P8, Math.abs(value));
-        }
+    previousMotorValues[motor] = currentMotorValues[motor];
+    currentMotorValues[motor] = value;
+    let minMotorPower = Math.map(gigglebot.voltageBattery(), 3400, 4700, minMotorPowerAtLowBatteryVoltage, minMotorPowerAtHighBatteryVoltage);
+    minMotorPower = Math.constrain(minMotorPower, 22, 36);
+    let currentDirection = Math.sign(currentMotorValues[motor]);
+    let previousDirection = Math.sign(previousMotorValues[motor]);
+    //Check if we need to force kick the motor to move with a slightly higher initial voltage
+    //Should be true if the motor was still or if it was previously moving the other direction 
+    let needsInitialPush = currentDirection != previousDirection;
+    let activeMotor: number;
+    if(motor == 0){
+        activeMotor = gigglebotWhichMotor.Left;
+    }else{
+        activeMotor = gigglebotWhichMotor.Right;
     }
+
+    if(needsInitialPush){
+        gigglebot.motorPowerAssign(activeMotor, currentDirection * 50);
+        basic.pause(15);
+    }
+    gigglebot.motorPowerAssign(activeMotor, Math.map(value, 0, currentDirection*MOTOR_RECEIVED_MAX, currentDirection*minMotorPower, currentDirection*100));
+    // gigglebot.motorPowerAssign(activeMotor, Math.constrain(value / -10, -100, 100))
 }
 
 function split(inputString: string, delimiter: string): Array<string> {
@@ -138,14 +141,14 @@ control.inBackground(() => {
         if (isConnected) {
             basic.clearScreen()
             led.plot(0, pins.map(
-                motor1Value,
+                currentMotorValues[0],
                 -1023,
                 1023,
                 4,
                 0
             ))
             led.plot(4, pins.map(
-                motor2Value,
+                currentMotorValues[1],
                 -1023,
                 1023,
                 4,
