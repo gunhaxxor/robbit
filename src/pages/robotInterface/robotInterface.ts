@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, NgZone } from "@angular/core";
 import { NavController, NavParams, Platform } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/bleService";
@@ -31,7 +31,8 @@ export class RobotInterfacePage {
     public bleService: BleService,
     public socket: Socket,
     // private camera: Camera,
-    public diagnostic: Diagnostic
+    public diagnostic: Diagnostic,
+    private zone: NgZone
   ) {
   }
 
@@ -133,8 +134,14 @@ export class RobotInterfacePage {
         switch(msg) {
           case "endcall":
             console.log("Received endcall.");
-            this.videoLinkActive = false;
-            this.initiateListen();
+            this.zone.run(()=> {
+              // because we are in a callback this would have happened outside angulars zone
+              // which wouldn't update the template
+              // that's why we force it to run inside the zone
+              // and update the interface instantly
+              this.videoLinkActive = false;
+              this.initiateListen();
+            });
             break;
           case "driver showCamera true":
             this.showDriver = true;
