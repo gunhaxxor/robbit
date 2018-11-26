@@ -131,6 +131,11 @@ export class RobotInterfacePage {
       if(msg.substring(0, 10) == "callInfo: ") {
         msg = msg.substring(10);
         switch(msg) {
+          case "endcall":
+            console.log("Received endcall.");
+            this.videoLinkActive = false;
+            this.initiateListen();
+            break;
           case "driver showCamera true":
             this.showDriver = true;
             break;
