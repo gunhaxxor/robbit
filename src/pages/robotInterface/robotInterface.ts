@@ -126,41 +126,74 @@ export class RobotInterfacePage {
     });
     this.peer.on("data", msg => {
       //console.log("received callInfo  msg: " + JSON.stringify(msg));
-      msg = String(msg);
-      console.log("received data: " + msg);
-
-      if(msg.substring(0, 10) == "callInfo: ") {
-        msg = msg.substring(10);
-        switch(msg) {
-          case "endcall":
-            console.log("Received endcall.");
-            this.zone.run(()=> {
-              // because we are in a callback this would have happened outside angulars zone
-              // which wouldn't update the template
-              // that's why we force it to run inside the zone
-              // and update the interface instantly
-              this.videoLinkActive = false;
-              this.initiateListen();
-            });
-            break;
-          case "driver showCamera true":
-            this.showDriver = true;
-            break;
-          case "driver showCamera false":
-            this.showDriver = false;
-            break;
-          default:
-            console.log("default switch");
-            if(msg.substring(0,6) == "emoji "){
-              msg = msg.substring(6);
-              console.log("found emoji:"+msg);
-              let emojiDiv: HTMLElement = document.getElementById("emoji");
-              emojiDiv.innerHTML = msg;
-            }
-            
-            break;
-        }
+      let msgObj = JSON.parse(String(msg));
+      
+      if(msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
+        console.log("Received endcall.");
+        this.zone.run(()=> {
+          // because we are in a callback this would have happened outside angulars zone
+          // which wouldn't update the template
+          // that's why we force it to run inside the zone
+          // and update the interface instantly
+          this.videoLinkActive = false;
+          this.initiateListen();
+        });
       }
+      if(msgObj.hasOwnProperty("showDriverCamera")) {
+        this.showDriver = msgObj.showDriverCamera;
+        console.log(this.showDriver);
+      }
+      if(msgObj.hasOwnProperty("muteDriver")) {
+        // TODO: Not implemented yet.
+        // Probably want to show this in the interface somehow
+        //this.muteDriver = msgObj.muteDriver;
+        //console.log(this.muteDriver);
+      }
+      if(msgObj.hasOwnProperty("emoji")) {
+        let emojiDiv: HTMLElement = document.getElementById("emoji");
+        emojiDiv.innerHTML = msgObj.emoji;
+        console.log("found emoji:"+msgObj.emoji);
+      }
+      if(msgObj.hasOwnProperty("chat")) {
+        let chatDiv: HTMLElement = document.getElementById("chat");
+        chatDiv.innerHTML = msgObj.chat;
+        console.log("found chat:"+msgObj.chat);
+      }
+
+      // console.log("received data: " + msg);
+
+      // if(msg.substring(0, 10) == "callInfo: ") {
+      //   msg = msg.substring(10);
+      //   switch(msg) {
+      //     case "endcall":
+      //       console.log("Received endcall.");
+      //       this.zone.run(()=> {
+      //         // because we are in a callback this would have happened outside angulars zone
+      //         // which wouldn't update the template
+      //         // that's why we force it to run inside the zone
+      //         // and update the interface instantly
+      //         this.videoLinkActive = false;
+      //         this.initiateListen();
+      //       });
+      //       break;
+      //     case "driver showCamera true":
+      //       this.showDriver = true;
+      //       break;
+      //     case "driver showCamera false":
+      //       this.showDriver = false;
+      //       break;
+      //     default:
+      //       console.log("default switch");
+      //       if(msg.substring(0,6) == "emoji "){
+      //         msg = msg.substring(6);
+      //         console.log("found emoji:"+msg);
+      //         let emojiDiv: HTMLElement = document.getElementById("emoji");
+      //         emojiDiv.innerHTML = msg;
+      //       }
+            
+      //       break;
+      //   }
+      // }
 
       
     });

@@ -262,7 +262,7 @@ export class DriverInterfacePage {
   }
 
   endCall() {
-    this.peer.send("callInfo: endcall");
+    this.sendData({endcall: true});
     this.peer.destroy();
   }
 
@@ -296,7 +296,7 @@ export class DriverInterfacePage {
     }
     this.peer.removeTrack(videoTracks[0], this.localStream);
     this.showCamera = false;
-    this.peer.send("callInfo: driver showCamera "+this.showCamera);
+    this.sendData({showDriverCamera: this.showCamera});
     console.log("Video track removed.");
   }
 
@@ -306,7 +306,7 @@ export class DriverInterfacePage {
       console.log("Adding video track to stream.");
       this.peer.addTrack(this.localVideoTrack, this.localStream);
       this.showCamera = true;
-      this.peer.send("callInfo: driver showCamera "+this.showCamera);
+      this.sendData({showDriverCamera: this.showCamera});
     }
     
   }
@@ -330,7 +330,7 @@ export class DriverInterfacePage {
     }
     this.peer.removeTrack(audioTracks[0], this.localStream);
     this.muteAudio = true;
-    this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
+    this.sendData({muteDriver: this.muteAudio});
     console.log("audio track removed.");
   }
 
@@ -340,7 +340,7 @@ export class DriverInterfacePage {
       console.log("Adding audio track to stream.");
       this.peer.addTrack(this.localAudioTrack, this.localStream);
       this.muteAudio = false;
-      this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
+      this.sendData({muteDriver: this.muteAudio});
     }
     
   }
@@ -379,7 +379,11 @@ export class DriverInterfacePage {
   }
 
   sendEmoji(text:String) {
-    this.peer.send("callInfo: emoji "+text);
+    this.sendData({emoji:text});
+  }
+
+  sendData(sendObj:object) {
+    this.peer.send(JSON.stringify(sendObj));
   }
 
   // permissionCheck(permission, name) {
