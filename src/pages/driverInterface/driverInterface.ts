@@ -207,9 +207,9 @@ export class DriverInterfacePage {
       
       let msg =
         "" +
-        rightMotorFloored +
-        ";" +
         leftMotorFloored +
+        ";" +
+        rightMotorFloored +
         ";" +
         servoFloored +
         "\n";
