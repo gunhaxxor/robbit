@@ -236,6 +236,9 @@ export class DriverInterfacePage {
       console.log('connection event!!!');
       this.videoLinkActive = true;
       this.videoLinkWaitingForAnswer = false;
+
+      // disable video as default
+      this.removeCameraStream();
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
@@ -276,7 +279,6 @@ export class DriverInterfacePage {
 
   toggleCameraStream() {
     this.showCamera = !this.showCamera;
-    this.peer.send("callInfo: driver showCamera "+this.showCamera);
     if(this.showCamera) {
       this.addCameraStream();
     }
@@ -293,6 +295,8 @@ export class DriverInterfacePage {
       return;
     }
     this.peer.removeTrack(videoTracks[0], this.localStream);
+    this.showCamera = false;
+    this.peer.send("callInfo: driver showCamera "+this.showCamera);
     console.log("Video track removed.");
   }
 
@@ -301,13 +305,14 @@ export class DriverInterfacePage {
     {
       console.log("Adding video track to stream.");
       this.peer.addTrack(this.localVideoTrack, this.localStream);
+      this.showCamera = true;
+      this.peer.send("callInfo: driver showCamera "+this.showCamera);
     }
     
   }
 
   toggleAudioStream() {
     this.muteAudio = !this.muteAudio;
-    this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
     if(this.muteAudio) {
       this.removeAudioStream();
     }
@@ -324,6 +329,8 @@ export class DriverInterfacePage {
       return;
     }
     this.peer.removeTrack(audioTracks[0], this.localStream);
+    this.muteAudio = true;
+    this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
     console.log("audio track removed.");
   }
 
@@ -332,6 +339,8 @@ export class DriverInterfacePage {
     {
       console.log("Adding audio track to stream.");
       this.peer.addTrack(this.localAudioTrack, this.localStream);
+      this.muteAudio = false;
+      this.peer.send("callInfo: driver muteAudio "+this.muteAudio);
     }
     
   }
