@@ -35,7 +35,6 @@ valueLength = 0
 receivedValues = []
 //gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Slowest)
 
-
 input.onButtonPressed(Button.A, () => {
     servoTargetValue = SERVO_START_VALUE
     servoValue = SERVO_START_VALUE
@@ -61,54 +60,65 @@ bluetooth.onBluetoothDisconnected(() => {
     isConnected = false
     basic.showIcon(IconNames.No)
     basic.pause(1000)
-    basic.clearScreen()
+
+    control.reset();
+    // basic.clearScreen()
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
+    led.toggle(4, 0);
     radioStamp = input.runningTime()
     receivedValues = []
-    receivedString = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
-    receivedStrings = split(receivedString, ";");
-    for (let i = 0; i <= receivedStrings.length - 1; i++) {
-        receivedValues.push(parseInt(receivedStrings[i]))
+    //we expect 3 values!
+    for (let i = 0; i < 2; i++) {
+        receivedValues[i] = parseInt(bluetooth.uartReadUntil(serial.delimiters(Delimiters.Comma)));
     }
-    // valueLength = 4 for (let i = 0, k = 0; k <
-    // receivedString.length; i++ , k += valueLength) {
-    // receivedValues[i] =
-    // parseInt(receivedString.substr(k, valueLength))
-    // -1023; }
+    receivedValues[2] = parseInt(bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine)));
+
+    // receivedString = bluetooth.uartReadUntil(serial.delimiters(Delimiters.Comma))
+    // receivedString = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    // serial.writeLine(receivedString);
+    // receivedStrings = split(receivedString, ";");
+    // for (let i = 0; i <= receivedStrings.length - 1; i++) {
+    //     receivedValues.push(parseInt(receivedStrings[i]))
+    // }
+
+    serial.writeNumbers(receivedValues);
+
     servoTargetValue = receivedValues[2]
 
     //We expect received motorValues to be between -1000 and 1000
-    setMotorPwm(0, receivedValues[0]);
-    setMotorPwm(1, receivedValues[1]);
+    // setMotorPwm(0, receivedValues[0]);
+    // setMotorPwm(1, receivedValues[1]);
 })
 
 let minMotorPowerAtLowBatteryVoltage = 36;
 let minMotorPowerAtHighBatteryVoltage = 25;
 
 function setMotorPwm(motor: number, value: number) {
-    previousMotorValues[motor] = currentMotorValues[motor];
+    // previousMotorValues[motor] = currentMotorValues[motor];
     currentMotorValues[motor] = value;
-    let minMotorPower = Math.map(gigglebot.voltageBattery(), 3400, 4700, minMotorPowerAtLowBatteryVoltage, minMotorPowerAtHighBatteryVoltage);
-    minMotorPower = Math.constrain(minMotorPower, 22, 36);
-    let currentDirection = Math.sign(currentMotorValues[motor]);
-    let previousDirection = Math.sign(previousMotorValues[motor]);
+    // let minMotorPower = 30;
+    // let minMotorPower = Math.map(gigglebot.voltageBattery(), 3400, 4700, minMotorPowerAtLowBatteryVoltage, minMotorPowerAtHighBatteryVoltage);
+    // minMotorPower = Math.constrain(minMotorPower, 22, 36);
+    // let currentDirection = Math.sign(currentMotorValues[motor]);
+    // let previousDirection = Math.sign(previousMotorValues[motor]);
+
     //Check if we need to force kick the motor to move with a slightly higher initial voltage
     //Should be true if the motor was still or if it was previously moving the other direction 
-    let needsInitialPush = currentDirection != previousDirection;
+    // let needsInitialPush = currentDirection != previousDirection;
     let activeMotor: number;
-    if(motor == 0){
+    if (motor == 0) {
         activeMotor = gigglebotWhichMotor.Left;
-    }else{
+    } else {
         activeMotor = gigglebotWhichMotor.Right;
     }
 
-    if(needsInitialPush){
-        gigglebot.motorPowerAssign(activeMotor, currentDirection * 50);
-        basic.pause(15);
-    }
-    gigglebot.motorPowerAssign(activeMotor, Math.map(value, 0, currentDirection*MOTOR_RECEIVED_MAX, currentDirection*minMotorPower, currentDirection*100));
-    // gigglebot.motorPowerAssign(activeMotor, Math.constrain(value / -10, -100, 100))
+    // if (needsInitialPush) {
+    //     gigglebot.motorPowerAssign(activeMotor, currentDirection * 50);
+    //     basic.pause(15);
+    // }
+    // gigglebot.motorPowerAssign(activeMotor, Math.map(value, 0, currentDirection * MOTOR_RECEIVED_MAX, currentDirection * minMotorPower, currentDirection * 100));
+    gigglebot.motorPowerAssign(activeMotor, Math.constrain(value / -10, -100, 100))
 }
 
 function split(inputString: string, delimiter: string): Array<string> {
@@ -139,18 +149,20 @@ control.inBackground(() => {
         pins.servoWritePin(SERVO_PIN, servoValue)
 
         if (isConnected) {
+            // setMotorPwm(0, receivedValues[0]);
+            // setMotorPwm(1, receivedValues[1]);
             basic.clearScreen()
             led.plot(0, pins.map(
-                currentMotorValues[0],
-                -1023,
-                1023,
+                receivedValues[0],
+                -1000,
+                1000,
                 4,
                 0
             ))
             led.plot(4, pins.map(
-                currentMotorValues[1],
-                -1023,
-                1023,
+                receivedValues[1],
+                -1000,
+                1000,
                 4,
                 0
             ))
@@ -171,6 +183,8 @@ control.inBackground(() => {
             setMotorPwm(1, 0);
             setMotorPwm(0, 0);
         }
-        basic.pause(100)
+        basic.pause(50)
+        led.toggle(0, 0);
+        basic.pause(50);
     }
-})
+}) 
