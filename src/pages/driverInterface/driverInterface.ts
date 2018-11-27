@@ -209,9 +209,9 @@ export class DriverInterfacePage {
       let msg =
         "" +
         leftMotorFloored +
-        ";" +
+        "," +
         rightMotorFloored +
-        ";" +
+        "," +
         servoFloored +
         "\n";
       console.log("sending robot data to socket: " + msg);
