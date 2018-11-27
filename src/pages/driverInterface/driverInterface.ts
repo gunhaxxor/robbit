@@ -239,8 +239,10 @@ export class DriverInterfacePage {
       this.videoLinkActive = true;
       this.videoLinkWaitingForAnswer = false;
 
-      // disable video as default
-      this.removeCameraStream();
+      
+      this.removeCameraStream(); // disable video as default
+      this.sendEmoji(this.currentEmoji);
+      this.sendChat();
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
@@ -375,6 +377,9 @@ export class DriverInterfacePage {
       ev: myEvent
     });
     popover.onDidDismiss(text => {
+      if(text == null) {
+        return;
+      }
       this.currentEmoji = text;
       this.sendEmoji(text);
     });
