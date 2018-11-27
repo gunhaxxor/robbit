@@ -22,6 +22,7 @@ export class RobotInterfacePage {
   videoVerticalFlipped: boolean = false;
   showDriver: boolean = true;
   connected: boolean = false;
+  chat: any = { text: "" };
 
   constructor(
     public platform: Platform,
@@ -155,9 +156,8 @@ export class RobotInterfacePage {
         console.log("found emoji:"+msgObj.emoji);
       }
       if(msgObj.hasOwnProperty("chat")) {
-        let chatDiv: HTMLElement = document.getElementById("chat");
-        chatDiv.innerHTML = msgObj.chat;
-        console.log("found chat:"+msgObj.chat);
+        this.chat.text = msgObj.chat;
+        console.log("found chat:"+this.chat.text);
       }
 
       // console.log("received data: " + msg);

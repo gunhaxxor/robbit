@@ -58,8 +58,10 @@ page-driverInterface {
     left: 0px;
     display: grid;
     grid-template-areas: 
-      "servo-up servo-down joystick";
-    grid-template-columns: 2fr 2fr 3fr;
+      "servo-up . joystick"
+      "servo-down chat joystick";
+    grid-template-columns: 1fr 4fr 2fr;
+    grid-template-rows: 1fr 1fr;
     align-items: end;
     grid-gap: 20px;
     // margin: 20px;
@@ -83,8 +85,8 @@ page-driverInterface {
 
   .servo-button {
     border: 0px solid red;
-    height: 50%;
-    width: 50%;
+    height: 100%;
+    width: 100%;
   }
 
   #servo-up {
@@ -101,6 +103,24 @@ page-driverInterface {
     // left: 0;
     // bottom: 0;
   }
+
+  #chat-container {
+    grid-area: chat;
+    display: grid;
+    grid-template-rows: auto 40pt;
+    grid-template-areas: "chat-input chat-send";
+  }
+
+  #chat-input {
+    grid-area: chat-input;
+    border: 1px dotted #888;
+    border-radius: 5px;
+  }
+
+  #chat-send {
+    grid-area: chat-send;
+  }
+
 
 
   #call-button {

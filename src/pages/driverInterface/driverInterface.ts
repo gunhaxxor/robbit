@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
+import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController, IonicFormInput } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
 // import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
@@ -38,6 +38,7 @@ export class DriverInterfacePage {
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
   videoVerticalFlipped: boolean = false;
+  chat: any = { text: "" };
 
   constructor(
     public platform: Platform,
@@ -380,6 +381,14 @@ export class DriverInterfacePage {
 
   sendEmoji(text:String) {
     this.sendData({emoji:text});
+  }
+
+  sendChat() {
+    
+    console.log("sending chat");
+    console.log(this.chat.text);
+    this.sendData({chat:this.chat.text});
+    this.chat.text = "";
   }
 
   sendData(sendObj:object) {
