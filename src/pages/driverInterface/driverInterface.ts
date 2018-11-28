@@ -181,8 +181,8 @@ export class DriverInterfacePage {
 
       let rotationMotorAdjustment = robotRotation * ROBOT_MOTOR_MAX_THROTTLE * TURN_MOTOR_SCALE; // -20 to +20
 
-      let leftMotor = robotThrottle - rotationMotorAdjustment;
-      let rightMotor = robotThrottle + rotationMotorAdjustment;
+      let leftMotor = robotThrottle + rotationMotorAdjustment;
+      let rightMotor = robotThrottle - rotationMotorAdjustment;
 
       //Section for constraining motor values within max allowed throttle
       let ratio = 1;
