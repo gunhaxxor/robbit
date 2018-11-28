@@ -116,7 +116,7 @@ export class DriverInterfacePage {
       if (data.angle) {
         // // px, py are between max distance and -1 * max distans
 
-        let px = -Math.cos(data.angle.radian) * data.distance;
+        let px = Math.cos(data.angle.radian) * data.distance;
         let py = Math.sin(data.angle.radian) * data.distance;
 
         console.log("px: " + px);
