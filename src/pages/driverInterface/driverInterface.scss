@@ -131,6 +131,11 @@ page-driverInterface {
     border-radius: 5px;
   }
 
+  .is-writing {
+    color: $light-lighter;
+    background-color: $primary-darker;
+  }
+
   #chat-send {
     grid-area: chat-send;
   }

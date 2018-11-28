@@ -44,7 +44,7 @@
     </button>
     <div id="chat-container" >
       <form (submit)="this.sendChat()">
-        <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" ></ion-input>
+        <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" [class.is-writing]="chat.text!=''" ></ion-input>
         <button ion-button  id="chat-send" >
           <ion-icon name="send"></ion-icon>
         </button>
