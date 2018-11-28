@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController, IonicFormInput } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
 // import { BleService } from "../../providers/bleservice/bleService";
@@ -39,6 +39,7 @@ export class DriverInterfacePage {
   SERVO_MIN_VALUE: number = 75;
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "" };
+  @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
     public platform: Platform,
@@ -390,11 +391,14 @@ export class DriverInterfacePage {
   }
 
   sendChat() {
-    
     console.log("sending chat");
     console.log(this.chat.text);
     this.sendData({chat:this.chat.text});
     this.chat.text = "";
+    // this is a rather ugly way of calling blur(onfocus) on the textfield
+    // but we want to close the smartphone keyboard
+    // See https://github.com/ionic-team/ionic/issues/14130
+    this.chatInput['_native'].nativeElement.blur();
   }
 
   sendData(sendObj:object) {

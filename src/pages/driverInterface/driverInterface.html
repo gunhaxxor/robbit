@@ -42,10 +42,12 @@
       <ion-icon name="arrow-round-down"></ion-icon>
     </button>
     <div id="chat-container" >
-      <ion-input id="chat-input" placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" ></ion-input>
-      <button ion-button (click)="this.sendChat()" id="chat-send" >
-        <ion-icon name="send"></ion-icon>
-      </button>
+      <form (submit)="this.sendChat()">
+        <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" ></ion-input>
+        <button ion-button  id="chat-send" >
+          <ion-icon name="send"></ion-icon>
+        </button>
+      </form>
     </div>
     <div id="zone-joystick"></div>
   </div>
