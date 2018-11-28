@@ -1,20 +1,3 @@
-let valueLength = 0
-let InnanConnect = false
-let checked = 0
-let servoValue = 0
-let servoTargetValue = 0
-let checkRadioStamp = 0
-let receivedValues: number[] = [0, 0, 150]
-let radioStamp = 0
-let SERVO_PIN = AnalogPin.P13
-let SERVO_START_VALUE = 100
-let SERVO_MAX_VALUE = 155
-let SERVO_MIN_VALUE = 75
-let SERVO_Q = 0.8
-let MOTOR_RECEIVED_MAX = 1000;
-
-
-bluetooth.startUartService()
 basic.showLeds(`
     . . . . .
     # . # . #
@@ -22,19 +5,24 @@ basic.showLeds(`
     # . # . #
     . . . . .
     `)
-basic.clearScreen()
-let receivedString = ""
-let receivedStrings: string[] = []
+// basic.clearScreen()
+
+
+let SERVO_PIN = AnalogPin.P13
+let SERVO_START_VALUE = 100
+let SERVO_MAX_VALUE = 155
+let SERVO_MIN_VALUE = 75
+let SERVO_Q = 0.8
+let MOTOR_RECEIVED_MAX = 1000;
+let receivedValues: number[] = [0, 0, 150]
+let radioStamp = 0
 let currentMotorValues: number[] = [0, 0];
 let previousMotorValues: number[] = [0, 0];
-let motor = false
 let isConnected = false
-servoValue = SERVO_START_VALUE
-servoTargetValue = SERVO_START_VALUE
-InnanConnect = true
-valueLength = 0
-receivedValues = []
-//gigglebot.setSpeed(gigglebotWhichMotor.Both, gigglebotWhichSpeed.Slowest)
+let servoValue = SERVO_START_VALUE
+let servoTargetValue = SERVO_START_VALUE
+
+bluetooth.startUartService()
 
 input.onButtonPressed(Button.A, () => {
     servoTargetValue = SERVO_START_VALUE
@@ -63,7 +51,6 @@ bluetooth.onBluetoothDisconnected(() => {
     basic.clearScreen()
 
     control.reset();
-    // basic.clearScreen()
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
     led.plot(4, 0);
@@ -86,10 +73,6 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
     // serial.writeNumbers(receivedValues);
 
     servoTargetValue = receivedValues[2]
-
-    //We expect received motorValues to be between -1000 and 1000
-    // setMotorPwm(0, receivedValues[0]);
-    // setMotorPwm(1, receivedValues[1]);
 })
 
 let minMotorPowerAtLowBatteryVoltage = 36;
@@ -98,6 +81,10 @@ let batteryVoltage = 4200;
 let minMotorPower = 30
 
 function setMotorPwm(motor: number, value: number) {
+    if (value == undefined) {
+        return;
+    }
+
     previousMotorValues[motor] = currentMotorValues[motor];
     currentMotorValues[motor] = value;
     let currentDirection = -1 * Math.sign(currentMotorValues[motor]);
@@ -184,9 +171,7 @@ control.inBackground(() => {
         else {
             // basic.showIcon(IconNames.Asleep, 1);
         }
-        checkRadioStamp = input.runningTime()
-        checked = checkRadioStamp - radioStamp
-        if (checked > 1000) {
+        if (input.runningTime() - radioStamp > 1000) {
             setMotorPwm(0, 0);
             setMotorPwm(1, 0);
         }
