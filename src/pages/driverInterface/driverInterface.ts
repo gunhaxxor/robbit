@@ -223,7 +223,16 @@ export class DriverInterfacePage {
   initiateCall() {
     console.log("starting call as initiator");
     this.videoLinkWaitingForAnswer = true;
-    this.peer = new Peer({ initiator: true, stream: this.localStream });
+    this.peer = new Peer({ initiator: true, stream: this.localStream, config: {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:54.197.33.120:3478",
+          username: "greger",
+          credential: "bajsmannen"
+        }
+      ]
+    } });
     this.peer.on("signal", data => {
       console.log("Driver got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
