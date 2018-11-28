@@ -38,7 +38,7 @@ export class DriverInterfacePage {
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "" };
+  chat: any = { text: "", sendText: "" };
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -403,6 +403,7 @@ export class DriverInterfacePage {
     console.log("sending chat");
     console.log(this.chat.text);
     this.sendData({chat:this.chat.text});
+    this.chat.sendText = this.chat.text;
     this.chat.text = "";
     // this is a rather ugly way of calling blur(onfocus) on the textfield
     // but we want to close the smartphone keyboard

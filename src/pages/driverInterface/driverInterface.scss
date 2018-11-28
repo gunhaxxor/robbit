@@ -48,6 +48,20 @@ page-driverInterface {
     font-size: 40pt;
   }
 
+  #chat {
+    font-size: 18pt;
+    color: $light-lighter;
+    background-color: $primary-lighter;
+    text-align:center;
+    vertical-align: middle;
+    position: absolute; 
+    right: 5pt;
+    top: 5pt;
+    max-width: 75%;
+    padding: 5pt;
+    border-radius: 10px;
+  }
+
   #control-panel {
     border: 0px solid red;
     z-index: 0;

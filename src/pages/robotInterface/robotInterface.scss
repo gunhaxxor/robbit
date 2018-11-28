@@ -81,19 +81,15 @@ page-robotInterface {
   }
 
   #chat {
-    font-size: 40pt;
-    color: $tertiary;
-    background-color: $secondary;
-    opacity: 70%;
+    font-size: 45pt;
+    color: $light-lighter;
+    background-color: $primary-lighter;
     text-align:center;
     vertical-align: middle;
     position: absolute; 
-    left: 50%;
-    bottom: 0;
-    transform: translate(-50%, 0%);
-    width: 300px;
-    height: 150px;
-    border-radius: 10px;
-    border: 1px solid $secondary-darker;
+    left: 5pt;
+    bottom: 5pt;
+    padding: 5pt;
+    border-radius: 20px;
   }
 }
