@@ -252,7 +252,7 @@ export class DriverInterfacePage {
       
       this.removeCameraStream(); // disable video as default
       this.sendEmoji(this.currentEmoji);
-      this.sendChat();
+      this.clearChat();
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
@@ -397,6 +397,11 @@ export class DriverInterfacePage {
 
   sendEmoji(text:String) {
     this.sendData({emoji:text});
+  }
+
+  clearChat() {
+    this.chat.text = "";
+    this.sendChat();
   }
 
   sendChat() {
