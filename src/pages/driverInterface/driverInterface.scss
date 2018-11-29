@@ -62,6 +62,12 @@ page-driverInterface {
     border-radius: 10px;
   }
 
+  .hidden-chat {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear;
+  }
+
   #control-panel {
     border: 0px solid red;
     z-index: 0;

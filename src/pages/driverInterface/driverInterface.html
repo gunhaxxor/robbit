@@ -34,7 +34,7 @@
   </video>
   <button (click)="this.presentEmojiPopover($event)" class="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="!this.videoLinkActive || this.showCamera">
   </button>
-  <div id="chat" [hidden]="!this.videoLinkActive || this.chat.sendText == '' " [innerHTML]="chat.sendText" (click)="this.clearChat()"></div>
+  <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown" [innerHTML]="chat.sendText" (click)="this.clearChat()"></div>
   <div id="control-panel" [class.invisible]="!this.videoLinkActive">
     <button ion-button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>

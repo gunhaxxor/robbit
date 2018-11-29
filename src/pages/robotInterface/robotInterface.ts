@@ -156,7 +156,7 @@ export class RobotInterfacePage {
         console.log("found emoji:"+msgObj.emoji);
       }
       if(msgObj.hasOwnProperty("chat")) {
-        this.chat.text = msgObj.chat;
+        this.chat = msgObj.chat;
         console.log("found chat:"+this.chat.text);
       }
 

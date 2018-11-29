@@ -20,6 +20,6 @@
   <div *ngIf="!this.videoLinkActive" class="waiting-text">
     Väntar på eleven att ringa upp..
   </div>
-  <div id="chat" [hidden]="!this.videoLinkActive || this.chat.text == '' " [innerHTML]="chat.text" >
+  <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown"  [innerHTML]="chat.text" >
   </div>
 </ion-content>

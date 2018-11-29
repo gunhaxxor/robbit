@@ -92,4 +92,10 @@ page-robotInterface {
     padding: 5pt;
     border-radius: 20px;
   }
+
+  .hidden-chat {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear;
+  }
 }

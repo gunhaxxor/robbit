@@ -38,7 +38,8 @@ export class DriverInterfacePage {
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "", sendText: "" };
+  chat: any = { text: "", sendText: "", isShown: false };
+  chatTimeout: any;
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -400,20 +401,29 @@ export class DriverInterfacePage {
   }
 
   clearChat() {
-    this.chat.text = "";
-    this.sendChat();
+    this.chat.isShown = false;
+    this.sendData({chat: {text: this.chat.sendText, isShown: this.chat.isShown}});
   }
 
   sendChat() {
     console.log("sending chat");
     console.log(this.chat.text);
-    this.sendData({chat:this.chat.text});
+    this.chat.isShown = true;
+    this.sendData({chat: {text: this.chat.text, isShown: this.chat.isShown}});
     this.chat.sendText = this.chat.text;
     this.chat.text = "";
     // this is a rather ugly way of calling blur(onfocus) on the textfield
     // but we want to close the smartphone keyboard
     // See https://github.com/ionic-team/ionic/issues/14130
     this.chatInput['_native'].nativeElement.blur();
+    if(this.chat.sendText != "") {
+      if(this.chatTimeout) {
+        clearTimeout(this.chatTimeout);
+      }
+      this.chatTimeout = setTimeout(() => {
+        this.clearChat();
+      }, 7000);
+    }
   }
 
   sendData(sendObj:object) {
