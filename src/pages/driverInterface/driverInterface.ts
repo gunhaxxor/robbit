@@ -38,7 +38,7 @@ export class DriverInterfacePage {
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "", sendText: "", isShown: false };
+  chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
   chatTimeout: any;
   @ViewChild('chatInput') chatInput: ElementRef;
 
@@ -422,7 +422,7 @@ export class DriverInterfacePage {
       }
       this.chatTimeout = setTimeout(() => {
         this.clearChat();
-      }, 7000);
+      }, this.chat.timeoutSeconds*1000);
     }
   }
 
