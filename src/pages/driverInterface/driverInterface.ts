@@ -39,6 +39,12 @@ export class DriverInterfacePage {
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
+  ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
+  DRIVE_MOTOR_SCALE: number = 0.3;
+  TURN_MOTOR_SCALE: number = 0.1;
+  servoAngle: number = this.SERVO_START_VALUE;
+  SERVO_SCALE: number = 5;
+  
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
   chatTimeout: any;
@@ -161,11 +167,6 @@ export class DriverInterfacePage {
     });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
-    let ROBOT_MOTOR_MAX_THROTTLE = 1000;
-    let DRIVE_MOTOR_SCALE = 0.3;
-    let TURN_MOTOR_SCALE = 0.1;
-    let servoAngle = this.SERVO_START_VALUE;
-    let SERVO_SCALE = 5;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
       if(!this.videoLinkActive) {
@@ -174,23 +175,23 @@ export class DriverInterfacePage {
       }
 
       if (this.forwardActive) {
-        robotThrottle = ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
+        robotThrottle = this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }
       else if (this.reverseActive) {
-        robotThrottle = -ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
+        robotThrottle = -this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }else{
         robotThrottle = 0;
       }
 
-      let rotationMotorAdjustment = robotRotation * ROBOT_MOTOR_MAX_THROTTLE * TURN_MOTOR_SCALE; // -20 to +20
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
 
       let leftMotor = robotThrottle + rotationMotorAdjustment;
       let rightMotor = robotThrottle - rotationMotorAdjustment;
 
       //Section for constraining motor values within max allowed throttle
       let ratio = 1;
-      if(Math.abs(leftMotor) > ROBOT_MOTOR_MAX_THROTTLE || Math.abs(rightMotor) > ROBOT_MOTOR_MAX_THROTTLE){
-        ratio = ROBOT_MOTOR_MAX_THROTTLE / Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
+      if(Math.abs(leftMotor) > this.ROBOT_MOTOR_MAX_THROTTLE || Math.abs(rightMotor) > this.ROBOT_MOTOR_MAX_THROTTLE){
+        ratio = this.ROBOT_MOTOR_MAX_THROTTLE / Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
       }
       leftMotor *= ratio;
       rightMotor *= ratio;
@@ -198,9 +199,9 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      servoAngle += servoAngleChange * SERVO_SCALE;
-      servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servoAngle));
-      let servoFloored = Math.floor(servoAngle);
+      this.servoAngle += servoAngleChange * this.SERVO_SCALE;
+      this.servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, this.servoAngle));
+      let servoFloored = Math.floor(this.servoAngle);
       // if (turnAmt == 0) {
       //   motorValue1 = forwardAmt;
       //   motorValue2 = forwardAmt;
@@ -459,6 +460,76 @@ export class DriverInterfacePage {
     bot.setKeyword("Robot");
     bot.addCommand("who are you", ()=>{
       console.log("Understood who are you");
+    });
+    bot.addCommand("kör framåt", ()=>{
+      console.log("Uppfattad: kör framåt");
+      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("kör bakåt", ()=>{
+      console.log("Uppfattad: kör bakåt");
+      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
+      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("vänster", ()=>{
+      console.log("Uppfattad: vänster");
+      let robotRotation = -1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
+      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("höger", ()=>{
+      console.log("Uppfattad: höger");
+      let robotRotation = 1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
+      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
     });
     bot.run();
   }
