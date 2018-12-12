@@ -5,12 +5,12 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <button ionic full class="side-button" id="robot-button" (click)="goToRobotInterface()">
+  <button ionic full class="side-button" id="robot-button" (click)="goToRobotInterface()" *ngIf="plt.is('cordova')">
     <ion-icon name="car"></ion-icon>
     <h1>ROBOT</h1>
     <p>Den mobil som är kopplad till roboten.</p>
   </button>
-  <button ionic full class="side-button" id="driver-button" (click)="goToDriverInterface()">
+  <button ionic full class="side-button" id="driver-button" (click)="goToDriverInterface()" *ngIf="!plt.is('cordova')">
     <ion-icon name="person"></ion-icon>
     <h1>ELEV</h1>
     <p>Tryck här för att styra roboten</p>
