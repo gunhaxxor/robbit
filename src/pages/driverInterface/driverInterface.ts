@@ -10,6 +10,8 @@ import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
+declare var CommandBot: any;
+
 // @IonicPage()
 @Component({
   selector: "page-driverInterface",
@@ -219,6 +221,8 @@ export class DriverInterfacePage {
       console.log("sending robot data to socket: " + msg);
       this.socket.emit("robotControl", msg);
     }, 300);
+
+    this.setupSpeechRecognition();
   }
 
   initiateCall() {
@@ -447,4 +451,17 @@ export class DriverInterfacePage {
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
+
+  setupSpeechRecognition() {
+    
+    var bot = new CommandBot;
+    bot.setLanguageRecognition("sv-SE");
+    bot.setKeyword("Robot");
+    bot.addCommand("who are you", ()=>{
+      console.log("Understood who are you");
+    });
+    bot.run();
+  }
+
+  
 }
