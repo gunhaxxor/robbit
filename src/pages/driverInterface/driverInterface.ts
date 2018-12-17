@@ -10,6 +10,8 @@ import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
+declare var CommandBot: any;
+
 // @IonicPage()
 @Component({
   selector: "page-driverInterface",
@@ -37,8 +39,15 @@ export class DriverInterfacePage {
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
   SERVO_MIN_VALUE: number = 75;
+  ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
+  DRIVE_MOTOR_SCALE: number = 0.3;
+  TURN_MOTOR_SCALE: number = 0.1;
+  servoAngle: number = this.SERVO_START_VALUE;
+  SERVO_SCALE: number = 5;
+  
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "", sendText: "" };
+  chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
+  chatTimeout: any;
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -158,11 +167,6 @@ export class DriverInterfacePage {
     });
 
     //TODO: Send robotcontrol over RTCDatachannel? As of now we're using the signaling socket. meh...
-    let ROBOT_MOTOR_MAX_THROTTLE = 1000;
-    let DRIVE_MOTOR_SCALE = 0.3;
-    let TURN_MOTOR_SCALE = 0.1;
-    let servoAngle = this.SERVO_START_VALUE;
-    let SERVO_SCALE = 5;
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
       if(!this.videoLinkActive) {
@@ -171,23 +175,23 @@ export class DriverInterfacePage {
       }
 
       if (this.forwardActive) {
-        robotThrottle = ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
+        robotThrottle = this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }
       else if (this.reverseActive) {
-        robotThrottle = -ROBOT_MOTOR_MAX_THROTTLE * DRIVE_MOTOR_SCALE;
+        robotThrottle = -this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }else{
         robotThrottle = 0;
       }
 
-      let rotationMotorAdjustment = robotRotation * ROBOT_MOTOR_MAX_THROTTLE * TURN_MOTOR_SCALE; // -20 to +20
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
 
       let leftMotor = robotThrottle + rotationMotorAdjustment;
       let rightMotor = robotThrottle - rotationMotorAdjustment;
 
       //Section for constraining motor values within max allowed throttle
       let ratio = 1;
-      if(Math.abs(leftMotor) > ROBOT_MOTOR_MAX_THROTTLE || Math.abs(rightMotor) > ROBOT_MOTOR_MAX_THROTTLE){
-        ratio = ROBOT_MOTOR_MAX_THROTTLE / Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
+      if(Math.abs(leftMotor) > this.ROBOT_MOTOR_MAX_THROTTLE || Math.abs(rightMotor) > this.ROBOT_MOTOR_MAX_THROTTLE){
+        ratio = this.ROBOT_MOTOR_MAX_THROTTLE / Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
       }
       leftMotor *= ratio;
       rightMotor *= ratio;
@@ -195,9 +199,9 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      servoAngle += servoAngleChange * SERVO_SCALE;
-      servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, servoAngle));
-      let servoFloored = Math.floor(servoAngle);
+      this.servoAngle += servoAngleChange * this.SERVO_SCALE;
+      this.servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, this.servoAngle));
+      let servoFloored = Math.floor(this.servoAngle);
       // if (turnAmt == 0) {
       //   motorValue1 = forwardAmt;
       //   motorValue2 = forwardAmt;
@@ -218,6 +222,8 @@ export class DriverInterfacePage {
       console.log("sending robot data to socket: " + msg);
       this.socket.emit("robotControl", msg);
     }, 300);
+
+    this.setupSpeechRecognition();
   }
 
   initiateCall() {
@@ -252,7 +258,7 @@ export class DriverInterfacePage {
       
       this.removeCameraStream(); // disable video as default
       this.sendEmoji(this.currentEmoji);
-      this.sendChat();
+      this.clearChat();
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
@@ -399,16 +405,30 @@ export class DriverInterfacePage {
     this.sendData({emoji:text});
   }
 
+  clearChat() {
+    this.chat.isShown = false;
+    this.sendData({chat: {text: this.chat.sendText, isShown: this.chat.isShown}});
+  }
+
   sendChat() {
     console.log("sending chat");
     console.log(this.chat.text);
-    this.sendData({chat:this.chat.text});
+    this.chat.isShown = true;
+    this.sendData({chat: {text: this.chat.text, isShown: this.chat.isShown}});
     this.chat.sendText = this.chat.text;
     this.chat.text = "";
     // this is a rather ugly way of calling blur(onfocus) on the textfield
     // but we want to close the smartphone keyboard
     // See https://github.com/ionic-team/ionic/issues/14130
     this.chatInput['_native'].nativeElement.blur();
+    if(this.chat.sendText != "") {
+      if(this.chatTimeout) {
+        clearTimeout(this.chatTimeout);
+      }
+      this.chatTimeout = setTimeout(() => {
+        this.clearChat();
+      }, this.chat.timeoutSeconds*1000);
+    }
   }
 
   sendData(sendObj:object) {
@@ -432,4 +452,87 @@ export class DriverInterfacePage {
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
+
+  setupSpeechRecognition() {
+    
+    var bot = new CommandBot;
+    bot.setLanguageRecognition("sv-SE");
+    bot.setKeyword("Robot");
+    bot.addCommand("who are you", ()=>{
+      console.log("Understood who are you");
+    });
+    bot.addCommand("kör framåt", ()=>{
+      console.log("Uppfattad: kör framåt");
+      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("kör bakåt", ()=>{
+      console.log("Uppfattad: kör bakåt");
+      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
+      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("vänster", ()=>{
+      console.log("Uppfattad: vänster");
+      let robotRotation = -1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
+      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.addCommand("höger", ()=>{
+      console.log("Uppfattad: höger");
+      let robotRotation = 1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
+      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
+      let servoFloored = Math.floor(this.servoAngle);
+      let msg =
+        "" +
+        leftMotorFloored +
+        "," +
+        rightMotorFloored +
+        "," +
+        servoFloored +
+        "\n";
+      console.log("sending robot data to socket: " + msg);
+      this.socket.emit("robotControl", msg);
+    });
+    bot.run();
+  }
+
+  
 }

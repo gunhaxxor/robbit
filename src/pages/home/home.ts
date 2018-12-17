@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
+import { Platform } from 'ionic-angular/platform/platform';
 import { BleService } from "../../providers/bleservice/bleService";
 import { DriverInterfacePage } from "../driverInterface/driverInterface";
 import { RobotInterfacePage } from "../robotInterface/robotInterface";
@@ -10,9 +11,12 @@ import { RobotInterfacePage } from "../robotInterface/robotInterface";
   templateUrl: "home.html"
 })
 export class HomePage {
-  constructor(public navCtrl: NavController, public bleService: BleService) {}
+  constructor(public navCtrl: NavController, public bleService: BleService, private plt: Platform) {}
 
-  ionViewDidLoad() {}
+  ionViewDidLoad() {
+    console.log("this.plt.is('cordova')");
+    console.log(this.plt.is('cordova'));
+  }
 
   // changed() {
   //   if (!this.toggleValue) {
