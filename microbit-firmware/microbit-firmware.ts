@@ -9,15 +9,16 @@ basic.showLeds(`
 
 
 let SERVO_PIN = AnalogPin.P13
-let SERVO_START_VALUE = 100
+let SERVO_START_VALUE = 105
 let SERVO_MAX_VALUE = 155
 let SERVO_MIN_VALUE = 75
-let SERVO_Q = 0.8
+let SERVO_Q = 0.3
 let MOTOR_RECEIVED_MAX = 1000;
 let receivedValues: number[] = [0, 0, 150]
 let radioStamp = 0
 let currentMotorValues: number[] = [0, 0];
 let previousMotorValues: number[] = [0, 0];
+let motorTargetSpeeds: number[] = [0, 0];
 let isConnected = false
 let servoValue = SERVO_START_VALUE
 let servoTargetValue = SERVO_START_VALUE
@@ -53,6 +54,7 @@ bluetooth.onBluetoothDisconnected(() => {
     control.reset();
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
+    isConnected = true;
     led.plot(4, 0);
     radioStamp = input.runningTime()
     receivedValues = []
@@ -72,14 +74,53 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), () => {
 
     // serial.writeNumbers(receivedValues);
 
+    motorTargetSpeeds[0] = receivedValues[0];
+    motorTargetSpeeds[1] = receivedValues[1];
     servoTargetValue = receivedValues[2]
 })
+
+let motorStamps: number[] = [0, 0];
+let motorInterval: number = 50;
+let stepThreshold = 200;
+function updateMotors() {
+    let now = input.runningTime();
+    for (let i = 0; i < 2; i++) {
+
+        let onDuration = Math.map(Math.abs(motorTargetSpeeds[i]), 0, stepThreshold, 0, motorInterval);
+        if (now - motorStamps[i] <= onDuration) {
+            if (Math.abs(motorTargetSpeeds[i]) < stepThreshold) {
+                setMotorPwm(i, Math.sign(motorTargetSpeeds[i] * 10));
+                led.plot(1 + 2 * i, 2);
+            } else {
+                let rescaledMotorValue = Math.sign(motorTargetSpeeds[i]) * Math.map(Math.abs(motorTargetSpeeds[i]), stepThreshold, 1000, 0, 1000);
+                setMotorPwm(i, rescaledMotorValue);
+                led.plot(1 + 2 * i, 3);
+            }
+
+
+        } else {
+            // let scaledMotorValue = Math.map(motorTargetSpeeds[i], 0, , 0, 4)
+            setMotorPwm(i, 0);
+            led.unplot(1 + 2 * i, 3);
+        }
+
+        if (now - motorStamps[i] > motorInterval) {
+            motorStamps[i] = now;
+            // led.plot(1 + 2 * i, 3);
+        }
+    }
+
+
+    // setMotorPwm(1, motorTargetSpeeds[1]);
+    // setMotorPwm(0, motorTargetSpeeds[0]);
+}
 
 let minMotorPowerAtLowBatteryVoltage = 36;
 let minMotorPowerAtHighBatteryVoltage = 25;
 let batteryVoltage = 4200;
 let minMotorPower = 30
 
+// Sets the motor speed. Expects values between -1000 and 1000
 function setMotorPwm(motor: number, value: number) {
     if (value == undefined) {
         return;
@@ -103,7 +144,7 @@ function setMotorPwm(motor: number, value: number) {
         activeMotor = gigglebotWhichMotor.Left;
     }
 
-    if (needsInitialPush) {
+    if (false && needsInitialPush) {
         gigglebot.motorPowerAssign(activeMotor, currentDirection * 50);
         basic.pause(15);
     }
@@ -111,41 +152,65 @@ function setMotorPwm(motor: number, value: number) {
     // gigglebot.motorPowerAssign(activeMotor, Math.constrain(value / -10, -100, 100))
 }
 
-function split(inputString: string, delimiter: string): Array<string> {
-    let splittedStrings: string[] = [];
-    let prevDelimiterIndex = 0;
-    for (let index = 0; index <= inputString.length; index++) {
-        if (inputString.charAt(index) == delimiter) {
-            splittedStrings.push(
-                inputString.substr(prevDelimiterIndex, index - prevDelimiterIndex)
-            );
-            prevDelimiterIndex = index + 1;
-        }
-    }
-    splittedStrings.push(
-        inputString.substr(
-            prevDelimiterIndex,
-            inputString.length - prevDelimiterIndex
-        )
-    );
-    return splittedStrings;
-}
+// function split(inputString: string, delimiter: string): Array<string> {
+//     let splittedStrings: string[] = [];
+//     let prevDelimiterIndex = 0;
+//     for (let index = 0; index <= inputString.length; index++) {
+//         if (inputString.charAt(index) == delimiter) {
+//             splittedStrings.push(
+//                 inputString.substr(prevDelimiterIndex, index - prevDelimiterIndex)
+//             );
+//             prevDelimiterIndex = index + 1;
+//         }
+//     }
+//     splittedStrings.push(
+//         inputString.substr(
+//             prevDelimiterIndex,
+//             inputString.length - prevDelimiterIndex
+//         )
+//     );
+//     return splittedStrings;
+// }
 
+let servoStamp = 0
+let servoInterval = 150
+let currentServoValue = servoValue
+
+let counter = 0;
 control.inBackground(() => {
     while (true) {
         basic.clearScreen()
-        // slowly go towards the target servo value
-        servoValue = servoValue * SERVO_Q + servoTargetValue * (1 - SERVO_Q);
 
         batteryVoltage = gigglebot.voltageBattery();
         minMotorPower = Math.map(batteryVoltage, 3400, 4700, minMotorPowerAtLowBatteryVoltage, minMotorPowerAtHighBatteryVoltage);
         minMotorPower = Math.constrain(minMotorPower, minMotorPowerAtHighBatteryVoltage, minMotorPowerAtLowBatteryVoltage);
 
-        pins.servoWritePin(SERVO_PIN, servoValue)
+        updateMotors();
+
+        motorTargetSpeeds[0]++;
+        motorTargetSpeeds[0] %= 600;
+
+        motorTargetSpeeds[1]--;
+        motorTargetSpeeds[1] %= 600;
+
+        if (input.runningTime() - servoStamp > servoInterval) {
+            servoStamp = input.runningTime();
+            // slowly go towards the target servo value
+            servoValue = servoValue * (1 - SERVO_Q) + servoTargetValue * SERVO_Q;
+            if (Math.abs(currentServoValue - servoValue) > 1) {
+                currentServoValue = servoValue;
+                led.plot(0, 4);
+                pins.servoWritePin(SERVO_PIN, currentServoValue);
+            }
+
+            // setMotorPwm(0, counter++);
+            // counter %= 1000;
+        }
 
         if (isConnected) {
-            setMotorPwm(0, receivedValues[0]);
-            setMotorPwm(1, receivedValues[1]);
+            // updateMotors();
+            // setMotorPwm(0, receivedValues[0]);
+            // setMotorPwm(1, receivedValues[1]);
             led.plot(0, pins.map(
                 currentMotorValues[0],
                 -500,
@@ -171,12 +236,13 @@ control.inBackground(() => {
         else {
             // basic.showIcon(IconNames.Asleep, 1);
         }
-        if (input.runningTime() - radioStamp > 1000) {
-            setMotorPwm(0, 0);
-            setMotorPwm(1, 0);
-        }
-        basic.pause(10)
+        // if (input.runningTime() - radioStamp > 1000) {
+        //     setMotorPwm(0, 0);
+        //     setMotorPwm(1, 0);
+        // }
+        basic.pause(5)
         led.plot(0, 0);
-        basic.pause(10);
+        basic.pause(5);
+
     }
 }) 
