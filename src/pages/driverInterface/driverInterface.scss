@@ -78,8 +78,8 @@ page-driverInterface {
     left: 0px;
     display: grid;
     grid-template-areas: 
-      "servo-up . joystick"
-      "servo-down chat joystick";
+      "forward-button . joystick"
+      "reverse-button chat joystick";
     grid-template-columns: 1fr 4fr 2fr;
     grid-template-rows: 1fr 1fr;
     align-items: end;
@@ -103,18 +103,18 @@ page-driverInterface {
     // top: 0;
   }
 
-  .servo-button {
+  .drive-button {
     border: 0px solid red;
     height: 100%;
     width: 100%;
   }
 
-  #servo-up {
-    grid-area: servo-up;
+  #forward-button {
+    grid-area: forward-button;
   }
 
-  #servo-down {
-    grid-area: servo-down;
+  #reverse-button {
+    grid-area: reverse-button;
   }
 
   #servo {

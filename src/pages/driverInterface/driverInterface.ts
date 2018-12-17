@@ -41,7 +41,7 @@ export class DriverInterfacePage {
   SERVO_MIN_VALUE: number = 75;
   ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
   DRIVE_MOTOR_SCALE: number = 0.3;
-  TURN_MOTOR_SCALE: number = 0.1;
+  TURN_MOTOR_SCALE: number = 0.3;
   servoAngle: number = this.SERVO_START_VALUE;
   SERVO_SCALE: number = 5;
   

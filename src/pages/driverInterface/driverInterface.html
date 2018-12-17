@@ -36,10 +36,10 @@
   </button>
   <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown" [innerHTML]="chat.sendText" (click)="this.clearChat()"></div>
   <div id="control-panel" [class.invisible]="!this.videoLinkActive">
-    <button ion-button id="servo-up" class="servo-button" (touchstart)="forwardActive = true" (touchend)="forwardActive = false">
+    <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false">
       <ion-icon name="arrow-round-up"></ion-icon>
     </button>
-    <button ion-button id="servo-down" class="servo-button" (touchstart)="reverseActive = true" (touchend)="reverseActive = false">
+    <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false">
       <ion-icon name="arrow-round-down"></ion-icon>
     </button>
     <div id="chat-container" >
