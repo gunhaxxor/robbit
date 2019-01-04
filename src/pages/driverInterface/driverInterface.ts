@@ -81,7 +81,10 @@ export class DriverInterfacePage {
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
     clearInterval(this.robotControlIntervalId);
-    this.peer.destroy();
+    if(this.peer)
+    {
+      this.peer.destroy();
+    }
     delete this.peer;
   }
 
