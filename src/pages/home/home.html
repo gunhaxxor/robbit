@@ -14,7 +14,7 @@
         <ion-label floating>Robot namn</ion-label>
         <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
       </ion-item>
-      <button ion-button>Go</button>
+      <button ion-button  [disabled]="!this.robotName">Start {{this.robotName}}</button>
     </form>
   </div>
   <div ionic full class="side-button" id="driver-button" *ngIf="!plt.is('cordova')">
@@ -26,7 +26,7 @@
         <ion-label floating>Robot namn</ion-label>
         <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
       </ion-item>
-      <button ion-button>Ring upp {{this.robotName}}</button>
+      <button ion-button [disabled]="!this.robotName">Ring upp {{this.robotName}}</button>
     </form>
   </div>
 </ion-content>
