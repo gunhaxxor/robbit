@@ -93,6 +93,20 @@ page-robotInterface {
     
   }
 
+  #waving {
+    position: absolute;
+    bottom:10%;
+    width:100%;
+    height:200pt;
+    font-size: 200pt;
+    text-align: center;
+    vertical-align: middle;
+
+    -webkit-animation:wave 1s linear infinite;
+    -moz-animation:wave 1s linear infinite;
+    animation:wave 1s linear infinite;
+  }
+
   #chat {
     font-size: 45pt;
     color: $light-lighter;
@@ -110,5 +124,51 @@ page-robotInterface {
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 2s, opacity 2s linear;
+  }
+
+
+  @keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      transform: rotate(-20deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+    }
+  }
+
+  @-webkit-keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+    }
+  }
+
+  @-moz-keyframes wave {
+    0% {
+      -moz-webkit-transform: rotate(20deg);
+    }
+    
+    50% {
+      -moz-webkit-transform: rotate(-20deg);
+    }
+
+    100% {
+      -moz-webkit-transform: rotate(20deg);
+    }
   }
 }

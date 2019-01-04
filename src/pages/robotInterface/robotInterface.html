@@ -20,6 +20,9 @@
   <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
       🙂
   </div>
+  <div id="waving" [hidden]="!this.videoLinkActive || !this.isWaving">
+      <ion-icon name="hand"></ion-icon>
+  </div>
   <video id="robot-local-video" autoplay>
   </video>
   <div *ngIf="!this.videoLinkActive" class="waiting-text">

@@ -183,7 +183,7 @@ page-driverInterface {
     color: #fff;
   }
 
-  #toggle-camera-button, #toggle-audio-button, #toggle-park-button {
+  #toggle-camera-button, #toggle-audio-button, #toggle-park-button, #toggle-wave-button {
     padding: 10px;
     font-size: 14pt;
   }
@@ -194,6 +194,13 @@ page-driverInterface {
 
   .toggle-button-disabled {
     background-color: $danger;
+  }
+
+  .toggle-button-waving {
+    background-color: $approve;
+    -webkit-animation:shake 1s linear infinite;
+    -moz-animation:shake 1s linear infinite;
+    animation:shake 1s linear infinite;
   }
   
 

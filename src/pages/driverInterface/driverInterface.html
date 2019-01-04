@@ -22,6 +22,9 @@
       <ion-icon name="lock" [hidden]="!isParked"></ion-icon>
       <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
     </button>
+    <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
+        <ion-icon name="hand"></ion-icon>
+      </button>
   </ion-navbar>
 </ion-header>
 

@@ -36,6 +36,7 @@ export class DriverInterfacePage {
   forwardActive: boolean;
   reverseActive: boolean;
   isParked: boolean = false;
+  isWaving: boolean = false;
   cameraOption: string = "constraint";
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
@@ -555,6 +556,11 @@ export class DriverInterfacePage {
   toggleParking() {
     this.isParked = !this.isParked;
     this.sendData({isParked: this.isParked});
+  }
+
+  toggleWaving() {
+    this.isWaving = !this.isWaving;
+    this.sendData({isWaving: this.isWaving});
   }
 
   

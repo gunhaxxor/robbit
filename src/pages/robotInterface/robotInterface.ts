@@ -23,6 +23,7 @@ export class RobotInterfacePage {
   showDriver: boolean = true;
   connected: boolean = false;
   isParked: boolean = false;
+  isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
 
@@ -166,6 +167,10 @@ export class RobotInterfacePage {
       if(msgObj.hasOwnProperty("isParked")) {
         this.isParked = msgObj.isParked;
         console.log(this.isParked);
+      }
+      if(msgObj.hasOwnProperty("isWaving")) {
+        this.isWaving = msgObj.isWaving;
+        console.log(this.isWaving);
       }
       // console.log("received data: " + msg);
 
