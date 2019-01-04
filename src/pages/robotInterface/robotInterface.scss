@@ -57,6 +57,19 @@ page-robotInterface {
     margin-left: -10px;
   }
 
+  #toggle-park-button {
+    padding: 10px;
+    font-size: 14pt;
+  }
+
+  .toggle-button-enabled {
+    background-color: $approve;
+  }
+
+  .toggle-button-disabled {
+    background-color: $danger;
+  }
+
   .waiting-text {
     color: $dark;
     text-align:center;

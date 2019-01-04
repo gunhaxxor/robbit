@@ -22,6 +22,7 @@ export class RobotInterfacePage {
   videoVerticalFlipped: boolean = false;
   showDriver: boolean = true;
   connected: boolean = false;
+  isParked: boolean = false;
   chat: any = { text: "" };
 
   constructor(
@@ -159,7 +160,10 @@ export class RobotInterfacePage {
         this.chat = msgObj.chat;
         console.log("found chat:"+this.chat.text);
       }
-
+      if(msgObj.hasOwnProperty("isParked")) {
+        this.isParked = msgObj.isParked;
+        console.log(this.isParked);
+      }
       // console.log("received data: " + msg);
 
       // if(msg.substring(0, 10) == "callInfo: ") {
@@ -237,5 +241,14 @@ export class RobotInterfacePage {
       return Promise.resolve();
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
+  }
+
+  toggleParking() {
+    this.isParked = !this.isParked;
+    this.sendData({isParked: this.isParked});
+  }
+
+  sendData(sendObj:object) {
+    this.peer.send(JSON.stringify(sendObj));
   }
 }

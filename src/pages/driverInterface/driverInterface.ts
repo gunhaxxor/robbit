@@ -35,6 +35,7 @@ export class DriverInterfacePage {
   // arrowBackwardActive: boolean;
   forwardActive: boolean;
   reverseActive: boolean;
+  isParked: boolean = false;
   cameraOption: string = "constraint";
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
@@ -277,6 +278,14 @@ export class DriverInterfacePage {
     });
       this.peer.on('error', err => {
       console.log("!! error "+err);
+    });
+    this.peer.on("data", msg => {
+      let msgObj = JSON.parse(String(msg));
+
+      if(msgObj.hasOwnProperty("isParked")) {
+        this.isParked = msgObj.isParked;
+        console.log(this.isParked);
+      }
     });
 
   }
@@ -532,6 +541,11 @@ export class DriverInterfacePage {
       this.socket.emit("robotControl", msg);
     });
     bot.run();
+  }
+
+  toggleParking() {
+    this.isParked = !this.isParked;
+    this.sendData({isParked: this.isParked});
   }
 
   

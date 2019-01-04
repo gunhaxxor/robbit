@@ -17,6 +17,11 @@
     <button (click)="this.toggleAudioStream()" id="toggle-audio-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="!this.muteAudio" [class.toggle-button-disabled]="this.muteAudio">
       <ion-icon name="mic"></ion-icon>
     </button>
+    <button (click)="this.toggleParking()" id="toggle-park-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="!this.isParked" [class.toggle-button-disabled]="this.isParked">
+      <ion-icon name="move"></ion-icon>
+      <ion-icon name="lock" [hidden]="!isParked"></ion-icon>
+      <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
 
@@ -36,10 +41,10 @@
   </button>
   <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown" [innerHTML]="chat.sendText" (click)="this.clearChat()"></div>
   <div id="control-panel" [class.invisible]="!this.videoLinkActive">
-    <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false">
+    <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [hidden]="isParked">
       <ion-icon name="arrow-round-up"></ion-icon>
     </button>
-    <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false">
+    <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [hidden]="isParked">
       <ion-icon name="arrow-round-down"></ion-icon>
     </button>
     <div id="chat-container" >

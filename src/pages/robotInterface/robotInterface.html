@@ -6,6 +6,11 @@
       <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
     </button> -->
     <ble-button></ble-button>
+    <button (click)="this.toggleParking()" id="toggle-park-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="!this.isParked" [class.toggle-button-disabled]="this.isParked">
+      <ion-icon name="move"></ion-icon>
+      <ion-icon name="lock" [hidden]="!isParked"></ion-icon>
+      <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
 
