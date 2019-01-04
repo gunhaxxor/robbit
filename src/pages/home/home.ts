@@ -11,6 +11,8 @@ import { RobotInterfacePage } from "../robotInterface/robotInterface";
   templateUrl: "home.html"
 })
 export class HomePage {
+  robotName: string;
+
   constructor(public navCtrl: NavController, public bleService: BleService, private plt: Platform) {}
 
   ionViewDidLoad() {
@@ -29,9 +31,9 @@ export class HomePage {
   // }
 
   goToDriverInterface() {
-    this.navCtrl.push(DriverInterfacePage);
+    this.navCtrl.push(DriverInterfacePage, {robotName: this.robotName} );
   }
   goToRobotInterface() {
-    this.navCtrl.push(RobotInterfacePage);
+    this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
   }
 }

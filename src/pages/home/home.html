@@ -5,14 +5,28 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <button ionic full class="side-button" id="robot-button" (click)="goToRobotInterface()" *ngIf="plt.is('cordova')">
+  <div ionic full class="side-button" id="robot-button" *ngIf="plt.is('cordova')">
     <ion-icon name="car"></ion-icon>
     <h1>ROBOT</h1>
-    <p>Den mobil som är kopplad till roboten.</p>
-  </button>
-  <button ionic full class="side-button" id="driver-button" (click)="goToDriverInterface()" *ngIf="!plt.is('cordova')">
+    <p>Vad heter denna robot?</p>
+    <form (submit)="goToRobotInterface()">
+      <ion-item>
+        <ion-label floating>Robot namn</ion-label>
+        <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
+      </ion-item>
+      <button ion-button>Go</button>
+    </form>
+  </div>
+  <div ionic full class="side-button" id="driver-button" *ngIf="!plt.is('cordova')">
     <ion-icon name="person"></ion-icon>
     <h1>ELEV</h1>
-    <p>Tryck här för att styra roboten</p>
-  </button>
+    <p>Vilken robot vill du ringa upp?</p>
+    <form (submit)="goToDriverInterface()">
+      <ion-item>
+        <ion-label floating>Robot namn</ion-label>
+        <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
+      </ion-item>
+      <button ion-button>Ring upp {{this.robotName}}</button>
+    </form>
+  </div>
 </ion-content>

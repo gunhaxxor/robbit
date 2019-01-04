@@ -45,6 +45,7 @@ export class DriverInterfacePage {
   TURN_MOTOR_SCALE: number = 0.3;
   servoAngle: number = this.SERVO_START_VALUE;
   SERVO_SCALE: number = 5;
+  robotName: string;
   
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
@@ -89,6 +90,8 @@ export class DriverInterfacePage {
   }
 
   ionViewDidEnter() {
+
+    this.robotName = this.navParams.get('robotName');
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
       // console.log("received socket msg: " + JSON.stringify(msg));
@@ -295,7 +298,10 @@ export class DriverInterfacePage {
 
   endCall() {
     this.sendData({endcall: true});
-    this.peer.destroy();
+    if(this.peer)
+    {
+      this.peer.destroy();
+    }
   }
 
   changeCamera() {

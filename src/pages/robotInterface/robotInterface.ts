@@ -24,6 +24,7 @@ export class RobotInterfacePage {
   connected: boolean = false;
   isParked: boolean = false;
   chat: any = { text: "" };
+  robotName: string;
 
   constructor(
     public platform: Platform,
@@ -57,6 +58,8 @@ export class RobotInterfacePage {
 
   ionViewDidEnter() {
     this.bleService.start();
+
+    this.robotName = this.navParams.get('robotName');
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
