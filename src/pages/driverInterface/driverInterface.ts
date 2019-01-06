@@ -25,6 +25,7 @@ export class DriverInterfacePage {
   remoteStream: MediaStream;
   localVideoTrack: any;
   localAudioTrack: any;
+  remoteVideoElement: any;
   showCamera: boolean;
   muteAudio: boolean;
   currentEmoji: string = "🙂";
@@ -37,6 +38,7 @@ export class DriverInterfacePage {
   reverseActive: boolean;
   isParked: boolean = false;
   isWaving: boolean = false;
+  robotVolume: number = 1;
   cameraOption: string = "constraint";
   SERVO_START_VALUE: number = 100;
   SERVO_MAX_VALUE: number = 155;
@@ -254,9 +256,8 @@ export class DriverInterfacePage {
     this.peer.on("stream", stream => {
       console.log("I am Driver and I am initiator. Received stream from listening peer");
       // got remote video stream, now let's show it in a video tag
-      var video: any = document.querySelector("#driver-remote-video");
-      video.srcObject = stream;
-      // video.play();
+      this.remoteVideoElement = document.querySelector("#driver-remote-video");
+      this.remoteVideoElement.srcObject = stream;
     });
     this.peer.on('connect', () => {
       console.log('connection event!!!');
@@ -563,5 +564,16 @@ export class DriverInterfacePage {
     this.sendData({isWaving: this.isWaving});
   }
 
+  increaseRobotVolume() {
+    this.robotVolume = this.robotVolume + 0.1;
+    this.robotVolume = Math.min(this.robotVolume, 1);
+    this.sendData({robotVolume: this.robotVolume});
+  }
+
+  decreaseRobotVolume() {
+    this.robotVolume = this.robotVolume - 0.1;
+    this.robotVolume = Math.max(this.robotVolume, 0);
+    this.sendData({robotVolume: this.robotVolume});
+  }
   
 }

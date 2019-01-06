@@ -26,6 +26,7 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
+  driverVolume: number = 1;
 
   constructor(
     public platform: Platform,
@@ -171,6 +172,10 @@ export class RobotInterfacePage {
       if(msgObj.hasOwnProperty("isWaving")) {
         this.isWaving = msgObj.isWaving;
         console.log(this.isWaving);
+      }
+      if(msgObj.hasOwnProperty("driverVolume")) {
+        this.driverVolume = msgObj.driverVolume;
+        console.log(this.driverVolume);
       }
       // console.log("received data: " + msg);
 

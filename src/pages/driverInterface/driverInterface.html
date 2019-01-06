@@ -23,8 +23,14 @@
       <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
     </button>
     <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
-        <ion-icon name="hand"></ion-icon>
-      </button>
+      <ion-icon name="hand"></ion-icon>
+    </button>
+    <div>
+      <ion-range min="0" max="10" step="1" snaps="true" [(ngModel)]="this.robotVolume" color="danger">
+        <ion-icon range-left small color="danger" name="thermometer"></ion-icon>
+        <ion-icon range-right color="danger" name="thermometer"></ion-icon>
+      </ion-range>
+    </div>
   </ion-navbar>
 </ion-header>
 
@@ -34,7 +40,11 @@
       <ion-icon name="call"></ion-icon>
     </button>
   </div>
-  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
+  <video [style.display]="this.videoLinkActive ?  'block': 'none'"
+         id="driver-remote-video"
+         autoplay
+         [class.video-vertical-flip]="this.videoVerticalFlipped"
+         (volume)="this.robotVolume/10">
   </video>
   <!-- <video id="driver-remote-video" autoplay>
   </video> -->

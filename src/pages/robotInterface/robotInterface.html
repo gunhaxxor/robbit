@@ -15,7 +15,10 @@
 </ion-header>
 
 <ion-content padding>
-  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
+  <video id="robot-remote-video"
+        autoplay [class.video-vertical-flip]="this.videoVerticalFlipped"
+        [hidden]="!this.videoLinkActive || !this.showDriver"
+        (volume)="this.driverVolume">
   </video>
   <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
       🙂
