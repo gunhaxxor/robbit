@@ -51,7 +51,6 @@ export class HomePage {
         // var isAnonymous = user.isAnonymous;
         let uid = user.uid;
         this.storage.set('firebaseUid', uid);
-
       } else {
         // User is signed out.
         console.log("user signed out of firebase");
@@ -84,9 +83,55 @@ export class HomePage {
   // }
 
   saveNameAndGoToRobotInterface(){
-    this.storage.set('robotName', this.robotName.trim()).then(() => {
-      this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
+    let name = this.robotName.trim();
+
+    firebase.database().ref('robot-names/' + name)
+    .transaction((currentData) => {
+      if (currentData === null) {
+        return this.device.uuid;
+      } else {
+        console.log('robot name already exists.');
+        return; // Abort the transaction.
+      }
     })
+    .then(({committed, snapshot}) => {
+      console.log('promise returned:');
+      console.log(committed);
+      if(!committed){
+        console.log('We aborted the transaction (because robot name already exists).');
+      }else{
+        console.log('robot name added to firebase!');
+        this.storage.set('robotName', name).then(() => {
+          this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
+        });
+      }
+    })
+    .catch((err) => {
+      console.log('Transaction failed abnormally!', err);
+    });
+    // function(error, committed, snapshot) {
+    //   if (error) {
+    //     console.log('Transaction failed abnormally!', error);
+    //   } else if (!committed) {
+    //     console.log('We aborted the transaction (because ada already exists).');
+    //   } else {
+    //     console.log('User ada added!');
+    //   }
+    //   console.log("Ada's data: ", snapshot.val());
+    // });
+
+
+
+    // firebase.database().ref('robot-names/' + name).set(this.device.uuid)
+    // .then(() => {
+    //   this.storage.set('robotName', name).then(() => {
+    //     this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
+    //   });
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+
+    // })
   }
 
   goToDriverInterface() {
