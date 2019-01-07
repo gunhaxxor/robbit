@@ -3,7 +3,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { IonicApp, IonicModule, IonicErrorHandler } from "ionic-angular";
 import { MyApp } from "./app.component";
 
-import { DeviceListPage } from "../pages/deviceList/deviceList";
+// import { DeviceListPage } from "../pages/deviceList/deviceList";
 import { HomePage } from "../pages/home/home";
 import { DriverInterfacePage } from "../pages/driverInterface/driverInterface";
 import { RobotInterfacePage } from "../pages/robotInterface/robotInterface";
@@ -21,6 +21,7 @@ import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic"
+import { Device } from '@ionic-native/device'
 import { IonicStorageModule } from '@ionic/storage';
 
 const socketConfig: SocketIoConfig = {
@@ -31,7 +32,7 @@ const socketConfig: SocketIoConfig = {
 @NgModule({
   declarations: [
     MyApp,
-    DeviceListPage,
+    // DeviceListPage,
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
@@ -49,7 +50,7 @@ const socketConfig: SocketIoConfig = {
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    DeviceListPage,
+    // DeviceListPage,
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
@@ -65,6 +66,7 @@ const socketConfig: SocketIoConfig = {
     LoadingController,
     Camera,
     Diagnostic,
+    Device,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

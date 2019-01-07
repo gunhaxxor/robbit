@@ -10,7 +10,7 @@
         <ng-container *ngIf="!storedName; else noStoredName">
             <h1>ROBOT</h1>
             <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp sig till roboten.</p>
-            <form (submit)="saveNameAndGoToDriverInterface()">
+            <form (submit)="saveNameAndGoToRobotInterface()">
               <ion-item>
                 <ion-label floating>Robotnamn</ion-label>
                 <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
@@ -21,7 +21,7 @@
         <ng-template #noStoredName>
           <h1>ROBOT</h1>
           <p>Välkommen! Denna robot heter {{storedName}}</p>
-          <button ion-button (click)="goToDriverInterface()">Starta {{storedName}}</button>
+          <button ion-button (click)="goToRobotInterface()">Starta {{storedName}}</button>
         </ng-template>
       </div>
       
