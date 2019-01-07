@@ -21,6 +21,7 @@ import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic"
+import { NativeAudio } from '@ionic-native/native-audio';
 
 const socketConfig: SocketIoConfig = {
   url: "https://social-robot-signaling-server.herokuapp.com/",
@@ -63,6 +64,7 @@ const socketConfig: SocketIoConfig = {
     LoadingController,
     Camera,
     Diagnostic,
+    NativeAudio,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

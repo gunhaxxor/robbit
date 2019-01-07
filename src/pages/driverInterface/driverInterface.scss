@@ -198,9 +198,9 @@ page-driverInterface {
 
   .toggle-button-waving {
     background-color: $approve;
-    -webkit-animation:shake 1s linear infinite;
-    -moz-animation:shake 1s linear infinite;
-    animation:shake 1s linear infinite;
+    -webkit-animation:wave 1s linear infinite;
+    -moz-animation:wave 1s linear infinite;
+    animation:wave 1s linear infinite;
   }
   
 
@@ -284,6 +284,62 @@ page-driverInterface {
 
     50%, 100% {
       -moz-webkit-transform: rotate(0deg);
+    }
+  }
+
+
+
+  @keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      transform: rotate(-20deg);
+      color: $dark;
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      color: $light;
+    }
+  }
+
+  @-webkit-keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      color: $dark;
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      color: $light;
+    }
+  }
+
+  @-moz-keyframes wave {
+    0% {
+      -moz-webkit-transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -moz-webkit-transform: rotate(-20deg);
+      color: $dark;
+    }
+
+    100% {
+      -moz-webkit-transform: rotate(20deg);
+      color: $light;
     }
   }
 }

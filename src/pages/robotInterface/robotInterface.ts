@@ -6,6 +6,7 @@ import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
+import { NativeAudio } from '@ionic-native/native-audio';
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
@@ -36,6 +37,7 @@ export class RobotInterfacePage {
     public socket: Socket,
     // private camera: Camera,
     public diagnostic: Diagnostic,
+    private nativeAudio: NativeAudio,
     private zone: NgZone
   ) {
   }
@@ -89,6 +91,13 @@ export class RobotInterfacePage {
       });
     }).catch((err) => console.log("failed to get permissions: " + err));
 
+    this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then( ()=> {
+      console.log("Audio loaded.");
+    },
+    (err)=> {
+      console.log("Failed to load audio!");
+      console.log(err);
+    } );
    
     console.log("ionViewWillEnter triggered");
   }
@@ -171,6 +180,9 @@ export class RobotInterfacePage {
       if(msgObj.hasOwnProperty("isWaving")) {
         this.isWaving = msgObj.isWaving;
         console.log(this.isWaving);
+        if(this.isWaving) {
+          this.nativeAudio.play('attention_sound');
+        }
       }
       // console.log("received data: " + msg);
 

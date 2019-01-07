@@ -47,6 +47,7 @@ export class DriverInterfacePage {
   servoAngle: number = this.SERVO_START_VALUE;
   SERVO_SCALE: number = 5;
   robotName: string;
+  attentionSound: any;
   
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
@@ -232,6 +233,10 @@ export class DriverInterfacePage {
     }, 300);
 
     this.setupSpeechRecognition();
+
+    this.attentionSound = new Audio();
+    this.attentionSound.src = "assets/sound/kickhat-open-button-2.mp3";
+    this.attentionSound.load();
   }
 
   initiateCall() {
@@ -561,6 +566,9 @@ export class DriverInterfacePage {
   toggleWaving() {
     this.isWaving = !this.isWaving;
     this.sendData({isWaving: this.isWaving});
+    if(this.isWaving) {
+      this.attentionSound.play();
+    }
   }
 
   
