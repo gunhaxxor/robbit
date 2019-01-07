@@ -24,6 +24,7 @@
     "@ionic-native/ble": "^4.8.0",
     "@ionic-native/camera": "^4.11.0",
     "@ionic-native/core": "4.7.0",
+    "@ionic-native/device": "^4.19.0",
     "@ionic-native/diagnostic": "^4.11.0",
     "@ionic-native/native-audio": "^4.19.0",
     "@ionic-native/splash-screen": "4.7.0",
