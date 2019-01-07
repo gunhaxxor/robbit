@@ -5,18 +5,29 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <div ionic full class="side-button" id="robot-button" *ngIf="plt.is('cordova')">
-    <h1>ROBOT</h1>
-    <p>Vad heter denna robot?</p>
-    <form (submit)="goToRobotInterface()">
-      <ion-item>
-        <ion-label floating>Robot namn</ion-label>
-        <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
-      </ion-item>
-      <button ion-button  [disabled]="!this.robotName">Start {{this.robotName}}</button>
-    </form>
-  </div>
-  <div ionic full class="side-button" id="driver-button" *ngIf="!plt.is('cordova')">
+  <ng-container *ngIf="plt.is('cordova')">
+      <div ionic full class="welcome-panel" >
+        <ng-container *ngIf="!storedName; else noStoredName">
+            <h1>ROBOT</h1>
+            <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp sig till roboten.</p>
+            <form (submit)="saveNameAndGoToDriverInterface()">
+              <ion-item>
+                <ion-label floating>Robotnamn</ion-label>
+                <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
+              </ion-item>
+              <button ion-button [disabled]="!this.robotName">Namnge och starta!</button>
+            </form>
+        </ng-container>
+        <ng-template #noStoredName>
+          <h1>ROBOT</h1>
+          <p>Välkommen! Denna robot heter {{storedName}}</p>
+          <button ion-button (click)="goToDriverInterface()">Starta {{storedName}}</button>
+        </ng-template>
+      </div>
+      
+    </ng-container>
+  
+  <div ionic full class="welcome-panel" *ngIf="!plt.is('cordova')">
     <h1>ELEV</h1>
     <p>Vilken robot vill du ringa upp?</p>
     <form (submit)="goToDriverInterface()">

@@ -22,6 +22,7 @@ import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic"
 import { NativeAudio } from '@ionic-native/native-audio';
+import { IonicStorageModule } from '@ionic/storage';
 
 const socketConfig: SocketIoConfig = {
   url: "https://social-robot-signaling-server.herokuapp.com/",
@@ -43,7 +44,8 @@ const socketConfig: SocketIoConfig = {
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
-    SocketIoModule.forRoot(socketConfig)
+    SocketIoModule.forRoot(socketConfig),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

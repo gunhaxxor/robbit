@@ -95,5 +95,6 @@
     <plugin name="cordova-custom-config" spec="*" />
     <allow-navigation href="http://192.168.86.78:8100" />
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
+    <plugin name="cordova-sqlite-storage" spec="^2.6.0" />
     <engine name="android" spec="7.0.0" />
 </widget>

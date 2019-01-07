@@ -1,6 +1,6 @@
 body {
   background-color: $dark;
-  background: linear-gradient(to bottom, $tertiary-lighter, $tertiary-darker);
+  
 }
 
 
@@ -17,8 +17,9 @@ ion-spinner {
   text-align: center;
   // header Title!
 }
-.content-md {
+.content{
   // för allt
+  background: linear-gradient(to bottom, $tertiary-lighter, $tertiary-darker);
 }
 
 .tab-button-text {
@@ -39,10 +40,7 @@ ion-spinner {
   display: none;
 }
 
-
-
-
-.side-button {
+.welcome-panel {
   margin: 0 auto;
   z-index: 12;
   height: 100%;
@@ -52,22 +50,16 @@ ion-spinner {
   padding: 5%;
 }
 
-.side-button ion-icon {
-  width: 10%;
-  font-size: 24pt;
-  
-}
+// .side-button p {
+//   font-size: 12pt;
+// }
 
-.side-button p {
-  font-size: 12pt;
-}
+// #robot-button {
+//   background: linear-gradient(to bottom, $primary, $primary-lighter, $primary-darker);
+//   //background-color: #b2d5ba;
+// }
 
-#robot-button {
-  background: linear-gradient(to bottom, $primary, $primary-lighter, $primary-darker);
-  //background-color: #b2d5ba;
-}
-
-#driver-button {
-  background: linear-gradient(to bottom, $tertiary, $tertiary-lighter, $tertiary-darker);
-  //background-color: #61ada0;
-}
+// #driver-button {
+//   background: linear-gradient(to bottom, $tertiary, $tertiary-lighter, $tertiary-darker);
+//   //background-color: #61ada0;
+// }
