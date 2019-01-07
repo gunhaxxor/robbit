@@ -26,6 +26,7 @@ import 'firebase/auth';
 export class HomePage {
   robotName: string;
   storedName: string = undefined;
+  nameAlreadyTaken: string = undefined;
 
   constructor(public navCtrl: NavController, public bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
     let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
@@ -83,7 +84,7 @@ export class HomePage {
   // }
 
   saveNameAndGoToRobotInterface(){
-    let name = this.robotName.trim();
+    this.robotName = this.robotName.trim();
 
     firebase.database().ref('robot-names/' + name)
     .transaction((currentData) => {
@@ -99,8 +100,10 @@ export class HomePage {
       console.log(committed);
       if(!committed){
         console.log('We aborted the transaction (because robot name already exists).');
+        this.nameAlreadyTaken = name;
       }else{
         console.log('robot name added to firebase!');
+        this.nameAlreadyTaken = undefined;
         this.storage.set('robotName', name).then(() => {
           this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
         });
