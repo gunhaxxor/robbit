@@ -453,6 +453,9 @@ export class DriverInterfacePage {
         this.clearChat();
       }, this.chat.timeoutSeconds*1000);
     }
+    else {
+      this.clearChat();
+    }
   }
 
   sendData(sendObj:object) {
