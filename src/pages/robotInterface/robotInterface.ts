@@ -52,7 +52,7 @@ export class RobotInterfacePage {
     this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
     this.socket.removeAllListeners("robotControl");
-    this.socket.removeAllListeners("callInfo");
+    // this.socket.removeAllListeners("callInfo");
     this.socket.removeAllListeners("signal");
     this.peer.destroy();
     delete this.peer;
@@ -63,6 +63,7 @@ export class RobotInterfacePage {
     this.bleService.start();
 
     this.robotName = this.navParams.get('robotName');
+    this.socket.emit('join', this.robotName);
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
@@ -120,7 +121,7 @@ export class RobotInterfacePage {
     });
     this.peer.on('signal', data => {
       console.log("Robot got signal data locally. Passing it on to signaling server");
-      this.socket.emit("signal", data);
+      // this.socket.to(this.robotName).emit("signal", data);
     });
     this.peer.on('stream', stream => {
       console.log("I am Robot and I am listener. Received stream from initiating peer");

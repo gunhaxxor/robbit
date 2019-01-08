@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ApplicationRef } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { Platform } from 'ionic-angular/platform/platform';
 import { BleService } from "../../providers/bleservice/bleService";
@@ -28,14 +28,14 @@ export class HomePage {
   storedName: string = undefined;
   nameAlreadyTaken: string = undefined;
 
-  constructor(public navCtrl: NavController, public bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
+  constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
     let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
     
     firebase.initializeApp(config);
     
     firebase.auth().signInAnonymously()
     .then(() => {
-      console.log("anonymously logged into firebases");
+      console.log("anonymously logged into firebase");
     })
     .catch(function(error) {
       console.log(error);
@@ -63,13 +63,19 @@ export class HomePage {
   ionViewDidLoad() {
     console.log("this.plt.is('cordova'):  " + this.plt.is('cordova'));
     if(this.plt.is('cordova')){
-      this.storage.get('robotName').then((name)=>{
-        this.storedName = name;
-        this.robotName = name;
-      }).catch((err) => {
-        console.log("no key found in storage: robotName");
-        console.log(err);
-      });
+      this.storage.ready().then(() =>{
+        this.storage.get('robotName').then((name)=>{
+          if(name === null){
+            console.log("key not found in storage: robotName");
+          }else{
+            console.log(`got robot name from storage: ${name}`);
+            this.storedName = name;
+            this.robotName = name;
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      })
     }
   }
 
@@ -86,7 +92,7 @@ export class HomePage {
   saveNameAndGoToRobotInterface(){
     this.robotName = this.robotName.trim();
 
-    firebase.database().ref('robot-names/' + name)
+    firebase.database().ref('robot-names/' + this.robotName)
     .transaction((currentData) => {
       if (currentData === null) {
         return this.device.uuid;
@@ -96,15 +102,14 @@ export class HomePage {
       }
     })
     .then(({committed, snapshot}) => {
-      console.log('promise returned:');
-      console.log(committed);
       if(!committed){
         console.log('We aborted the transaction (because robot name already exists).');
-        this.nameAlreadyTaken = name;
+        this.nameAlreadyTaken = this.robotName;
+        // this.appRef.tick();
       }else{
         console.log('robot name added to firebase!');
         this.nameAlreadyTaken = undefined;
-        this.storage.set('robotName', name).then(() => {
+        this.storage.set('robotName', this.robotName).then(() => {
           this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
         });
       }

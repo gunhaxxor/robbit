@@ -16,9 +16,8 @@
                 <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
                 <ion-icon *ngIf="nameAlreadyTaken" name="heart"></ion-icon>
               </ion-item>
-              <p color="red" *ngIf="nameAlreadyTaken">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
-              <button ion-button [disabled]="!robotName || nameAlreadyTaken === robotName">Namnge och starta!</button>
-              
+              <p *ngIf="nameAlreadyTaken">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
+              <button ion-button [disabled]="!robotName || nameAlreadyTaken === robotName">Namnge och starta!</button> 
             </form>
         </ng-container>
         <ng-template #noStoredName>
