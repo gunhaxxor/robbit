@@ -94,6 +94,11 @@ export class DriverInterfacePage {
   ionViewDidEnter() {
 
     this.robotName = this.navParams.get('robotName');
+    
+    this.socket.on('connect', () =>{
+      this.socket.emit('join', this.robotName);
+    });
+
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
       // console.log("received socket msg: " + JSON.stringify(msg));
