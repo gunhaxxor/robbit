@@ -95,9 +95,13 @@ export class DriverInterfacePage {
 
     this.robotName = this.navParams.get('robotName');
     
-    this.socket.on('connect', () =>{
+    if(this.socket.ioSocket.connected){
       this.socket.emit('join', this.robotName);
-    });
+    }else{
+      this.socket.on('connect', () =>{
+        this.socket.emit('join', this.robotName);
+      });
+    }
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {

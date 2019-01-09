@@ -64,10 +64,7 @@ export class RobotInterfacePage {
 
     this.robotName = this.navParams.get('robotName');
 
-    this.socket.on('connect', () =>{
-      this.socket.emit('join', this.robotName);
-    });
-    
+    this.socket.emit('join', this.robotName);
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
