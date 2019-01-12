@@ -327,6 +327,9 @@ export class DriverInterfacePage {
   }
 
   removeCameraStream() {
+    if(!this.peer) {
+      return;
+    }
     let videoTracks = this.localStream.getVideoTracks();
     if(videoTracks.length == 0)
     {
@@ -340,6 +343,9 @@ export class DriverInterfacePage {
   }
 
   addCameraStream() {
+    if(!this.peer) {
+      return;
+    }
     if(this.localVideoTrack != null)
     {
       console.log("Adding video track to stream.");
@@ -361,6 +367,9 @@ export class DriverInterfacePage {
   }
 
   removeAudioStream() {
+    if(!this.peer) {
+      return;
+    }
     let audioTracks = this.localStream.getAudioTracks();
     if(audioTracks.length == 0)
     {
@@ -374,6 +383,9 @@ export class DriverInterfacePage {
   }
 
   addAudioStream() {
+    if(!this.peer) {
+      return;
+    }
     if(this.localAudioTrack != null)
     {
       console.log("Adding audio track to stream.");
