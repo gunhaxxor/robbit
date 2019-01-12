@@ -55,6 +55,7 @@ export class DriverInterfacePage {
   voiceDriveIntervalMillis: number = 200;
   voiceDriveTimeoutMillis: number = 2000;
   voiceRotateTimeoutMillis: number = 1000;
+  voiceRecognitionState: number = -1;
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -397,7 +398,6 @@ export class DriverInterfacePage {
       this.muteAudio = false;
       this.sendData({muteDriver: this.muteAudio});
     }
-    
   }
 
   retrieveCamera() {
@@ -508,6 +508,22 @@ export class DriverInterfacePage {
     var bot = new CommandBot;
     bot.setLanguageRecognition("sv-SE");
     bot.setKeyword("Robot");
+    bot.setKeywordRecognised(()=>{
+      this.voiceRecognitionState = 1;
+    });
+    bot.setCommandRecognised(()=>{
+      this.voiceRecognitionState = 2;
+      setTimeout(()=>{
+        this.voiceRecognitionState = 0;
+      }, 1000);
+    });
+    bot.setNoCommandRecognised(()=>{
+      this.voiceRecognitionState = 3;
+      setTimeout(()=>{
+        this.voiceRecognitionState = 0;
+      }, 1000);
+    });
+
     bot.addCommand("who are you", ()=>{
       console.log("I am your personal robot.");
     });
@@ -550,11 +566,20 @@ export class DriverInterfacePage {
     bot.addCommand("stopp", ()=>{
       clearInterval(this.voiceDriveTimeout);
     });
+    bot.addCommand("titta upp", ()=>{
+      this.angleChange(5);
+    });
+    bot.addCommand("titta ner", ()=>{
+      this.angleChange(-5);
+    });
     bot.addCommand("räck upp handen", ()=>{
       this.toggleWaving();
     });
     bot.addCommand("avsluta", ()=>{
       this.navCtrl.pop();
+    });
+    bot.addCommand("ring upp", ()=>{
+      this.initiateCall();
     });
     bot.addCommand("video", ()=>{
       this.toggleCameraStream();
@@ -564,6 +589,7 @@ export class DriverInterfacePage {
     });
 
     bot.run();
+    this.voiceRecognitionState = 0;
   }
 
   drive(leftMotor:number, rightMotor:number, isRotation:boolean ) {
@@ -582,6 +608,25 @@ export class DriverInterfacePage {
       rightMotorFloored = Math.floor(rightMotor * this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
     }
     let servoFloored = Math.floor(this.servoAngle);
+    let msg =
+      "" +
+      leftMotorFloored +
+      "," +
+      rightMotorFloored +
+      "," +
+      servoFloored +
+      "\n";
+    console.log("sending robot data to socket: " + msg);
+    this.socket.emit("robotControl", msg);
+  }
+
+  angleChange(servoAngleChange) {
+    let leftMotorFloored = 0;
+    let rightMotorFloored = 0;
+    this.servoAngle += servoAngleChange * this.SERVO_SCALE;
+    this.servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, this.servoAngle));
+    let servoFloored = Math.floor(this.servoAngle);
+
     let msg =
       "" +
       leftMotorFloored +

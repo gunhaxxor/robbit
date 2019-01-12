@@ -183,7 +183,7 @@ page-driverInterface {
     color: #fff;
   }
 
-  #toggle-camera-button, #toggle-audio-button, #toggle-park-button, #toggle-wave-button {
+  #toggle-camera-button, #toggle-audio-button, #toggle-park-button, #toggle-wave-button, #voice-recognition-icon {
     padding: 10px;
     font-size: 14pt;
   }
@@ -201,6 +201,24 @@ page-driverInterface {
     -webkit-animation:shake 1s linear infinite;
     -moz-animation:shake 1s linear infinite;
     animation:shake 1s linear infinite;
+  }
+
+  
+  #voice-recognition-icon {
+    background-color: $light-lighter;
+    display: inline-block;
+  }
+
+  .voice-recognition-keyword {
+    background-color: $light-darker !important;
+  }
+
+  .voice-recognition-command {
+    background-color: $approve !important;
+  }
+
+  .voice-recognition-no-command {
+    background-color: $danger !important;
   }
   
 

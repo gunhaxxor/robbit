@@ -23,8 +23,14 @@
       <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
     </button>
     <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
-        <ion-icon name="hand"></ion-icon>
-      </button>
+      <ion-icon name="hand"></ion-icon>
+    </button>
+    <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+      [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
+      [class.voice-recognition-command]="this.voiceRecognitionState == 2"
+      [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
+      <ion-icon name="quote"></ion-icon>
+    </div>
   </ion-navbar>
 </ion-header>
 

@@ -3,7 +3,9 @@ function CommandBot(){
 	
 	var keyword = "robot";
 	var commands = [];
+	var keywordRecognisedCallback = null;
 	var noCommandRecognisedCallback = null;
+	var commandRecognisedCallback = null;
 	var languageRecognition = "en-US";
 	
 	//Keyword handling
@@ -26,6 +28,9 @@ function CommandBot(){
         
 	      if(array.indexOf(keyword.toLowerCase()) != -1){
 					console.log("Keyword heard. Awaiting command.");
+					if(keywordRecognisedCallback != null) {
+						keywordRecognisedCallback();
+					}
 	      	stopListeningKeyword();
 	        startListeningCommand();
 	      }
@@ -49,8 +54,13 @@ function CommandBot(){
 						console.log("Not a command: "+event.results[i][0].transcript);
 						noCommandRecognisedCallback();
 					}
-					console.log("Heard command: "+event.results[i][0].transcript);
-					
+					else{
+						console.log("Heard command: "+event.results[i][0].transcript);
+						if(commandRecognisedCallback != null)
+						{
+							commandRecognisedCallback();
+						}
+					}
 					stopListeningCommand();
 					startListeningKeyword();
 					} 
@@ -106,9 +116,17 @@ function CommandBot(){
   this.addCommand = function(command,callback){
   	commands.push(new Command(command,callback));
   }
-  
+	
+	this.setKeywordRecognised = function(callback){
+	  keywordRecognisedCallback = callback;
+	}
+	
   this.setNoCommandRecognised = function(callback){
 	  noCommandRecognisedCallback = callback;
+	}
+	
+	this.setCommandRecognised = function(callback){
+	  commandRecognisedCallback = callback;
   }
   
   this.run = function(){
