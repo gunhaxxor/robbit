@@ -51,6 +51,10 @@ export class DriverInterfacePage {
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
   chatTimeout: any;
+  voiceDriveTimeout: any;
+  voiceDriveIntervalMillis: number = 200;
+  voiceDriveTimeoutMillis: number = 2000;
+  voiceRotateTimeoutMillis: number = 1000;
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -487,87 +491,6 @@ export class DriverInterfacePage {
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
-  setupSpeechRecognition() {
-    
-    var bot = new CommandBot;
-    bot.setLanguageRecognition("sv-SE");
-    bot.setKeyword("Robot");
-    bot.addCommand("who are you", ()=>{
-      console.log("Understood who are you");
-    });
-    bot.addCommand("kör framåt", ()=>{
-      console.log("Uppfattad: kör framåt");
-      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
-      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("kör bakåt", ()=>{
-      console.log("Uppfattad: kör bakåt");
-      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
-      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("vänster", ()=>{
-      console.log("Uppfattad: vänster");
-      let robotRotation = -1.0;
-      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
-
-      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
-      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("höger", ()=>{
-      console.log("Uppfattad: höger");
-      let robotRotation = 1.0;
-      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
-
-      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
-      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.run();
-  }
-
   toggleParking() {
     this.isParked = !this.isParked;
     this.sendData({isParked: this.isParked});
@@ -575,7 +498,100 @@ export class DriverInterfacePage {
 
   toggleWaving() {
     this.isWaving = !this.isWaving;
+    console.log(this.isWaving)
     this.sendData({isWaving: this.isWaving});
+  }
+
+  setupSpeechRecognition() {
+    console.log("Initiating speech recognition.");
+    
+    var bot = new CommandBot;
+    bot.setLanguageRecognition("sv-SE");
+    bot.setKeyword("Robot");
+    bot.addCommand("who are you", ()=>{
+      console.log("I am your personal robot.");
+    });
+    bot.addCommand("kör framåt", ()=>{
+      this.drive(1, 1, false);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(1, 1, false);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceDriveTimeoutMillis);
+    });
+    bot.addCommand("kör bakåt", ()=>{
+      this.drive(-1, -1, false);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(-1, 1, false);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceDriveTimeoutMillis);
+    });
+    bot.addCommand("vänster", ()=>{
+      this.drive(-1, 1, true);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(-1, 1, true);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceRotateTimeoutMillis);
+    });
+    bot.addCommand("höger", ()=>{
+      this.drive(1, -1, true);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(1, -1, true);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceRotateTimeoutMillis);
+    });
+    bot.addCommand("stopp", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+    });
+    bot.addCommand("räck upp handen", ()=>{
+      this.toggleWaving();
+    });
+    bot.addCommand("avsluta", ()=>{
+      this.navCtrl.pop();
+    });
+    bot.addCommand("video", ()=>{
+      this.toggleCameraStream();
+    });
+    bot.addCommand("mikrofon", ()=>{
+      this.toggleAudioStream();
+    });
+
+    bot.run();
+  }
+
+  drive(leftMotor:number, rightMotor:number, isRotation:boolean ) {
+    let leftMotorFloored = 0;
+    let rightMotorFloored = 0;
+
+    if(isRotation) {
+      let robotRotation = 1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      leftMotorFloored = Math.floor(leftMotor * rotationMotorAdjustment);
+      rightMotorFloored = Math.floor(rightMotor * rotationMotorAdjustment);
+    }
+    else {
+      leftMotorFloored = Math.floor(leftMotor * this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      rightMotorFloored = Math.floor(rightMotor * this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+    }
+    let servoFloored = Math.floor(this.servoAngle);
+    let msg =
+      "" +
+      leftMotorFloored +
+      "," +
+      rightMotorFloored +
+      "," +
+      servoFloored +
+      "\n";
+    console.log("sending robot data to socket: " + msg);
+    this.socket.emit("robotControl", msg);
   }
 
   

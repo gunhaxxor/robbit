@@ -12,17 +12,20 @@ function CommandBot(){
 	rKeyword.interimResults = true;
 	
 	var rCommand = new webkitSpeechRecognition();
+	// The continuous property of the SpeechRecognition interface controls whether continuous results are returned for each recognition, or only a single result.
 	rCommand.continuous = false;
+	// The interimResults property of the SpeechRecognition interface controls whether interim results should be returned (true) or not (false.) Interim results are results that are not yet final (e.g. the SpeechRecognitionResult.isFinal property is false.)
 	rCommand.interimResults = true;
 	
 	//Callback setup
 	
 	rKeyword.onresult = function(event) {
 	    for (var i = event.resultIndex; i < event.results.length; ++i) {
-		    
+		    console.log("Heard: "+event.results[i][0].transcript);
 				var array = transcriptToArray(event.results[i][0].transcript);	      
         
 	      if(array.indexOf(keyword.toLowerCase()) != -1){
+					console.log("Keyword heard. Awaiting command.");
 	      	stopListeningKeyword();
 	        startListeningCommand();
 	      }
@@ -36,22 +39,22 @@ function CommandBot(){
 
 	    for (var i = event.resultIndex; i < event.results.length; ++i) {
 	          	
-	      if (event.results[i].isFinal) { //Final results
-	
-			  var commandFound = false;
-  			for(var j = 0; j < commands.length; j++){
-  				commandFound = commandFound || commands[j].tryCommand(event.results[i][0].transcript);
-  			}
-  			
-  			if(!commandFound && noCommandRecognisedCallback != null){
-	  			noCommandRecognisedCallback();
-  			}
-	               
-	        stopListeningCommand();
-	        startListeningKeyword();
-	        
-	      } 
-	      //document.getElementById("speech-result").innerHTML = "Jag har uppfattat: " + event.results[i][0].transcript;
+				if (event.results[i].isFinal) { //Final results
+					var commandFound = false;
+					for(var j = 0; j < commands.length; j++){
+						commandFound = commandFound || commands[j].tryCommand(event.results[i][0].transcript);
+					}
+					
+					if(!commandFound && noCommandRecognisedCallback != null){
+						console.log("Not a command: "+event.results[i][0].transcript);
+						noCommandRecognisedCallback();
+					}
+					console.log("Heard command: "+event.results[i][0].transcript);
+					
+					stopListeningCommand();
+					startListeningKeyword();
+					} 
+					//document.getElementById("speech-result").innerHTML = "Jag har uppfattat: " + event.results[i][0].transcript;
 	    }
 	}
   
@@ -110,7 +113,12 @@ function CommandBot(){
   
   this.run = function(){
   	startListeningKeyword();  
-  }
+	}
+	
+	this.stop = function(){
+		stopListeningKeyword();
+		stopListeningCommand();
+	}
 
 }
 
