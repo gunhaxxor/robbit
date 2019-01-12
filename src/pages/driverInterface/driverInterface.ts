@@ -451,7 +451,10 @@ export class DriverInterfacePage {
   }
 
   sendData(sendObj:object) {
-    this.peer.send(JSON.stringify(sendObj));
+    if(this.peer)
+    {
+      this.peer.send(JSON.stringify(sendObj));
+    }
   }
 
   // permissionCheck(permission, name) {
