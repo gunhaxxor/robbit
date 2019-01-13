@@ -183,7 +183,7 @@ export class DriverInterfacePage {
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
       if(!this.videoLinkActive) {
-        console.log("Not sending anything because we have no connection.");
+        //console.log("Not sending anything because we have no connection.");
         return;
       }
 
@@ -508,6 +508,7 @@ export class DriverInterfacePage {
     var bot = new CommandBot;
     bot.setLanguageRecognition("sv-SE");
     bot.setKeyword("Robot");
+    bot.setNoKeywordMode(false);
     bot.setKeywordRecognised(()=>{
       this.voiceRecognitionState = 1;
     });
@@ -523,6 +524,7 @@ export class DriverInterfacePage {
         this.voiceRecognitionState = 0;
       }, 1000);
     });
+
 
     bot.addCommand("who are you", ()=>{
       console.log("I am your personal robot.");
@@ -575,6 +577,9 @@ export class DriverInterfacePage {
     bot.addCommand("räck upp handen", ()=>{
       this.toggleWaving();
     });
+    bot.addCommand("ta ner handen", ()=>{
+      this.isWaving = false;
+    });
     bot.addCommand("avsluta", ()=>{
       this.navCtrl.pop();
     });
@@ -586,6 +591,12 @@ export class DriverInterfacePage {
     });
     bot.addCommand("mikrofon", ()=>{
       this.toggleAudioStream();
+    });
+    bot.addCommand("lyssna", ()=>{
+      bot.setNoKeywordMode(true);
+    });
+    bot.addCommand("lyssna inte", ()=>{
+      bot.setNoKeywordMode(false);
     });
 
     bot.run();

@@ -7,6 +7,7 @@ function CommandBot(){
 	var noCommandRecognisedCallback = null;
 	var commandRecognisedCallback = null;
 	var languageRecognition = "en-US";
+	var noKeywordMode = false;
 	
 	//Keyword handling
 	var rKeyword = new webkitSpeechRecognition();
@@ -61,18 +62,98 @@ function CommandBot(){
 							commandRecognisedCallback();
 						}
 					}
-					stopListeningCommand();
-					startListeningKeyword();
-					} 
+					if(!noKeywordMode) {
+						stopListeningCommand();
+						startListeningKeyword();
+					}
+					else {
+						//stopListeningCommand();
+						//startListeningCommand();
+					}
+
+				} 
 					//document.getElementById("speech-result").innerHTML = "Jag har uppfattat: " + event.results[i][0].transcript;
 	    }
+	}
+
+	rKeyword.onstart = function() {
+		console.log("keyword onstart");
+	}
+	
+	rKeyword.onend = function() {
+		console.log("keyword onend");
+		setTimeout(() => {
+			if(noKeywordMode) {
+				//startListeningCommand();
+			}
+			else {
+				//startListeningKeyword();
+			}
+		}, 1000);
+	}
+
+	rKeyword.onspeechstart = function() {
+		console.log("keyword onspeechstart");
+	}
+
+	rKeyword.onspeechend = function() {
+		console.log("keyword onspeechend");
+	}
+
+	rKeyword.onerror = function(err) {
+		console.log("keyword onerror");
+		console.log(err);
+	}
+
+	rKeyword.onnomatch = function() {
+		console.log("keyword onnomatch");
+	}
+
+	//--
+
+	rCommand.onstart = function() {
+		console.log("command onstart");
+	}
+	
+	rCommand.onend = function() {
+		console.log("command onend");
+		setTimeout(() => {
+			if(noKeywordMode) {
+				startListeningCommand();
+			}
+			else {
+				startListeningKeyword();
+			}
+		}, 5000);
+	}
+
+	rCommand.onspeechstart = function() {
+		console.log("command onspeechstart");
+	}
+
+	rCommand.onspeechend = function() {
+		console.log("command onspeechend");
+	}
+
+	rCommand.onerror = function(err) {
+		console.log("command onerror");
+		console.log(err);
+	}
+
+	rCommand.onnomatch = function() {
+		console.log("command onnomatch");
 	}
   
   //Private functions
 	
 	var startListeningKeyword = function(){
 		//document.getElementById("instructions").innerHTML = "Inväntar startkommando: " + keyword;
-		rKeyword.start();
+		try {
+			rKeyword.start();
+		}
+		catch(err) {
+			console.log(err);
+		}
 	}
 	
 	var stopListeningKeyword = function(){
@@ -82,7 +163,12 @@ function CommandBot(){
 	var startListeningCommand = function(){
 		//document.getElementById("instructions").innerHTML ="Lyssnar på din röst...";
 	  //document.getElementById("speech-result").className += "listening";
-	  rCommand.start();
+		try {
+			rCommand.start();
+		}
+		catch(err) {
+			console.log(err);
+		}
 	}
 	
 	var stopListeningCommand = function(){
@@ -127,10 +213,29 @@ function CommandBot(){
 	
 	this.setCommandRecognised = function(callback){
 	  commandRecognisedCallback = callback;
-  }
+	}
+	
+	this.setNoKeywordMode = function(mode) {
+		noKeywordMode = mode
+		//rCommand.continuous = mode;
+		stopListeningCommand();
+		if(noKeywordMode) {
+			setTimeout(() => {
+				startListeningCommand();		
+			}, 500);
+		}
+		else {
+			startListeningKeyword();
+		}
+	}
   
   this.run = function(){
-  	startListeningKeyword();  
+		if(noKeywordMode) {
+			startListeningCommand();
+		}
+		else {
+			startListeningKeyword();
+		}
 	}
 	
 	this.stop = function(){
