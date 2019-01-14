@@ -26,7 +26,7 @@ import { Device } from '@ionic-native/device'
 import { IonicStorageModule } from '@ionic/storage';
 
 const socketConfig: SocketIoConfig = {
-  url: "https://social-robot-signaling-server.herokuapp.com/",
+  url: process.env.SIGNALING_SERVER,
   options: {}
 };
 

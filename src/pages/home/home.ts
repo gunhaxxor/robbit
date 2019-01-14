@@ -29,6 +29,7 @@ export class HomePage {
   nameAlreadyTaken: string = undefined;
 
   constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
+    console.log(`signaling server: ${process.env.SIGNALING_SERVER}`);
     let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
     
     firebase.initializeApp(config);

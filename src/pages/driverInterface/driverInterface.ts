@@ -81,6 +81,7 @@ export class DriverInterfacePage {
 
   ionViewWillLeave(){
     console.log("will leave driver interface page. Cleaning up som shit");
+    this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
     clearInterval(this.robotControlIntervalId);
@@ -105,7 +106,7 @@ export class DriverInterfacePage {
 
     console.log("attaching socket events");
     this.socket.on("robotControl", msg => {
-      // console.log("received socket msg: " + JSON.stringify(msg));
+      console.log("received socket msg: " + JSON.stringify(msg));
       // this.bleService.send(msg);
     });
 

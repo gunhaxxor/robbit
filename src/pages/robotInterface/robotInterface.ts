@@ -51,8 +51,8 @@ export class RobotInterfacePage {
   ionViewWillLeave() {
     this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
+    this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
-    // this.socket.removeAllListeners("callInfo");
     this.socket.removeAllListeners("signal");
     this.peer.destroy();
     delete this.peer;
@@ -122,7 +122,7 @@ export class RobotInterfacePage {
     });
     this.peer.on('signal', data => {
       console.log("Robot got signal data locally. Passing it on to signaling server");
-      // this.socket.to(this.robotName).emit("signal", data);
+      this.socket.emit("signal", data);
     });
     this.peer.on('stream', stream => {
       console.log("I am Robot and I am listener. Received stream from initiating peer");
