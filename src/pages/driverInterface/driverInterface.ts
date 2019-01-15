@@ -342,8 +342,13 @@ export class DriverInterfacePage {
   }
 
   removeCameraStream() {
+    console.log("removing camera stream");
+    if(!this.localStream){
+      console.log("no local stream available for removal!");
+      return;
+    }
     let videoTracks = this.localStream.getVideoTracks();
-    if(videoTracks.length == 0)
+    if(!videoTracks || videoTracks.length == 0)
     {
       console.log("No video tracks found on local stream");
       return;

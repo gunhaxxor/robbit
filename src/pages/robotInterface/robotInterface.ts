@@ -19,6 +19,7 @@ export class RobotInterfacePage {
   localStream: MediaStream;
   remoteStream: MediaStream;
   cameraOption: string = "constraint";
+  keepPeerActive: boolean = true;
   videoLinkActive: boolean = false;
   videoVerticalFlipped: boolean = false;
   showDriver: boolean = true;
@@ -42,10 +43,10 @@ export class RobotInterfacePage {
   ) {
   }
 
-  startWebRTC() {
-    // console.log("Listening on calls!");
-    this.initiateListen();
-  }
+  // startWebRTC() {
+  //   // console.log("Listening on calls!");
+  //   this.initiateListen();
+  // }
   
   //user is leaving the selected page.
   ionViewWillLeave() {
@@ -54,8 +55,13 @@ export class RobotInterfacePage {
     this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
+    
+
+    this.keepPeerActive = false; //avoid retrying peer on close event
     this.peer.destroy();
     delete this.peer;
+    console.log("this.peer is:");
+    console.log(this.peer);
     this.videoLinkActive = false;
   }
 
@@ -89,7 +95,8 @@ export class RobotInterfacePage {
               console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
           });
         });
-        this.startWebRTC();
+        this.keepPeerActive = true; //retry in close event if peer closes.
+        this.initiateListen();
       });
     }).catch((err) => console.log("failed to get permissions: " + err));
 
@@ -106,6 +113,7 @@ export class RobotInterfacePage {
 
 
   initiateListen() {
+    console.log("initiating listen");
     this.peer = new Peer({
       initiator: false,
       stream: this.localStream,
@@ -120,6 +128,8 @@ export class RobotInterfacePage {
         ]
       }
     });
+    console.log("peer object is:");
+    console.log(this.peer);
     this.peer.on('signal', data => {
       console.log("Robot got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
@@ -137,8 +147,11 @@ export class RobotInterfacePage {
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
-      console.log('this.peer: ' + this.peer); 
-      this.initiateListen();
+      console.log('this.peer: ');
+      console.log(this.peer);
+      if(this.keepPeerActive){
+        this.initiateListen();
+      }
       this.videoLinkActive = false;
     });
     this.peer.on("data", msg => {
