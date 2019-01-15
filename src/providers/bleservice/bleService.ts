@@ -96,7 +96,7 @@ export class BleService {
 
   public disconnect() {
     if (!this.connectedDevice) {
-      console.log("device is not set. Nothing to disconnect from!");
+      console.error("device is not set. Nothing to disconnect from!");
       return;
     }
     console.log(
