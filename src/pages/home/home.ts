@@ -12,21 +12,16 @@ import 'firebase/database';
 import 'firebase/auth';
 // declare let cordova: any;
 
-// <script src="https://www.gstatic.com/firebasejs/5.7.2/firebase.js"></script>
-// <script>
-//   // Initialize Firebase
-//   var config = 
-//   firebase.initializeApp(config);
-// </script>
-
 @Component({
   selector: "page-home",
   templateUrl: "home.html"
 })
 export class HomePage {
+  recentConnectedRobots: object = {};
   robotName: string;
   storedName: string = undefined;
-  nameAlreadyTaken: string = undefined;
+  invalidRobotName: string = undefined;
+  objectKeys: any = Object.keys;
 
   constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
     console.log(`signaling server: ${process.env.SIGNALING_SERVER}`);
@@ -77,18 +72,23 @@ export class HomePage {
           console.log(err);
         });
       })
+    }else{
+      this.storage.ready().then(() =>{
+        this.storage.get('recent-connected-robots').then((robots)=>{
+          if(robots === null){
+            console.log("key not found in storage: recent-connected-robots");
+          }else{
+            let parsedRobots = JSON.parse(robots)
+            console.log(`got robot list from storage:`);
+            console.log(robots);
+            this.recentConnectedRobots = parsedRobots;
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      })
     }
   }
-
-  // changed() {
-  //   if (!this.toggleValue) {
-  //     console.log("Control mode on");
-  //     this.bleService.sharedState.isConnectedToDevice = true;
-  //   } else {
-  //     console.log("Buetooth mode on");
-  //     this.bleService.sharedState.isConnectedToDevice = false;
-  //   }
-  // }
 
   saveNameAndGoToRobotInterface(){
     this.robotName = this.robotName.trim();
@@ -105,11 +105,11 @@ export class HomePage {
     .then(({committed, snapshot}) => {
       if(!committed){
         console.log('We aborted the transaction (because robot name already exists).');
-        this.nameAlreadyTaken = this.robotName;
+        this.invalidRobotName = this.robotName;
         // this.appRef.tick();
       }else{
         console.log('robot name added to firebase!');
-        this.nameAlreadyTaken = undefined;
+        this.invalidRobotName = undefined;
         this.storage.set('robotName', this.robotName).then(() => {
           this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
         });
@@ -118,29 +118,23 @@ export class HomePage {
     .catch((err) => {
       console.log('Transaction failed abnormally!', err);
     });
-    // function(error, committed, snapshot) {
-    //   if (error) {
-    //     console.log('Transaction failed abnormally!', error);
-    //   } else if (!committed) {
-    //     console.log('We aborted the transaction (because ada already exists).');
-    //   } else {
-    //     console.log('User ada added!');
-    //   }
-    //   console.log("Ada's data: ", snapshot.val());
-    // });
+  }
 
+  checkNameAndGoToDriverInterface(){
+    this.robotName = this.robotName.trim();
 
-
-    // firebase.database().ref('robot-names/' + name).set(this.device.uuid)
-    // .then(() => {
-    //   this.storage.set('robotName', name).then(() => {
-    //     this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
-    //   });
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-
-    // })
+    firebase.database().ref('robot-names/' + this.robotName).once('value').then((snapshot) => {
+      if(!snapshot.val()){
+        console.log("No such robot found");
+        this.invalidRobotName = this.robotName;
+        return;
+      }
+      this.invalidRobotName = undefined;
+      this.recentConnectedRobots[this.robotName] = Date.now();
+      this.storage.set('recent-connected-robots', JSON.stringify(this.recentConnectedRobots)).then(() => {
+        this.navCtrl.push(DriverInterfacePage, {robotName: this.robotName} );
+      });
+    });
   }
 
   goToDriverInterface() {
@@ -148,5 +142,9 @@ export class HomePage {
   }
   goToRobotInterface() {
     this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
+  }
+
+  robotsByDate(a, b){
+    return a.value > b.value ? -1 : 1;
   }
 }

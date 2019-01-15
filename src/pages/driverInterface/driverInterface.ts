@@ -262,6 +262,8 @@ export class DriverInterfacePage {
         }
       ]
     } });
+    console.log("peer object is:");
+    console.log(this.peer);
     this.peer.on("signal", data => {
       console.log("Driver got signal data locally. Passing it on to signaling server");
       this.socket.emit("signal", data);
@@ -274,7 +276,9 @@ export class DriverInterfacePage {
       // video.play();
     });
     this.peer.on('connect', () => {
-      console.log('connection event!!!');
+      console.log('peer connection event');
+      console.log("peer object is:");
+      console.log(this.peer);
       this.videoLinkActive = true;
       this.videoLinkWaitingForAnswer = false;
 
