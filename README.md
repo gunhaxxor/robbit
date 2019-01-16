@@ -9,6 +9,10 @@ Following files are required in the root of the project, but are not included in
 * .env.prod
 * .env.dev
 
+# See also
+
+* 3D models for this project https://www.thingiverse.com/thing:3360113
+
 # Credits
 
 Using the sound Open Button 2 by Kickhat with creative commons 0 license.
