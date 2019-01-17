@@ -1,25 +1,9 @@
-// ion-content {
-//   text-align: center;
-//   width: 100%;
-//   height: 100%;
-// }
-// ion-content button {
-//   z-index: 3;
-//   width: 75px;
-//   height: 75px;
-// }
-
 page-driverInterface {
 
-  .scroll-content {
-    background: linear-gradient(to bottom, $tertiary, $tertiary-darker);
+  .content {
+    background:#888;
   }
-
-  .driver-nav-button {
-    padding: 10px;
-    font-size: 14pt;
-  }
-
+  
   #driver-remote-video {
     position: absolute;
     top: 0;
@@ -28,6 +12,176 @@ page-driverInterface {
     height: 100%;
     background-color: #000;
   }
+
+  #corner-div {
+    position: absolute;
+    top:0;
+    right:0;
+    width: 25rem;
+    height: 25rem;
+    display:grid;
+    grid-template-rows: 2em auto;
+    background-color: #0008;
+    border-bottom-left-radius: 5rem;
+  }
+
+  #driver-name {
+    border: 0px solid red;
+    font-size: 2em;
+    color:white;
+    text-align: center;
+    height: 2em;
+    line-height: 2em;
+  }
+
+  #driver-local-video {
+    border: 0px solid red;
+    width:75%;
+    margin: auto;
+    border-radius: 2rem;
+  }
+  
+  #bottom-bar {
+    border: 0px solid red;
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height: 15rem;
+    display:grid;
+    grid-template-columns: 20rem auto 20rem;
+  }
+
+  #drive-buttons {
+    border: 0px solid yellow;
+    perspective: 100px;
+    padding: 0 20% 10% 20%;
+    background-color: #0008;
+  }
+  
+  #drive-buttons-perspective {
+    border: 0px solid blue;
+    transform: rotateX(35deg);
+    width: 100%;
+    height: 100%;
+    display:grid;
+    grid-template-areas: 
+      "forward-button"
+      "reverse-button";
+  }
+  
+  .drive-button {
+    height: 90%;
+    width: 90%;
+    margin: auto;
+    border-radius: 1rem;
+    font-size: 2rem;
+  }
+
+  #forward-button {
+    grid-area: forward-button;
+  }
+  
+  #reverse-button {
+    grid-area: reverse-button;
+  }
+
+  #bottom-bar-middle {
+    border: 0px solid white;
+    display:grid;
+    grid-template-areas: 
+      "middle-top"
+      "middle-bottom";
+    grid-template-rows: 50% 50%;
+  }
+
+  #bar-curves {
+    grid-area: middle-top;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #curve-left {
+    width: 10rem;
+    border-top-right-radius: 10rem;
+    background-color: #0008;
+  }
+
+  #curve-right {
+    width: 10rem;
+    border-top-left-radius: 10rem;
+    background-color: #0008;
+  }
+  
+  #bottom-controls {
+    border: 0px solid green;
+    grid-area: middle-bottom;
+    display: flex;
+    justify-items: start;
+    padding: 0 12rem 0 12rem;
+    align-items: center;
+    background-color: #0008;
+  }
+
+  .control-button {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1rem;
+    font-size: 2.5rem;
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+  }
+
+  .control-button-right {
+    margin-left: auto;
+  }
+
+  #end-call-button {
+    background-color: $danger;
+  }
+
+  #end-call-button ion-icon {
+    -moz-webkit-transform: rotate(137deg);
+    -webkit-transform: rotate(137deg);
+    transform: rotate(137deg);
+    color: #fff;
+  }
+
+  #zone-joystick {
+    border: 0px solid red;
+    z-index: 2;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: #0008;
+  }
+
+  #zone-joystick .nipple {
+    opacity: 1 !important;
+  }
+  
+  #zone-joystick .back {
+    opacity: 1 !important;
+    background-color: $primary-darker !important;
+  }
+
+  #zone-joystick .front {
+    opacity: 1 !important;
+    background-color: $primary !important;
+  }
+  
+
+
+
+  /* ---------- old stuff below ---- 
+  
+  .scroll-content {
+  }
+
+  .driver-nav-button {
+    padding: 10px;
+    font-size: 14pt;
+  }
+
 
   #driver-local-video, .choose-emoji-button {
     position: absolute;
@@ -40,14 +194,14 @@ page-driverInterface {
 
   #driver-local-video {
     transform: rotateY(180deg);
-    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-    -moz-transform:rotateY(180deg); /* Firefox */
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome 
+    -moz-transform:rotateY(180deg); /* Firefox 
   }
 
   .choose-emoji-button {
     font-size: 40pt;
   }
-
+  
   #chat {
     font-size: 18pt;
     color: $light-lighter;
@@ -61,13 +215,13 @@ page-driverInterface {
     padding: 5pt;
     border-radius: 10px;
   }
-
+  
   .hidden-chat {
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 2s, opacity 2s linear;
   }
-
+  
   #control-panel {
     border: 0px solid red;
     z-index: 0;
@@ -90,32 +244,9 @@ page-driverInterface {
   .invisible {
     visibility: hidden;
   }
-
-
-  #zone-joystick {
-    border: 0px solid red;
-    z-index: 2;
-    grid-area: joystick;
-    position: relative;
-    height: 100%;
-    width: 100%;
-    // position: absolute;
-    // top: 0;
-  }
-
-  .drive-button {
-    border: 0px solid red;
-    height: 100%;
-    width: 100%;
-  }
-
-  #forward-button {
-    grid-area: forward-button;
-  }
-
-  #reverse-button {
-    grid-area: reverse-button;
-  }
+  
+  
+  
 
   #servo {
     // z-index: 3;
@@ -342,4 +473,6 @@ page-driverInterface {
       color: $light;
     }
   }
+
+  */
 }

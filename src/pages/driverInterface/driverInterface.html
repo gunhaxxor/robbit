@@ -1,13 +1,7 @@
+<!--
 <ion-header>
-
   <ion-navbar>
     <ion-title>{{this.robotName}}</ion-title>
-    <!-- <button (click)="changeCamera()" class="driver-nav-button">
-      <ion-icon name="repeat"></ion-icon>
-    </button>
-    <button class="driver-nav-button">
-      <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
-    </button> -->
     <button (click)="endCall()" id="end-call-button" *ngIf="this.videoLinkActive">
       <ion-icon name="call"></ion-icon>
     </button>
@@ -23,11 +17,11 @@
       <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
     </button>
     <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
-        <ion-icon name="hand"></ion-icon>
-      </button>
+      <ion-icon name="hand"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
-
+  
 <ion-content padding>
   <div id="call-button" *ngIf="!this.videoLinkActive" [class.ready-to-call]="!this.videoLinkWaitingForAnswer" [class.waiting-for-answer]="this.videoLinkWaitingForAnswer">
     <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
@@ -36,8 +30,6 @@
   </div>
   <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped">
   </video>
-  <!-- <video id="driver-remote-video" autoplay>
-  </video> -->
   <video id="driver-local-video" autoplay>
   </video>
   <button (click)="this.presentEmojiPopover($event)" class="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="!this.videoLinkActive || this.showCamera">
@@ -57,6 +49,53 @@
           <ion-icon name="send"></ion-icon>
         </button>
       </form>
+    </div>
+    <div id="zone-joystick"></div>
+  </div>
+</ion-content>
+
+-->
+<ion-content>
+  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
+  </video>
+  <div id="corner-div">
+    <div id="driver-name"><span>{{this.robotName}}</span></div>
+    <video id="driver-local-video" autoplay>
+    </video>
+  </div>
+  <div id="bottom-bar">
+    <div id="drive-buttons">
+      <div id="drive-buttons-perspective">
+        <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked">
+          <ion-icon name="arrow-round-up"></ion-icon>
+        </button>
+        <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked">
+          <ion-icon name="arrow-round-down"></ion-icon>
+        </button>
+      </div>
+    </div>
+    <div id="bottom-bar-middle">
+      <div id="bar-curves">
+        <div id="curve-left"></div>
+        <div id="curve-right"></div>
+      </div>
+      <div id="bottom-controls">
+        <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-button-waving]="this.isWaving">
+          <ion-icon name="hand"></ion-icon>
+        </button>
+        <button ion-button id="toggle-chat-button" class="control-button">
+          <ion-icon name="chatboxes"></ion-icon>
+        </button>
+        <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-button-enabled]="this.showCamera" [class.toggle-button-disabled]="!this.showCamera">
+          <ion-icon name="videocam"></ion-icon>
+        </button>
+        <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-button-enabled]="!this.muteAudio" [class.toggle-button-disabled]="this.muteAudio">
+          <ion-icon name="mic"></ion-icon>
+        </button>
+        <button ion-button (click)="endCall()" id="end-call-button" class="control-button">
+          <ion-icon name="call"></ion-icon>
+        </button>
+      </div>
     </div>
     <div id="zone-joystick"></div>
   </div>
