@@ -91,7 +91,7 @@ export class HomePage {
   }
 
   saveNameAndGoToRobotInterface(){
-    this.robotName = this.robotName.trim();
+    this.robotName = this.robotName.trim().toLowerCase();
 
     firebase.database().ref('robot-names/' + this.robotName)
     .transaction((currentData) => {
@@ -121,7 +121,7 @@ export class HomePage {
   }
 
   checkNameAndGoToDriverInterface(){
-    this.robotName = this.robotName.trim();
+    this.robotName = this.robotName.trim().toLowerCase();
 
     firebase.database().ref('robot-names/' + this.robotName).once('value').then((snapshot) => {
       if(!snapshot.val()){
