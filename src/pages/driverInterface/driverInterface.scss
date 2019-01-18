@@ -46,7 +46,7 @@ page-driverInterface {
     width: 75%;
     height: 75%;
     margin: auto;
-    font-size: 13rem;
+    font-size: 11rem;
     background: none;
   }
   
@@ -55,7 +55,7 @@ page-driverInterface {
     position:absolute;
     bottom:0;
     width:100%;
-    height: 15rem;
+    height: 21rem;
     display:grid;
     grid-template-columns: 20rem auto 20rem;
   }
@@ -63,7 +63,7 @@ page-driverInterface {
   #drive-buttons {
     border: 0px solid yellow;
     perspective: 100px;
-    padding: 0 20% 10% 20%;
+    padding: 0 0% 10% 20%;
     background-color: $seethrough;
   }
   
@@ -73,24 +73,31 @@ page-driverInterface {
     width: 100%;
     height: 100%;
     display:grid;
+    align-items: center;
     grid-template-areas: 
       "forward-button"
       "reverse-button";
   }
   
   .drive-button {
-    height: 90%;
-    width: 90%;
+    height: 60%;
+    width: 100%;
     margin: auto;
+    margin-top:0;
+    margin-bottom:0;
     border-radius: 1rem;
     font-size: 2rem;
   }
-
+  
   #forward-button {
+    height: 100%;
+    align-self: flex-end;
     grid-area: forward-button;
+    margin-bottom: 1rem;
   }
   
   #reverse-button {
+    align-self: flex-start;
     grid-area: reverse-button;
   }
 
@@ -100,7 +107,7 @@ page-driverInterface {
     grid-template-areas: 
       "middle-top"
       "middle-bottom";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: 40% 60%;
   }
 
   #bar-curves {
@@ -110,15 +117,23 @@ page-driverInterface {
   }
 
   #curve-left {
-    width: 10rem;
-    border-top-right-radius: 10rem;
-    background-color: $seethrough;
+    width: 25rem;
+    // border-top-right-radius: 10rem;
+    // background-color: $seethrough;
+    background-image: url('../assets/imgs/s-curve.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
   }
-
+  
   #curve-right {
-    width: 10rem;
-    border-top-left-radius: 10rem;
-    background-color: $seethrough;
+    border:0px solid green;
+    width: 25rem;
+    // border-top-left-radius: 10rem;
+    // background-color: $seethrough;
+    background-image: url('../assets/imgs/s-curve2.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    // transform: rotateY(180deg);
   }
   
   #bottom-controls {
@@ -132,20 +147,33 @@ page-driverInterface {
   }
 
   .control-button {
-    width: 5rem;
-    height: 5rem;
+    width: 7rem;
+    height: 7rem;
     border-radius: 1rem;
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-left: 0.8rem;
     margin-right: 0.8rem;
+    border: 3px solid $primary;
+  }
+
+  .toggle-off {
+    background:none;
+    border: 3px dashed $primary;
   }
 
   .control-button-right {
     margin-left: auto;
   }
 
+  #toggle-wave-button:not(.toggle-off) ion-icon {
+    -webkit-animation:wave 1s linear infinite;
+    -moz-animation:wave 1s linear infinite;
+    animation:wave 1s linear infinite;
+  }
+
   #end-call-button {
     background-color: $danger;
+    border-color: $danger;
   }
 
   #end-call-button ion-icon {
@@ -227,7 +255,59 @@ page-driverInterface {
   }
 
   
+  @keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      transform: rotate(-20deg);
+      color: $dark;
+    }
 
+    100% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      color: $light;
+    }
+  }
+
+  @-webkit-keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      color: $dark;
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      color: $light;
+    }
+  }
+
+  @-moz-keyframes wave {
+    0% {
+      -moz-webkit-transform: rotate(20deg);
+      color: $light;
+    }
+    
+    50% {
+      -moz-webkit-transform: rotate(-20deg);
+      color: $dark;
+    }
+
+    100% {
+      -moz-webkit-transform: rotate(20deg);
+      color: $light;
+    }
+  }
 
 
   /* ---------- old stuff below ---- 
@@ -478,59 +558,7 @@ page-driverInterface {
 
 
 
-  @keyframes wave {
-    0% {
-      -webkit-transform: rotate(20deg);
-      transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -webkit-transform: rotate(-20deg);
-      transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -webkit-transform: rotate(20deg);
-      transform: rotate(20deg);
-      color: $light;
-    }
-  }
-
-  @-webkit-keyframes wave {
-    0% {
-      -webkit-transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -webkit-transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -webkit-transform: rotate(20deg);
-      color: $light;
-    }
-  }
-
-  @-moz-keyframes wave {
-    0% {
-      -moz-webkit-transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -moz-webkit-transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -moz-webkit-transform: rotate(20deg);
-      color: $light;
-    }
-  }
+  
 
   */
 }

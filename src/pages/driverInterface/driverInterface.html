@@ -82,16 +82,16 @@
         <div id="curve-right"></div>
       </div>
       <div id="bottom-controls">
-        <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-button-waving]="this.isWaving">
+        <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving">
           <ion-icon name="hand"></ion-icon>
         </button>
         <button ion-button id="toggle-chat-button" class="control-button">
           <ion-icon name="chatboxes"></ion-icon>
         </button>
-        <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-button-enabled]="this.showCamera" [class.toggle-button-disabled]="!this.showCamera">
+        <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-off]="!this.showCamera">
           <ion-icon name="videocam"></ion-icon>
         </button>
-        <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-button-enabled]="!this.muteAudio" [class.toggle-button-disabled]="this.muteAudio">
+        <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-off]="this.muteAudio">
           <ion-icon name="mic"></ion-icon>
         </button>
         <button ion-button (click)="endCall()" id="end-call-button" class="control-button">
