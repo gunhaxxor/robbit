@@ -60,8 +60,10 @@
   </video>
   <div id="corner-div">
     <div id="driver-name"><span>{{this.robotName}}</span></div>
-    <video id="driver-local-video" autoplay>
+    <video id="driver-local-video" autoplay [hidden]="!this.showCamera">
     </video>
+    <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="this.showCamera">
+    </button>  
   </div>
   <div id="bottom-bar">
     <div id="drive-buttons">
