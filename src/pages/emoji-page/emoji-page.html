@@ -1,34 +1,29 @@
-<ion-header>
-
-  
-</ion-header>
-
 <ion-content padding>
   <button ion-button (click)="this.setEmoji('🙂')" class="emoji-button" >
       🙂
   </button>
   <button ion-button (click)="this.setEmoji('🙁')" class="emoji-button" >
     🙁
-</button>
-<button ion-button (click)="this.setEmoji('😎')" class="emoji-button" >
-    😎
-</button>
-<button ion-button (click)="this.setEmoji('😁')" class="emoji-button" >
-    😁
-</button>
-<button ion-button (click)="this.setEmoji(' 😛')" class="emoji-button" >
-    😛
-</button>
-<button ion-button (click)="this.setEmoji(' 😍')" class="emoji-button" >
-    😍
-</button>
-<button ion-button (click)="this.setEmoji('😭')" class="emoji-button" >
-    😭
-</button>
-<button ion-button (click)="this.setEmoji('😡')" class="emoji-button" >
-    😡
-</button>
-<button ion-button (click)="this.viewCtrl.dismiss()" class="emoji-button" >
-    <ion-icon name="close"></ion-icon>
-</button>
+    </button>
+    <button ion-button (click)="this.setEmoji('😎')" class="emoji-button" >
+        😎
+    </button>
+    <button ion-button (click)="this.setEmoji('😁')" class="emoji-button" >
+        😁
+    </button>
+    <button ion-button (click)="this.setEmoji(' 😛')" class="emoji-button" >
+        😛
+    </button>
+    <button ion-button (click)="this.setEmoji(' 😍')" class="emoji-button" >
+        😍
+    </button>
+    <button ion-button (click)="this.setEmoji('😭')" class="emoji-button" >
+        😭
+    </button>
+    <button ion-button (click)="this.setEmoji('😡')" class="emoji-button" >
+        😡
+    </button>
+    <button ion-button (click)="this.viewCtrl.dismiss()" id="emoji-cancel-button" >
+        <ion-icon name="close"></ion-icon>
+    </button>
 </ion-content>

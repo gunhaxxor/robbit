@@ -21,7 +21,7 @@ page-driverInterface {
     height: 25rem;
     display:grid;
     grid-template-rows: 2em auto;
-    background-color: #0008;
+    background-color: $seethrough;
     border-bottom-left-radius: 5rem;
   }
 
@@ -64,7 +64,7 @@ page-driverInterface {
     border: 0px solid yellow;
     perspective: 100px;
     padding: 0 20% 10% 20%;
-    background-color: #0008;
+    background-color: $seethrough;
   }
   
   #drive-buttons-perspective {
@@ -112,13 +112,13 @@ page-driverInterface {
   #curve-left {
     width: 10rem;
     border-top-right-radius: 10rem;
-    background-color: #0008;
+    background-color: $seethrough;
   }
 
   #curve-right {
     width: 10rem;
     border-top-left-radius: 10rem;
-    background-color: #0008;
+    background-color: $seethrough;
   }
   
   #bottom-controls {
@@ -128,7 +128,7 @@ page-driverInterface {
     justify-items: start;
     padding: 0 12rem 0 12rem;
     align-items: center;
-    background-color: #0008;
+    background-color: $seethrough;
   }
 
   .control-button {
@@ -161,7 +161,7 @@ page-driverInterface {
     position: relative;
     height: 100%;
     width: 100%;
-    background-color: #0008;
+    background-color: $seethrough;
   }
 
   #zone-joystick .nipple {
