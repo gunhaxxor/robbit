@@ -322,6 +322,7 @@ export class DriverInterfacePage {
     {
       this.peer.destroy();
     }
+    this.navCtrl.pop();
   }
 
   changeCamera() {
@@ -357,7 +358,9 @@ export class DriverInterfacePage {
       console.log("No video tracks found on local stream");
       return;
     }
-    this.peer.removeTrack(videoTracks[0], this.localStream);
+    if(this.peer != null) {
+      this.peer.removeTrack(videoTracks[0], this.localStream);
+    }
     this.showCamera = false;
     this.sendData({showDriverCamera: this.showCamera});
     console.log("Video track removed.");
@@ -367,7 +370,9 @@ export class DriverInterfacePage {
     if(this.localVideoTrack != null)
     {
       console.log("Adding video track to stream.");
-      this.peer.addTrack(this.localVideoTrack, this.localStream);
+      if(this.peer != null) {
+        this.peer.addTrack(this.localVideoTrack, this.localStream);
+      }
       this.showCamera = true;
       this.sendData({showDriverCamera: this.showCamera});
     }
@@ -391,7 +396,9 @@ export class DriverInterfacePage {
       console.log("No audio tracks found on local stream");
       return;
     }
-    this.peer.removeTrack(audioTracks[0], this.localStream);
+    if(this.peer != null) {
+      this.peer.removeTrack(audioTracks[0], this.localStream);
+    }
     this.muteAudio = true;
     this.sendData({muteDriver: this.muteAudio});
     console.log("audio track removed.");
@@ -401,7 +408,9 @@ export class DriverInterfacePage {
     if(this.localAudioTrack != null)
     {
       console.log("Adding audio track to stream.");
-      this.peer.addTrack(this.localAudioTrack, this.localStream);
+      if(this.peer != null) {
+        this.peer.addTrack(this.localAudioTrack, this.localStream);
+      }
       this.muteAudio = false;
       this.sendData({muteDriver: this.muteAudio});
     }
@@ -478,7 +487,9 @@ export class DriverInterfacePage {
   }
 
   sendData(sendObj:object) {
-    this.peer.send(JSON.stringify(sendObj));
+    if(this.peer != null){
+      this.peer.send(JSON.stringify(sendObj));
+    }
   }
 
   // permissionCheck(permission, name) {

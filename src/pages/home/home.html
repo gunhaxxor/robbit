@@ -41,7 +41,7 @@
       <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Ring upp {{this.robotName}}</button>
       <h3>Tidigare anslutna robotar:</h3>
       <ng-container *ngFor="let robot of objectKeys(recentConnectedRobots)">
-        <button ion-button class="recent-robot-button">{{robot}}  <ion-icon class="recent-robot-call-icon" name="call"></ion-icon></button>
+        <button ion-button class="recent-robot-button" (click)="this.robotName = robot" >{{robot}}  <ion-icon class="recent-robot-call-icon" name="call"></ion-icon></button>
       </ng-container>
     </form>
   </div>

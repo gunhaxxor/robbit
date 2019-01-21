@@ -35,13 +35,14 @@ $app-direction: ltr;
 
 // current colors are based on https://www.colourlovers.com/palette/292482/Terra
 $colors: (
-  primary:    #036564,
+  primary:    #22b3b3, /* #036564, */
   secondary:  #CDB380,
   tertiary:   #033649,
-  danger:     #f53d3d,
+  danger:     #ea1616, /* #f53d3d, */
   approve:    #5bf43d,
   light:      #E8DDCB,
   dark:       #031634,
+  seethrough: #122C3499,
 );
 
 $primary : color($colors, primary);
@@ -51,6 +52,7 @@ $danger : color($colors, danger);
 $approve : color($colors, approve);
 $light : color($colors, light);
 $dark : color($colors, dark);
+$seethrough : color($colors, seethrough);
 
 $primary-lighter : lighten($primary, 10);
 $primary-darker : darken($primary, 10);

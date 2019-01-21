@@ -26,20 +26,20 @@ export class HomePage {
   constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
     console.log(`signaling server: ${process.env.SIGNALING_SERVER}`);
     let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
-
+    
     firebase.initializeApp(config);
-
+    
     firebase.auth().signInAnonymously()
-      .then(() => {
-        console.log("anonymously logged into firebase");
-      })
-      .catch(function (error) {
-        console.log(error);
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
+    .then(() => {
+      console.log("anonymously logged into firebase");
+    })
+    .catch(function(error) {
+      console.log(error);
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -56,14 +56,14 @@ export class HomePage {
 
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     console.log("this.plt.is('cordova'):  " + this.plt.is('cordova'));
-    if (this.plt.is('cordova')) {
-      this.storage.ready().then(() => {
-        this.storage.get('robotName').then((name) => {
-          if (name === null) {
+    if(this.plt.is('cordova')){
+      this.storage.ready().then(() =>{
+        this.storage.get('robotName').then((name)=>{
+          if(name === null){
             console.log("key not found in storage: robotName");
-          } else {
+          }else{
             console.log(`got robot name from storage: ${name}`);
             this.storedName = name;
             this.robotName = name;
@@ -72,12 +72,12 @@ export class HomePage {
           console.log(err);
         });
       })
-    } else {
-      this.storage.ready().then(() => {
-        this.storage.get('recent-connected-robots').then((robots) => {
-          if (robots === null) {
+    }else{
+      this.storage.ready().then(() =>{
+        this.storage.get('recent-connected-robots').then((robots)=>{
+          if(robots === null){
             console.log("key not found in storage: recent-connected-robots");
-          } else {
+          }else{
             let parsedRobots = JSON.parse(robots)
             console.log(`got robot list from storage:`);
             console.log(robots);
@@ -90,41 +90,41 @@ export class HomePage {
     }
   }
 
-  saveNameAndGoToRobotInterface() {
-    this.robotName = this.robotName.trim();
+  saveNameAndGoToRobotInterface(){
+    this.robotName = this.robotName.trim().toLowerCase();
 
     firebase.database().ref('robot-names/' + this.robotName)
-      .transaction((currentData) => {
-        if (currentData === null) {
-          return this.device.uuid;
-        } else {
-          console.log('robot name already exists.');
-          return; // Abort the transaction.
-        }
-      })
-      .then(({ committed, snapshot }) => {
-        if (!committed) {
-          console.log('We aborted the transaction (because robot name already exists).');
-          this.invalidRobotName = this.robotName;
-          // this.appRef.tick();
-        } else {
-          console.log('robot name added to firebase!');
-          this.invalidRobotName = undefined;
-          this.storage.set('robotName', this.robotName).then(() => {
-            this.navCtrl.push(RobotInterfacePage, { robotName: this.robotName });
-          });
-        }
-      })
-      .catch((err) => {
-        console.log('Transaction failed abnormally!', err);
-      });
+    .transaction((currentData) => {
+      if (currentData === null) {
+        return this.device.uuid;
+      } else {
+        console.log('robot name already exists.');
+        return; // Abort the transaction.
+      }
+    })
+    .then(({committed, snapshot}) => {
+      if(!committed){
+        console.log('We aborted the transaction (because robot name already exists).');
+        this.invalidRobotName = this.robotName;
+        // this.appRef.tick();
+      }else{
+        console.log('robot name added to firebase!');
+        this.invalidRobotName = undefined;
+        this.storage.set('robotName', this.robotName).then(() => {
+          this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
+        });
+      }
+    })
+    .catch((err) => {
+      console.log('Transaction failed abnormally!', err);
+    });
   }
 
-  checkNameAndGoToDriverInterface() {
-    this.robotName = this.robotName.trim();
+  checkNameAndGoToDriverInterface(){
+    this.robotName = this.robotName.trim().toLowerCase();
 
     firebase.database().ref('robot-names/' + this.robotName).once('value').then((snapshot) => {
-      if (!snapshot.val()) {
+      if(!snapshot.val()){
         console.log("No such robot found");
         this.invalidRobotName = this.robotName;
         return;
@@ -132,19 +132,19 @@ export class HomePage {
       this.invalidRobotName = undefined;
       this.recentConnectedRobots[this.robotName] = Date.now();
       this.storage.set('recent-connected-robots', JSON.stringify(this.recentConnectedRobots)).then(() => {
-        this.navCtrl.push(DriverInterfacePage, { robotName: this.robotName });
+        this.navCtrl.push(DriverInterfacePage, {robotName: this.robotName} );
       });
     });
   }
 
   goToDriverInterface() {
-    this.navCtrl.push(DriverInterfacePage, { robotName: this.robotName });
+    this.navCtrl.push(DriverInterfacePage, {robotName: this.robotName} );
   }
   goToRobotInterface() {
-    this.navCtrl.push(RobotInterfacePage, { robotName: this.robotName });
+    this.navCtrl.push(RobotInterfacePage, {robotName: this.robotName} );
   }
 
-  robotsByDate(a, b) {
+  robotsByDate(a, b){
     return a.value > b.value ? -1 : 1;
   }
 }

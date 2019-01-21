@@ -9,15 +9,54 @@
 //   height: 75px;
 // }
 
+
+
+.popover-content {
+  background: $seethrough !important;
+  border-radius: 5rem !important;
+  //border-top-right-radius: 2rem !important;
+  width: auto !important;
+  position: absolute;
+  left: 50% !important;
+  top: 20% !important;
+  transform: translateX(-50%) !important;
+}
+
 page-emoji {
-
+  
   .scroll-content {
-    background: linear-gradient(to bottom, $light, $light-darker);
+    overflow: hidden;
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
   }
-
+  
+  .content {
+    padding:2rem !important;
+    background: #0000;
+  }
+  
   .emoji-button {
+    opacity: 1 !important;
     width: 40pt;
     height: 40pt;
     font-size: 40pt;
+    border-radius: 2rem;
+    padding: 5rem;
+    background: none;
+    box-shadow: none;
+  }
+  
+  #emoji-cancel-button {
+    position: absolute;
+    font-size: 3rem;
+    right: 0rem;
+    top: 0rem;
+    margin:0;
+    padding:1rem;
+    color: #aaa;
+    background: none;
+    box-shadow: none;
   }
 }
