@@ -488,7 +488,13 @@ export class DriverInterfacePage {
 
   sendData(sendObj:object) {
     if(this.peer != null){
-      this.peer.send(JSON.stringify(sendObj));
+      try{
+        this.peer.send(JSON.stringify(sendObj));
+      }
+      catch(err) {
+        console.log("Error while trying to send data:");
+        console.log(err);
+      }
     }
   }
 
