@@ -1,9 +1,3 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>Social Robot
-    </ion-title>
-  </ion-navbar>
-</ion-header>
 <ion-content>
   <ng-container *ngIf="plt.is('cordova')">
     <div ionic full class="welcome-panel" >
@@ -13,7 +7,7 @@
           <form (submit)="saveNameAndGoToRobotInterface()">
             <ion-item>
               <ion-label floating>Robotnamn</ion-label>
-              <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
+              <ion-input type="text" name="robotname" id="robot-name-input" [(ngModel)]="robotName"></ion-input>
               <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
             </ion-item>
             <p *ngIf="invalidRobotName">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
@@ -35,13 +29,13 @@
     <form (submit)="checkNameAndGoToDriverInterface()">
       <ion-item>
         <ion-label floating>Robot namn</ion-label>
-        <ion-input type="text" name="robotname" [(ngModel)]="robotName"></ion-input>
+        <ion-input type="text" name="robotname" id="driver-name-input" [(ngModel)]="robotName"></ion-input>
       </ion-item>
       <p *ngIf="invalidRobotName">Hittade ingen robot med det namnet. Säker på att du stavade rätt?</p>
       <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Ring upp {{this.robotName}}</button>
       <h3>Tidigare anslutna robotar:</h3>
       <ng-container *ngFor="let robot of objectKeys(recentConnectedRobots)">
-        <button ion-button class="recent-robot-button" (click)="this.robotName = robot" >{{robot}}  <ion-icon class="recent-robot-call-icon" name="call"></ion-icon></button>
+        <button ion-button class="recent-robot-button" (click)="this.robotName = robot" >{{robot}}  <span class="recent-robot-call-icon"></span></button>
       </ng-container>
     </form>
   </div>

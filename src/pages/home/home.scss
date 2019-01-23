@@ -3,71 +3,54 @@ body {
   
 }
 
+page-home {
 
-ion-spinner {
-  position: absolute;
-  right: 50px;
-}
+  
+  ion-spinner {
+    position: absolute;
+    right: 50px;
+  }
+  
 
-.scroll-content {
-  // background: linear-gradient(to right, #b64ce0 50%, #774ee6 50%);
-  color: #61ada0;
-}
-.toolbar-title-md {
-  text-align: center;
-  // header Title!
-}
-.content{
-  // för allt
-  background: linear-gradient(to bottom, $tertiary-lighter, $tertiary-darker);
-}
+  .content{
+    // för allt
+    background: $tertiary;
+  }
 
-.tab-button-text {
-  font-size: 50pt;
-  font-weight: bold;
-}
-.toolbar-background-md {
-  background-color: $primary;
-}
-.toolbar-title-md {
-  color: $light;
-}
-.tabs-md .tab-button[aria-selected="true"] {
-  color: $light;
-}
-.tabs-md .tabbar {
-  background-color: #000;
-  display: none;
-}
+  .item-input {
+    border-radius: 1rem;
+    width: 50rem;
+  }
+  
+  .welcome-panel {
+    margin: 0 auto;
+    z-index: 12;
+    height: 100%;
+    width: 100%;
+    color: $light;
+    float: left;
+    padding: 5%;
+  }
 
-.welcome-panel {
-  margin: 0 auto;
-  z-index: 12;
-  height: 100%;
-  width: 100%;
-  color: $light;
-  float: left;
-  padding: 5%;
+  .button {
+    height: 5rem;
+    border-radius: 1rem;
+    //font-size: 3rem;
+    border: 3px solid $primary;
+    margin-top: 1rem;
+  }
+
+  .recent-robot-button {
+    display: block;
+  }
+
+  .recent-robot-call-icon {
+    margin-left: 10px;
+    height: 3rem;
+    width: 3rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../assets/imgs/call.svg');
+  }
 }
-
-.recent-robot-button {
-  display: block;
-}
-
-.recent-robot-call-icon {
-  margin-left: 10px;
-}
-
-// .side-button p {
-//   font-size: 12pt;
-// }
-
-// #robot-button {
-//   background: linear-gradient(to bottom, $primary, $primary-lighter, $primary-darker);
-//   //background-color: #b2d5ba;
-// }
-
-// #driver-button {
-//   background: linear-gradient(to bottom, $tertiary, $tertiary-lighter, $tertiary-darker);
-//   //background-color: #61ada0;
-// }
