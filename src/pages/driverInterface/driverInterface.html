@@ -62,9 +62,17 @@
     <div id="driver-name"><span>{{this.robotName}}</span></div>
     <video id="driver-local-video" autoplay [hidden]="!this.showCamera">
     </video>
-    <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji" [hidden]="this.showCamera">
-    </button>  
+    <div id="emoji-container" [hidden]="this.showCamera">
+      <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji">
+      </button>
+      <button ion-button id="emoji-edit-button">
+      </button>
+    </div>
+
   </div>
+  <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
+    <ion-icon name="call"></ion-icon>
+  </button>
   <div id="bottom-bar">
     <div id="drive-buttons">
       <div id="drive-buttons-perspective">
@@ -83,19 +91,15 @@
       </div>
       <div id="bottom-controls">
         <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving">
-          <ion-icon name="hand"></ion-icon>
         </button>
         <button ion-button id="toggle-chat-button" class="control-button">
           <ion-icon name="chatboxes"></ion-icon>
         </button>
         <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-off]="!this.showCamera">
-          <ion-icon name="videocam"></ion-icon>
         </button>
         <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-off]="this.muteAudio">
-          <ion-icon name="mic"></ion-icon>
         </button>
         <button ion-button (click)="endCall()" id="end-call-button" class="control-button">
-          <ion-icon name="call"></ion-icon>
         </button>
       </div>
     </div>
