@@ -65,7 +65,7 @@
     <div id="emoji-container" [hidden]="this.showCamera">
       <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji">
       </button>
-      <button ion-button id="emoji-edit-button">
+      <button ion-button id="emoji-edit-button" (click)="this.presentEmojiPopover($event)">
       </button>
     </div>
 
