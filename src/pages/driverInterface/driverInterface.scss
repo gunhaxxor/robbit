@@ -41,14 +41,33 @@ page-driverInterface {
     border-radius: 2rem;
   }
 
+  #emoji-container {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+  }
+  
   #choose-emoji-button {
     border: 0px solid red;
-    width: 75%;
-    height: 75%;
-    margin: auto;
+    width: 100%;
+    height: 100%;
     font-size: 11rem;
+    margin: 0;
     background: none;
   }
+
+  #emoji-edit-button {
+    position: absolute;
+    right: 15%;
+    bottom: 15%;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    background-size: contain;
+    background-position: center;
+    background-image: url('../assets/imgs/edit.svg');
+  }
+
   
   #bottom-bar {
     border: 0px solid red;
@@ -154,18 +173,24 @@ page-driverInterface {
     margin-left: 0.8rem;
     margin-right: 0.8rem;
     border: 3px solid $primary;
+    background-size: contain !important;
+    background-position: center !important;
   }
 
   .toggle-off {
-    background:none;
+    background-color: transparent;
     border: 3px dashed $primary;
+  }
+
+  .toggle-off:hover {
+    background-color: $seethrough !important;
   }
 
   .control-button-right {
     margin-left: auto;
   }
 
-  #toggle-wave-button:not(.toggle-off) ion-icon {
+  #toggle-wave-button:not(.toggle-off) {
     -webkit-animation:wave 1s linear infinite;
     -moz-animation:wave 1s linear infinite;
     animation:wave 1s linear infinite;
@@ -181,6 +206,22 @@ page-driverInterface {
     -webkit-transform: rotate(137deg);
     transform: rotate(137deg);
     color: #fff;
+  }
+
+  #toggle-wave-button {
+    background-image: url('../assets/imgs/hand.svg');
+  }
+
+  #toggle-camera-button {
+    background-image: url('../assets/imgs/video.svg');
+  }
+
+  #toggle-audio-button {
+    background-image: url('../assets/imgs/mic.svg');
+  }
+
+  #end-call-button {
+    background-image: url('../assets/imgs/leave.svg');
   }
 
   #zone-joystick {
