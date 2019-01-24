@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="125.995" height="126" viewBox="0 0 125.995 126">
+  <g id="P" transform="translate(-187.653 -13.517)">
+    <circle id="Ellipse_22" data-name="Ellipse 22" cx="53" cy="53" r="53" transform="translate(197.467 23.33)" fill="#ea1616"/>
+    <text id="P-2" data-name="P" transform="translate(230.501 97.709)" fill="#fff" font-size="62" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700"><tspan x="0" y="0">P</tspan></text>
+    <g id="Ellipse_23" data-name="Ellipse 23" transform="translate(187.653 13.517)" fill="none" stroke="#ea1616" stroke-width="5">
+      <ellipse cx="62.998" cy="63" rx="62.998" ry="63" stroke="none"/>
+      <ellipse cx="62.998" cy="63" rx="60.498" ry="60.5" fill="none"/>
+    </g>
+  </g>
+</svg>

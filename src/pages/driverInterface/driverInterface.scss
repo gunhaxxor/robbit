@@ -85,6 +85,19 @@ page-driverInterface {
     padding: 0 0% 10% 20%;
     background-color: $seethrough;
   }
+
+  #parked-icon {
+    width: 10rem;
+    height: 10rem;
+    position: absolute;
+    right:-5rem;
+    top:5rem;
+    z-index: 100;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url('../assets/imgs/parked.svg');
+  }
   
   #drive-buttons-perspective {
     border: 0px solid blue;

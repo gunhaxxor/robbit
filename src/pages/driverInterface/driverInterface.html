@@ -75,6 +75,7 @@
   </button>
   <div id="bottom-bar">
     <div id="drive-buttons">
+      <div id="parked-icon" [hidden]="!isParked"></div>
       <div id="drive-buttons-perspective">
         <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked">
           <ion-icon name="arrow-round-up"></ion-icon>
