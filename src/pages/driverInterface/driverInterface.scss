@@ -1,5 +1,14 @@
 page-driverInterface {
 
+  [ion-fixed] {
+    height: 100%;
+    width: 100%;
+    
+  }
+  .scroll-content {
+    display: none;
+  }
+
   .content {
     background:#888;
   }
@@ -21,7 +30,7 @@ page-driverInterface {
     height: 25rem;
     display:grid;
     grid-template-rows: 2em auto;
-    background-color: $seethrough;
+    background-color: rgba($seethrough, $seethrough-opacity);
     border-bottom-left-radius: 5rem;
   }
 
@@ -83,7 +92,7 @@ page-driverInterface {
     border: 0px solid yellow;
     perspective: 100px;
     padding: 0 0% 10% 20%;
-    background-color: $seethrough;
+    background-color: rgba($seethrough, $seethrough-opacity);
   }
 
   #parked-icon {
@@ -151,7 +160,7 @@ page-driverInterface {
   #curve-left {
     width: 25rem;
     // border-top-right-radius: 10rem;
-    // background-color: $seethrough;
+    // background-color: rgba($seethrough, $seethrough-opacity);
     background-image: url('../assets/imgs/s-curve.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -161,7 +170,7 @@ page-driverInterface {
     border:0px solid green;
     width: 25rem;
     // border-top-left-radius: 10rem;
-    // background-color: $seethrough;
+    // background-color: rgba($seethrough, $seethrough-opacity);
     background-image: url('../assets/imgs/s-curve2.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -175,7 +184,7 @@ page-driverInterface {
     justify-items: start;
     padding: 0 12rem 0 12rem;
     align-items: center;
-    background-color: $seethrough;
+    background-color: rgba($seethrough, $seethrough-opacity);
   }
 
   .control-button {
@@ -188,6 +197,7 @@ page-driverInterface {
     border: 3px solid $primary;
     background-size: contain !important;
     background-position: center !important;
+    background-repeat: no-repeat;
   }
 
   .toggle-off {
@@ -209,31 +219,21 @@ page-driverInterface {
     animation:wave 1s linear infinite;
   }
 
-  #end-call-button {
-    background-color: $danger;
-    border-color: $danger;
-  }
-
-  #end-call-button ion-icon {
-    -moz-webkit-transform: rotate(137deg);
-    -webkit-transform: rotate(137deg);
-    transform: rotate(137deg);
-    color: #fff;
-  }
-
   #toggle-wave-button {
     background-image: url('../assets/imgs/hand.svg');
   }
-
+  
   #toggle-camera-button {
     background-image: url('../assets/imgs/video.svg');
   }
-
+  
   #toggle-audio-button {
     background-image: url('../assets/imgs/mic.svg');
   }
 
   #end-call-button {
+    background-color: $danger;
+    border-color: $danger;
     background-image: url('../assets/imgs/leave.svg');
   }
 
@@ -243,7 +243,7 @@ page-driverInterface {
     position: relative;
     height: 100%;
     width: 100%;
-    background-color: $seethrough;
+    background-color: rgba($seethrough, $seethrough-opacity);
   }
 
   #zone-joystick .nipple {

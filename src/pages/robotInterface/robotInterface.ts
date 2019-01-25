@@ -284,6 +284,23 @@ export class RobotInterfacePage {
   }
 
   sendData(sendObj:object) {
-    this.peer.send(JSON.stringify(sendObj));
+    if(this.peer != null){
+      try{
+        this.peer.send(JSON.stringify(sendObj));
+      }
+      catch(err) {
+        console.log("Error while trying to send data:");
+        console.log(err);
+      }
+    }
+  }
+
+  endCall() {
+    this.sendData({endcall: true});
+    if(this.peer)
+    {
+      this.peer.destroy();
+    }
+    this.navCtrl.pop();
   }
 }

@@ -1,33 +1,35 @@
-<ion-header>
+<ion-content>
+  <div ion-fixed>
 
-  <ion-navbar>
-    <ion-title> Robot {{this.robotName}} </ion-title>
-    <!-- <button class="robot-nav-button">
-      <ion-icon name="git-compare" (click)="this.videoVerticalFlipped=!this.videoVerticalFlipped"></ion-icon>
-    </button> -->
-    <ble-button></ble-button>
-    <button (click)="this.toggleParking()" id="toggle-park-button" *ngIf="this.videoLinkActive" [class.toggle-button-enabled]="!this.isParked" [class.toggle-button-disabled]="this.isParked">
-      <ion-icon name="move"></ion-icon>
-      <ion-icon name="lock" [hidden]="!isParked"></ion-icon>
-      <ion-icon name="unlock" [hidden]="isParked"></ion-icon>
-    </button>
-  </ion-navbar>
-</ion-header>
+    <div id="corner-div">
+      <div id="robot-name">{{this.robotName}}</div>
+      <video id="robot-local-video" autoplay>
+      </video>
+    </div>
+    
+    <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
+    </video>
+    <div id="emoji-container">
+      <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
+        🙂
+      </div>
+    </div>
 
-<ion-content padding>
-  <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
-  </video>
-  <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
-      🙂
-  </div>
-  <div id="waving" [hidden]="!this.videoLinkActive || !this.isWaving">
-      <ion-icon name="hand"></ion-icon>
-  </div>
-  <video id="robot-local-video" autoplay>
-  </video>
-  <div *ngIf="!this.videoLinkActive" class="waiting-text">
-    Väntar på eleven att ringa upp..
-  </div>
-  <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown"  [innerHTML]="chat.text" >
+    <div id="waving-container">
+      <div id="waving" [hidden]="!this.videoLinkActive || !this.isWaving">
+      </div>
+    </div>
+    
+    
+    <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown"  [innerHTML]="chat.text" >
+    </div>
+    <!-- <ble-button></ble-button> -->
+    
+    <div id="bottom-controls">
+      <button ion-button (click)="this.toggleParking()" id="toggle-park-button" class="control-button" [class.toggle-off]="!this.isParked">
+        P
+      </button>
+      <button ion-button (click)="this.endCall()" id="end-call-button" class="control-button"></button>
+    </div>
   </div>
 </ion-content>

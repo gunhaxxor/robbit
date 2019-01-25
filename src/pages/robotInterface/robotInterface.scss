@@ -1,21 +1,26 @@
 page-robotInterface {
 
-  .scroll-content {
-    background: linear-gradient(to bottom, $primary, $primary-darker);
+  [ion-fixed] {
+    height: 100%;
+    width: 100%; 
   }
 
-  .robot-nav-button {
-      padding: 10px;
-      font-size: 14pt;
-    }
+  .scroll-content {
+    display: none;
+  }
+
+  .content {
+    background-color: $tertiary-lighter;
+  }
+
+
     
-    #robot-remote-video {
-      position: absolute;
-      top: 0;
-      z-index: -1;
+  #robot-remote-video {
+    position: absolute;
+    top: 0;
+    z-index: -1;
     width: 100%;
     height: 100%;
-    background-color: #000;
   }
 
   .video-vertical-flip {
@@ -24,18 +29,176 @@ page-robotInterface {
     -moz-transform:rotateX(180deg); /* Firefox */
   }
 
-  #robot-local-video {
+  #emoji-container {
     position: absolute;
-    left: 0%;
-    top: 0%;
-    z-index: 2;
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+  }
+
+  #emoji {
+    margin: auto;
+    font-size: 13rem; /* Seems like this is as big as it gets before it bugs out*/
+  }
+
+  #waving-container {
+    position: absolute;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    display: grid;
+  }
+
+  #waving {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    margin-left: 5%;
+    background-image: url('../assets/imgs/hand.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    border-radius: 20rem;
+    -moz-animation:wave 1s linear infinite;
+    animation:wave 1s linear infinite;
+  }
+
+  #corner-div {
+    border: 0px solid red;
+    position: absolute;
+    top:0;
+    right:0;
+    width: 15rem;
+    height: 15rem;
+    display:grid;
+    grid-template-rows: 2em auto;
+    background-color: rgba($seethrough, $seethrough-opacity);
+    border-bottom-left-radius: 3rem;
+  }
+
+  #robot-name {
+    border: 0px solid red;
+    font-size: 1.5em;
+    color:white;
+    text-align: center;
+    height: 1.5em;
+    line-height: 2em;
+  }
+
+  #robot-local-video {
+    border: 0px solid yellow;
+    width:75%;
+    margin: auto;
+    border-radius: 2rem;
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
     -moz-transform:rotateY(180deg); /* Firefox */
   }
 
+  #bottom-controls {
+    border: 0px solid red;
+    position: absolute;
+    bottom:0;
+    right: 0;
+    padding: 1rem;
+    padding-left: 2rem;
+    background-color: rgba($seethrough, $seethrough-opacity);
+    border-top-left-radius: 3rem;
+  }
+
+  .control-button {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 1rem;
+    font-size: 2rem;
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+    border: 3px solid $primary;
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat;
+  }
+
+  #toggle-park-button {
+    font-size: 3.5rem;
+    padding: 0;
+    background-color: $danger;
+    border-color: $danger;
+  }
+
+  .toggle-off {
+    background-color: transparent !important;
+    border: 3px dashed $primary !important;
+  }
+
+  .toggle-off:hover {
+    background-color: $seethrough !important;
+  }
+
+  #end-call-button {
+    background-color: $danger;
+    border-color: $danger;
+    background-image: url('../assets/imgs/leave.svg');
+  }
+
+  
+  @keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      background-color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      transform: rotate(-20deg);
+      background-color: $dark;
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      transform: rotate(20deg);
+      background-color: $light;
+    }
+  }
+
+  @-webkit-keyframes wave {
+    0% {
+      -webkit-transform: rotate(20deg);
+      background-color: $light;
+    }
+    
+    50% {
+      -webkit-transform: rotate(-20deg);
+      background-color: $dark;
+    }
+
+    100% {
+      -webkit-transform: rotate(20deg);
+      background-color: $light;
+    }
+  }
+
+  @-moz-keyframes wave {
+    0% {
+      -moz-webkit-transform: rotate(20deg);
+      background-color: $light;
+    }
+    
+    50% {
+      -moz-webkit-transform: rotate(-20deg);
+      background-color: $dark;
+    }
+
+    100% {
+      -moz-webkit-transform: rotate(20deg);
+      background-color: $light;
+    }
+  }
+
+
+
+  /*
 
   #ble {
     text-align: center;
@@ -46,21 +209,14 @@ page-robotInterface {
     padding: 5px;
     color: #fff;
     border: 2px solid #000;
-    position: absolute;
-    right: 10px;
     margin-top: -35px;
   }
 
   #ble ion-icon {
-    position: absolute;
     font-size: 25pt;
     margin-left: -10px;
   }
 
-  #toggle-park-button {
-    padding: 10px;
-    font-size: 14pt;
-  }
 
   .toggle-button-enabled {
     background-color: $approve;
@@ -83,28 +239,9 @@ page-robotInterface {
     
   }
 
-  #emoji {
-    width:100%;
-    height:100pt;
-    font-size: 90pt;
-    text-align: center;
-    vertical-align: middle;
-    margin-top: 50%;
-    
-  }
+  
 
-  #waving {
-    position: absolute;
-    bottom:10%;
-    width:100%;
-    height:200pt;
-    font-size: 200pt;
-    text-align: center;
-    vertical-align: middle;
-
-    -moz-animation:wave 1s linear infinite;
-    animation:wave 1s linear infinite;
-  }
+  
 
   #chat {
     font-size: 45pt;
@@ -126,57 +263,7 @@ page-robotInterface {
   }
 
 
-  @keyframes wave {
-    0% {
-      -webkit-transform: rotate(20deg);
-      transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -webkit-transform: rotate(-20deg);
-      transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -webkit-transform: rotate(20deg);
-      transform: rotate(20deg);
-      color: $light;
-    }
+  
   }
-
-  @-webkit-keyframes wave {
-    0% {
-      -webkit-transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -webkit-transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -webkit-transform: rotate(20deg);
-      color: $light;
-    }
-  }
-
-  @-moz-keyframes wave {
-    0% {
-      -moz-webkit-transform: rotate(20deg);
-      color: $light;
-    }
-    
-    50% {
-      -moz-webkit-transform: rotate(-20deg);
-      color: $dark;
-    }
-
-    100% {
-      -moz-webkit-transform: rotate(20deg);
-      color: $light;
-    }
-  }
+  */
 }

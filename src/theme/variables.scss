@@ -42,7 +42,7 @@ $colors: (
   approve:    #5bf43d,
   light:      #E8DDCB,
   dark:       #031634,
-  seethrough: #122C3499,
+  seethrough: rgb(18, 44, 52),/*#122C3499,*/
 );
 
 $primary : color($colors, primary);
@@ -53,6 +53,7 @@ $approve : color($colors, approve);
 $light : color($colors, light);
 $dark : color($colors, dark);
 $seethrough : color($colors, seethrough);
+$seethrough-opacity : 0.6;
 
 $primary-lighter : lighten($primary, 10);
 $primary-darker : darken($primary, 10);
