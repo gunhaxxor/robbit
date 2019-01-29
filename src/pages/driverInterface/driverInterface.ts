@@ -50,7 +50,7 @@ export class DriverInterfacePage {
   attentionSound: any;
   
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 20 };
+  chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 60 };
   chatTimeout: any;
   @ViewChild('chatInput') chatInput: ElementRef;
 
