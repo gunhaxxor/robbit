@@ -252,16 +252,8 @@ export class DriverInterfacePage {
   initiateCall() {
     console.log("starting call as initiator");
     this.videoLinkWaitingForAnswer = true;
-    this.peer = new Peer({ initiator: true, stream: this.localStream, config: {
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        {
-          urls: "turn:54.197.33.120:3478",
-          username: "greger",
-          credential: "bajsmannen"
-        }
-      ]
-    } });
+    let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    this.peer = new Peer({ initiator: true, stream: this.localStream, config: peerConfig });
     console.log("peer object is:");
     console.log(this.peer);
     this.peer.on("signal", data => {

@@ -114,19 +114,11 @@ export class RobotInterfacePage {
 
   initiateListen() {
     console.log("initiating listen");
+    let peerConfig = JSON.parse(process.env.PEER_CONFIG);
     this.peer = new Peer({
       initiator: false,
       stream: this.localStream,
-      config: {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          {
-            urls: "turn:54.197.33.120:3478",
-            username: "greger",
-            credential: "bajsmannen"
-          }
-        ]
-      }
+      config: peerConfig
     });
     console.log("peer object is:");
     console.log(this.peer);
