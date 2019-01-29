@@ -79,10 +79,10 @@
       <div id="parked-icon" [hidden]="!isParked"></div>
       <div id="drive-buttons-perspective">
         <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked">
-          <ion-icon name="arrow-round-up"></ion-icon>
+          
         </button>
         <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked">
-          <ion-icon name="arrow-round-down"></ion-icon>
+          
         </button>
       </div>
     </div>
@@ -106,14 +106,6 @@
       </div>
     </div>
     <div id="zone-joystick">
-      <div id="joystick-arrows-container">
-        <div id="joystick-arrows">
-          <ion-icon name="arrow-up" id="joystick-up" class="joystick-arrow"></ion-icon>
-          <ion-icon name="arrow-down" id="joystick-down" class="joystick-arrow"></ion-icon>
-          <ion-icon name="arrow-forward" id="joystick-right" class="joystick-arrow"></ion-icon>
-          <ion-icon name="arrow-back" id="joystick-left" class="joystick-arrow"></ion-icon>
-        </div>
-      </div>
     </div>
   </div>
 </div>

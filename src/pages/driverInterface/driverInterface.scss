@@ -74,6 +74,7 @@ page-driverInterface {
     border-radius: 1rem;
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     background-image: url('../assets/imgs/edit.svg');
   }
 
@@ -128,6 +129,8 @@ page-driverInterface {
     margin-bottom:0;
     border-radius: 1rem;
     font-size: 2rem;
+    background-position: center;
+    background-repeat: no-repeat;
   }
   
   #forward-button {
@@ -135,11 +138,15 @@ page-driverInterface {
     align-self: flex-end;
     grid-area: forward-button;
     margin-bottom: 1rem;
+    background-size: 8rem;
+    background-image: url('../assets/imgs/forward_arrow.svg');
   }
   
   #reverse-button {
     align-self: flex-start;
     grid-area: reverse-button;
+    background-size: 6rem;
+    background-image: url('../assets/imgs/back_arrow.svg');
   }
 
   #bottom-bar-middle {
@@ -254,6 +261,10 @@ page-driverInterface {
   #zone-joystick .back {
     opacity: 1 !important;
     background-color: $primary-darker !important;
+    background-image: url('../assets/imgs/angle_arrows.svg') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 12rem !important;
   }
 
   #zone-joystick .front {
@@ -261,52 +272,6 @@ page-driverInterface {
     background-color: $primary !important;
   }
 
-  #joystick-arrows-container {
-    width: 100%;
-    height: 100%;
-    display: grid;
-  }
-
-  #joystick-arrows {
-    width: 11rem;
-    height: 11rem;
-    margin: auto;
-    display: grid;
-    grid-template-rows: 33% 33% 33%;
-    grid-template-columns: 33% 33% 33%;
-    grid-template-areas: 
-      ". joy-up ."
-      "joy-left . joy-right"
-      ". joy-down .";
-      z-index: 950 !important;
-      position: relative;
-      opacity: 0.5;
-  }
-
-  .joystick-arrow {
-    border: 0px solid red;
-    color: white;
-    font-size: 2rem;
-    text-align: center;
-    margin:auto;
-    
-  }
-
-  #joystick-up {
-    grid-area: joy-up;
-  }
-
-  #joystick-down {
-    grid-area: joy-down;
-  }
-
-  #joystick-right {
-    grid-area: joy-right;
-  }
-
-  #joystick-left{
-    grid-area: joy-left;
-  }
 
   
   @keyframes wave {

@@ -132,9 +132,9 @@ export class DriverInterfacePage {
     let options = {
       zone: document.getElementById("zone-joystick"),
       mode: 'static',
-      position: {right: '50%', top: '50%'},
+      position: {right: '70%', top: '50%'},
       color: 'white',
-      size: 100
+      size: 150
     };
 
     let manager = nipplejs.create(options);
