@@ -189,7 +189,7 @@ export class DriverInterfacePage {
     console.log("ionViewWillEnter triggered");
     this.robotControlIntervalId = setInterval(() => {
       if(!this.videoLinkActive) {
-        console.log("Not sending anything because we have no connection.");
+        //console.log("Not sending anything because we have no connection.");
         return;
       }
 
