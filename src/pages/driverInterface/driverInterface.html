@@ -74,6 +74,7 @@
         </div>
       </div>
     </div>
+    <ion-spinner id="progress-spinner" [hidden]="!this.videoLinkWaitingForAnswer"></ion-spinner>
     <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
     </video>
     <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
