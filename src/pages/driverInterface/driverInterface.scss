@@ -138,7 +138,8 @@ page-driverInterface {
   #drive-buttons {
     border: 0px solid yellow;
     perspective: 100px;
-    padding: 0 0% 10% 20%;
+    padding: 0% 0% 10% 30%;
+    
     background-color: rgba($seethrough, $seethrough-opacity);
   }
 
@@ -157,8 +158,8 @@ page-driverInterface {
   
   #drive-buttons-perspective {
     border: 0px solid blue;
-    transform: rotateX(35deg);
-    width: 100%;
+    transform: rotateX(35deg) skewX(-14deg);
+    width: 120%;
     height: 100%;
     display:grid;
     align-items: center;
