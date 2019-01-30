@@ -247,6 +247,13 @@ export class DriverInterfacePage {
     this.attentionSound = new Audio();
     this.attentionSound.src = "assets/sound/kickhat-open-button-2.mp3";
     this.attentionSound.load();
+
+    // ugly hack for now, to make it call the robot after a short delay
+    // hoping that all webrtc setup is done by then.
+    // Maybe we can do this with a promise instead?
+    setTimeout(() => {
+      this.initiateCall();
+    }, 2000);
   }
 
   initiateCall() {
