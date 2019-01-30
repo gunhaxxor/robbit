@@ -313,6 +313,10 @@ page-driverInterface {
     background-color: $primary-darker;
   }
 
+  #chat-input.chat-input-disabled {
+    border-color: rgba($primary, 0.5);
+  }
+
   #chat-send-button {
     border: 0px solid yellow;
     width: 7rem;
@@ -335,6 +339,14 @@ page-driverInterface {
     height: 100%;
     width: 100%;
     background-color: rgba($seethrough, $seethrough-opacity);
+  }
+
+  #zone-joystick.joystick-disabled .nipple {
+    opacity: 0.5 !important;
+  }
+
+  #zone-joystick.joystick-disabled .front {
+    display: none !important;
   }
 
   #zone-joystick .nipple {

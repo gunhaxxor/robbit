@@ -83,9 +83,9 @@
       <div id="drive-buttons">
         <div id="parked-icon" [hidden]="!isParked"></div>
         <div id="drive-buttons-perspective">
-          <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked">
+          <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked || !videoLinkActive">
           </button>
-          <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked">
+          <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked || !videoLinkActive">
           </button>
         </div>
       </div>
@@ -95,11 +95,12 @@
           <div id="curve-right"></div>
         </div>
         <div id="bottom-controls">
-          <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving">
+          <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving" [disabled]="!videoLinkActive">
           </button>
-          <form (submit)="this.sendChat()" id="chat-form">
-            <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" [class.is-writing]="chat.text!=''" ></ion-input>
-            <button ion-button id="chat-send-button"></button>
+          <form (submit)="this.sendChat()" id="chat-form" >
+            <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" [class.is-writing]="chat.text!=''" [disabled]="!videoLinkActive" [class.chat-input-disabled]="!videoLinkActive">
+            </ion-input>
+            <button ion-button id="chat-send-button" [disabled]="!videoLinkActive"></button>
           </form>
           <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-off]="!this.showCamera">
           </button>
@@ -109,7 +110,7 @@
           </button>
         </div>
       </div>
-      <div id="zone-joystick">
+      <div id="zone-joystick" [class.joystick-disabled]="!videoLinkActive">
       </div>
     </div>
   </div>
