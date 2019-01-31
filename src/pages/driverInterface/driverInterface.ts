@@ -38,9 +38,9 @@ export class DriverInterfacePage {
   isParked: boolean = false;
   isWaving: boolean = false;
   cameraOption: string = "constraint";
-  SERVO_START_VALUE: number = 100;
-  SERVO_MAX_VALUE: number = 155;
-  SERVO_MIN_VALUE: number = 75;
+  SERVO_START_VALUE: number = 90;
+  SERVO_MAX_VALUE: number = 100;
+  SERVO_MIN_VALUE: number = 20;
   ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
   DRIVE_MOTOR_SCALE: number = 0.3;
   TURN_MOTOR_SCALE: number = 0.3;
