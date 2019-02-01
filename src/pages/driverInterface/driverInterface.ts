@@ -530,6 +530,7 @@ export class DriverInterfacePage {
       console.log("I am your personal robot.");
     });
     bot.addCommand("kör framåt", ()=>{
+      clearInterval(this.voiceDriveTimeout);
       this.drive(1, 1, false);
       this.voiceDriveTimeout = setInterval(() => {
         this.drive(1, 1, false);
@@ -539,6 +540,7 @@ export class DriverInterfacePage {
       }, this.voiceDriveTimeoutMillis);
     });
     bot.addCommand("kör bakåt", ()=>{
+      clearInterval(this.voiceDriveTimeout);
       this.drive(-1, -1, false);
       this.voiceDriveTimeout = setInterval(() => {
         this.drive(-1, 1, false);
@@ -548,6 +550,7 @@ export class DriverInterfacePage {
       }, this.voiceDriveTimeoutMillis);
     });
     bot.addCommand("vänster", ()=>{
+      clearInterval(this.voiceDriveTimeout);
       this.drive(-1, 1, true);
       this.voiceDriveTimeout = setInterval(() => {
         this.drive(-1, 1, true);
@@ -557,6 +560,7 @@ export class DriverInterfacePage {
       }, this.voiceRotateTimeoutMillis);
     });
     bot.addCommand("höger", ()=>{
+      clearInterval(this.voiceDriveTimeout);
       this.drive(1, -1, true);
       this.voiceDriveTimeout = setInterval(() => {
         this.drive(1, -1, true);
@@ -592,12 +596,12 @@ export class DriverInterfacePage {
     bot.addCommand("mikrofon", ()=>{
       this.toggleAudioStream();
     });
-    bot.addCommand("lyssna", ()=>{
-      bot.setNoKeywordMode(true);
-    });
-    bot.addCommand("lyssna inte", ()=>{
-      bot.setNoKeywordMode(false);
-    });
+    // bot.addCommand("lyssna", ()=>{
+    //   bot.setNoKeywordMode(true);
+    // });
+    // bot.addCommand("lyssna inte", ()=>{
+    //   bot.setNoKeywordMode(false);
+    // });
 
     bot.run();
     this.voiceRecognitionState = 0;
