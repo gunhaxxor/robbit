@@ -53,6 +53,11 @@ export class DriverInterfacePage {
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 60 };
   chatTimeout: any;
+  voiceDriveTimeout: any;
+  voiceDriveIntervalMillis: number = 200;
+  voiceDriveTimeoutMillis: number = 2000;
+  voiceRotateTimeoutMillis: number = 1000;
+  voiceRecognitionState: number = -1;
   @ViewChild('chatInput') chatInput: ElementRef;
 
   constructor(
@@ -398,6 +403,9 @@ export class DriverInterfacePage {
   }
 
   addCameraStream() {
+    if(!this.peer) {
+      return;
+    }
     if(this.localVideoTrack != null)
     {
       console.log("Adding video track to stream.");
@@ -421,6 +429,9 @@ export class DriverInterfacePage {
   }
 
   removeAudioStream() {
+    if(!this.peer) {
+      return;
+    }
     let audioTracks = this.localStream.getAudioTracks();
     if(audioTracks.length == 0)
     {
@@ -436,6 +447,9 @@ export class DriverInterfacePage {
   }
 
   addAudioStream() {
+    if(!this.peer) {
+      return;
+    }
     if(this.localAudioTrack != null)
     {
       console.log("Adding audio track to stream.");
@@ -445,7 +459,6 @@ export class DriverInterfacePage {
       this.muteAudio = false;
       this.sendData({muteDriver: this.muteAudio});
     }
-    
   }
 
   retrieveCamera() {
@@ -547,87 +560,6 @@ export class DriverInterfacePage {
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
-  setupSpeechRecognition() {
-    
-    var bot = new CommandBot;
-    bot.setLanguageRecognition("sv-SE");
-    bot.setKeyword("Robot");
-    bot.addCommand("who are you", ()=>{
-      console.log("Understood who are you");
-    });
-    bot.addCommand("kör framåt", ()=>{
-      console.log("Uppfattad: kör framåt");
-      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
-      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("kör bakåt", ()=>{
-      console.log("Uppfattad: kör bakåt");
-      let leftMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
-      let rightMotorFloored = Math.floor(this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE *-1);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("vänster", ()=>{
-      console.log("Uppfattad: vänster");
-      let robotRotation = -1.0;
-      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
-
-      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
-      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.addCommand("höger", ()=>{
-      console.log("Uppfattad: höger");
-      let robotRotation = 1.0;
-      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
-
-      let leftMotorFloored = Math.floor(rotationMotorAdjustment);
-      let rightMotorFloored = Math.floor( -rotationMotorAdjustment);
-      let servoFloored = Math.floor(this.servoAngle);
-      let msg =
-        "" +
-        leftMotorFloored +
-        "," +
-        rightMotorFloored +
-        "," +
-        servoFloored +
-        "\n";
-      console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
-    });
-    bot.run();
-  }
-
   toggleParking() {
     this.isParked = !this.isParked;
     this.sendData({isParked: this.isParked});
@@ -639,6 +571,159 @@ export class DriverInterfacePage {
     if(this.isWaving) {
       this.attentionSound.play();
     }
+  }
+
+  setupSpeechRecognition() {
+    console.log("Initiating speech recognition.");
+    
+    var bot = new CommandBot;
+    bot.setLanguageRecognition("sv-SE");
+    bot.setKeyword("Robot");
+    bot.setNoKeywordMode(false);
+    bot.setKeywordRecognised(()=>{
+      this.voiceRecognitionState = 1;
+    });
+    bot.setCommandRecognised(()=>{
+      this.voiceRecognitionState = 2;
+      setTimeout(()=>{
+        this.voiceRecognitionState = 0;
+      }, 1000);
+    });
+    bot.setNoCommandRecognised(()=>{
+      this.voiceRecognitionState = 3;
+      setTimeout(()=>{
+        this.voiceRecognitionState = 0;
+      }, 1000);
+    });
+
+
+    bot.addCommand("who are you", ()=>{
+      console.log("I am your personal robot.");
+    });
+    bot.addCommand("kör framåt", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+      this.drive(1, 1, false);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(1, 1, false);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceDriveTimeoutMillis);
+    });
+    bot.addCommand("kör bakåt", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+      this.drive(-1, -1, false);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(-1, 1, false);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceDriveTimeoutMillis);
+    });
+    bot.addCommand("vänster", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+      this.drive(-1, 1, true);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(-1, 1, true);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceRotateTimeoutMillis);
+    });
+    bot.addCommand("höger", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+      this.drive(1, -1, true);
+      this.voiceDriveTimeout = setInterval(() => {
+        this.drive(1, -1, true);
+      }, this.voiceDriveIntervalMillis);
+      setTimeout(()=>{
+        clearInterval(this.voiceDriveTimeout);
+      }, this.voiceRotateTimeoutMillis);
+    });
+    bot.addCommand("stopp", ()=>{
+      clearInterval(this.voiceDriveTimeout);
+    });
+    bot.addCommand("titta upp", ()=>{
+      this.angleChange(5);
+    });
+    bot.addCommand("titta ner", ()=>{
+      this.angleChange(-5);
+    });
+    bot.addCommand("räck upp handen", ()=>{
+      this.toggleWaving();
+    });
+    bot.addCommand("ta ner handen", ()=>{
+      this.isWaving = false;
+    });
+    bot.addCommand("avsluta", ()=>{
+      this.navCtrl.pop();
+    });
+    bot.addCommand("ring upp", ()=>{
+      this.initiateCall();
+    });
+    bot.addCommand("video", ()=>{
+      this.toggleCameraStream();
+    });
+    bot.addCommand("mikrofon", ()=>{
+      this.toggleAudioStream();
+    });
+    // bot.addCommand("lyssna", ()=>{
+    //   bot.setNoKeywordMode(true);
+    // });
+    // bot.addCommand("lyssna inte", ()=>{
+    //   bot.setNoKeywordMode(false);
+    // });
+
+    bot.run();
+    this.voiceRecognitionState = 0;
+  }
+
+  drive(leftMotor:number, rightMotor:number, isRotation:boolean ) {
+    let leftMotorFloored = 0;
+    let rightMotorFloored = 0;
+
+    if(isRotation) {
+      let robotRotation = 1.0;
+      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+
+      leftMotorFloored = Math.floor(leftMotor * rotationMotorAdjustment);
+      rightMotorFloored = Math.floor(rightMotor * rotationMotorAdjustment);
+    }
+    else {
+      leftMotorFloored = Math.floor(leftMotor * this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+      rightMotorFloored = Math.floor(rightMotor * this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE);
+    }
+    let servoFloored = Math.floor(this.servoAngle);
+    let msg =
+      "" +
+      leftMotorFloored +
+      "," +
+      rightMotorFloored +
+      "," +
+      servoFloored +
+      "\n";
+    console.log("sending robot data to socket: " + msg);
+    this.socket.emit("robotControl", msg);
+  }
+
+  
+  angleChange(servoAngleChange) {
+    let leftMotorFloored = 0;
+    let rightMotorFloored = 0;
+    this.servoAngle += servoAngleChange * this.SERVO_SCALE;
+    this.servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, this.servoAngle));
+    let servoFloored = Math.floor(this.servoAngle);
+
+    let msg =
+      "" +
+      leftMotorFloored +
+      "," +
+      rightMotorFloored +
+      "," +
+      servoFloored +
+      "\n";
+    console.log("sending robot data to socket: " + msg);
+    this.socket.emit("robotControl", msg);
   }
 
   

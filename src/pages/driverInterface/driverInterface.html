@@ -19,6 +19,12 @@
     <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
       <ion-icon name="hand"></ion-icon>
     </button>
+    <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+      [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
+      [class.voice-recognition-command]="this.voiceRecognitionState == 2"
+      [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
+      <ion-icon name="quote"></ion-icon>
+    </div>
   </ion-navbar>
 </ion-header>
   
@@ -80,6 +86,12 @@
     <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
       <ion-icon name="call"></ion-icon>
     </button>
+    <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+      [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
+      [class.voice-recognition-command]="this.voiceRecognitionState == 2"
+      [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
+      <ion-icon name="quote"></ion-icon>
+    </div>
     <div id="bottom-bar">
       <div id="drive-buttons">
         <div id="parked-icon" [hidden]="!isParked"></div>
