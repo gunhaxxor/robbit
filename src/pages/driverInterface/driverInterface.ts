@@ -8,6 +8,7 @@ import nipplejs from "nipplejs";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
+import { HostListener } from '@angular/core';
 // import encoding from 'text-encoding';
 
 declare var CommandBot: any;
@@ -254,6 +255,37 @@ export class DriverInterfacePage {
     setTimeout(() => {
       this.initiateCall();
     }, 2000);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) { 
+    console.log("key down:"+event.key);
+    if(this.chat.text != "" || !this.videoLinkActive) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowUp':
+        
+        break;
+      case 'ArrowDown':
+        
+        break;
+        case 'ArrowLeft':
+        
+        break;
+      case 'ArrowRight':
+        
+        break;
+      case 'a':
+        
+        break;
+      case 'z':
+        
+        break;
+      default:
+        break;
+    }
   }
 
   initiateCall() {
