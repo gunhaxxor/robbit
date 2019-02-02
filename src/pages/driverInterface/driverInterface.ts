@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from "@angular/core";
-import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController, IonicFormInput } from "ionic-angular";
+import { NavController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
+import { SettingsPage } from '../settings-page/settings-page';
 // import { BleService } from "../../providers/bleservice/bleService";
 import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
@@ -13,7 +14,6 @@ import { HostListener } from '@angular/core';
 
 declare var CommandBot: any;
 
-// @IonicPage()
 @Component({
   selector: "page-driverInterface",
   templateUrl: "driverInterface.html"
@@ -69,7 +69,8 @@ export class DriverInterfacePage {
     private socket: Socket,
     // private camera: Camera,
     private diagnostic: Diagnostic,
-    public popoverEmojiCtrl: PopoverController
+    public popoverEmojiCtrl: PopoverController,
+    public popoverSettingsCtrl: PopoverController
   ) {
     
   }
@@ -263,33 +264,62 @@ export class DriverInterfacePage {
   }
 
   @HostListener('document:keydown', ['$event'])
+  @HostListener('document:keyup', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) { 
-    console.log("key down:"+event.key);
-    if(this.chat.text != "" || !this.videoLinkActive) {
+    // console.log("key down:"+event.key);
+    
+    if(document.activeElement.className.includes("text-input")) {
       return;
     }
 
-    switch (event.key) {
-      case 'ArrowUp':
-        
-        break;
-      case 'ArrowDown':
-        
-        break;
+    if(event.type == "keydown") {
+      switch (event.key) {
+        case 'ArrowUp':
+          this.angleChange(1);
+          break;
+        case 'ArrowDown':
+          this.angleChange(-1);
+          break;
         case 'ArrowLeft':
-        
-        break;
-      case 'ArrowRight':
-        
-        break;
-      case 'a':
-        
-        break;
-      case 'z':
-        
-        break;
-      default:
-        break;
+          this.drive(-1, 1, true);
+          break;
+        case 'ArrowRight':
+          this.drive(1, -1, true);
+          break;
+        case 'a':
+          this.forwardActive = true;
+          break;
+        case 'z':
+          this.reverseActive = true;
+          break;
+        case 's':
+          this.presentSettingsPopover(undefined);
+          break;
+        case 'e':
+          if(!this.showCamera) {
+            this.presentEmojiPopover(undefined);
+          }
+          break;
+        case 'k':
+          this.toggleCameraStream();
+          break;
+        case 'm':
+          this.toggleAudioStream();
+          break;
+        case 'w':
+          this.toggleWaving();
+          break;
+      }
+    }
+    else if(event.type == "keyup") {
+      switch (event.key) {
+        case "a":
+          this.forwardActive = false;
+          break;
+        case "z":
+          this.reverseActive = false;
+          break;
+      }
     }
   }
 
@@ -499,6 +529,18 @@ export class DriverInterfacePage {
 
   sendEmoji(text:String) {
     this.sendData({emoji:text});
+  }
+
+  presentSettingsPopover(myEvent) {
+    let popover = this.popoverSettingsCtrl.create(SettingsPage);
+    popover.present({
+      ev: myEvent
+    });
+    popover.onDidDismiss(text => {
+      if(text == null) {
+        return;
+      }
+    });
   }
 
   clearChat() {

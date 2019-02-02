@@ -92,6 +92,9 @@
       [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
       <ion-icon name="quote"></ion-icon>
     </div>
+    <button ion-button id="settings-button" (click)="this.presentSettingsPopover($event)">
+    Settings
+    </button>
     <div id="bottom-bar">
       <div id="drive-buttons">
         <div id="parked-icon" [hidden]="!isParked"></div>
