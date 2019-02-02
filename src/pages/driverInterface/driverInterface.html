@@ -83,18 +83,15 @@
     <ion-spinner id="progress-spinner" [hidden]="!this.videoLinkWaitingForAnswer"></ion-spinner>
     <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
     </video>
-    <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
+    <!-- <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
       <ion-icon name="call"></ion-icon>
-    </button>
-    <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+    </button> -->
+    <!-- <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
       [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
       [class.voice-recognition-command]="this.voiceRecognitionState == 2"
       [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
       <ion-icon name="quote"></ion-icon>
-    </div>
-    <button ion-button id="settings-button" (click)="this.presentSettingsPopover($event)">
-    Settings
-    </button>
+    </div> -->
     <div id="bottom-bar">
       <div id="drive-buttons">
         <div id="parked-icon" [hidden]="!isParked"></div>
@@ -118,7 +115,12 @@
             </ion-input>
             <button ion-button id="chat-send-button" [disabled]="!videoLinkActive"></button>
           </form>
-          <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-off]="!this.showCamera">
+          <button ion-button id="settings-button"
+            (click)="this.presentSettingsPopover($event)"
+            class="control-button control-button-right">
+            <ion-icon name="settings"></ion-icon>
+          </button>
+          <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button" [class.toggle-off]="!this.showCamera">
           </button>
           <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-off]="this.muteAudio">
           </button>

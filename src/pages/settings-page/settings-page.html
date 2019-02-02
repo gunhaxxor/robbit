@@ -1,5 +1,11 @@
 <ion-content padding>
-    <div>Inställningar</div>
+    <div id="voice-control" class="setting-row">
+        <ion-label>Röststyrning (experimentellt)</ion-label>
+        <ion-toggle
+            (ionChange)="this.setVoiceControl();"
+            id="voice-control-toggle"
+            [(ngModel)]="this.voiceControlEnabled"></ion-toggle>
+    </div>
     <button ion-button (click)="this.viewCtrl.dismiss()" id="cancel-button" >
         <ion-icon name="close"></ion-icon>
     </button>

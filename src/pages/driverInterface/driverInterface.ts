@@ -53,6 +53,8 @@ export class DriverInterfacePage {
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 60 };
   chatTimeout: any;
+  bot: any;
+  voiceControlEnabled: boolean = false;
   voiceDriveTimeout: any;
   voiceDriveIntervalMillis: number = 200;
   voiceDriveTimeoutMillis: number = 2000;
@@ -249,7 +251,9 @@ export class DriverInterfacePage {
       this.socket.emit("robotControl", msg);
     }, 300);
 
-    this.setupSpeechRecognition();
+    if(this.voiceControlEnabled) {
+      this.setupSpeechRecognition();
+    }
 
     this.attentionSound = new Audio();
     this.attentionSound.src = "assets/sound/kickhat-open-button-2.mp3";
@@ -532,7 +536,9 @@ export class DriverInterfacePage {
   }
 
   presentSettingsPopover(myEvent) {
-    let popover = this.popoverSettingsCtrl.create(SettingsPage);
+    let popover = this.popoverSettingsCtrl.create(SettingsPage, {
+      driverPage: ()=> {return this;}
+    });
     popover.present({
       ev: myEvent
     });
@@ -618,106 +624,121 @@ export class DriverInterfacePage {
   setupSpeechRecognition() {
     console.log("Initiating speech recognition.");
     
-    var bot = new CommandBot;
-    bot.setLanguageRecognition("sv-SE");
-    bot.setKeyword("Robot");
-    bot.setNoKeywordMode(false);
-    bot.setKeywordRecognised(()=>{
-      this.voiceRecognitionState = 1;
-    });
-    bot.setCommandRecognised(()=>{
-      this.voiceRecognitionState = 2;
-      setTimeout(()=>{
-        this.voiceRecognitionState = 0;
-      }, 1000);
-    });
-    bot.setNoCommandRecognised(()=>{
-      this.voiceRecognitionState = 3;
-      setTimeout(()=>{
-        this.voiceRecognitionState = 0;
-      }, 1000);
-    });
-
-
-    bot.addCommand("who are you", ()=>{
-      console.log("I am your personal robot.");
-    });
-    bot.addCommand("kör framåt", ()=>{
-      clearInterval(this.voiceDriveTimeout);
-      this.drive(1, 1, false);
-      this.voiceDriveTimeout = setInterval(() => {
+    if(!this.bot) {
+      this.bot = new CommandBot;
+      this.bot.setLanguageRecognition("sv-SE");
+      this.bot.setKeyword("Robot");
+      this.bot.setNoKeywordMode(false);
+      this.bot.setKeywordRecognised(()=>{
+        this.voiceRecognitionState = 1;
+      });
+      this.bot.setCommandRecognised(()=>{
+        this.voiceRecognitionState = 2;
+        setTimeout(()=>{
+          this.voiceRecognitionState = 0;
+        }, 1000);
+      });
+      this.bot.setNoCommandRecognised(()=>{
+        this.voiceRecognitionState = 3;
+        setTimeout(()=>{
+          this.voiceRecognitionState = 0;
+        }, 1000);
+      });
+  
+  
+      this.bot.addCommand("who are you", ()=>{
+        console.log("I am your personal robot.");
+      });
+      this.bot.addCommand("kör framåt", ()=>{
+        clearInterval(this.voiceDriveTimeout);
         this.drive(1, 1, false);
-      }, this.voiceDriveIntervalMillis);
-      setTimeout(()=>{
+        this.voiceDriveTimeout = setInterval(() => {
+          this.drive(1, 1, false);
+        }, this.voiceDriveIntervalMillis);
+        setTimeout(()=>{
+          clearInterval(this.voiceDriveTimeout);
+        }, this.voiceDriveTimeoutMillis);
+      });
+      this.bot.addCommand("kör bakåt", ()=>{
         clearInterval(this.voiceDriveTimeout);
-      }, this.voiceDriveTimeoutMillis);
-    });
-    bot.addCommand("kör bakåt", ()=>{
-      clearInterval(this.voiceDriveTimeout);
-      this.drive(-1, -1, false);
-      this.voiceDriveTimeout = setInterval(() => {
-        this.drive(-1, 1, false);
-      }, this.voiceDriveIntervalMillis);
-      setTimeout(()=>{
+        this.drive(-1, -1, false);
+        this.voiceDriveTimeout = setInterval(() => {
+          this.drive(-1, 1, false);
+        }, this.voiceDriveIntervalMillis);
+        setTimeout(()=>{
+          clearInterval(this.voiceDriveTimeout);
+        }, this.voiceDriveTimeoutMillis);
+      });
+      this.bot.addCommand("vänster", ()=>{
         clearInterval(this.voiceDriveTimeout);
-      }, this.voiceDriveTimeoutMillis);
-    });
-    bot.addCommand("vänster", ()=>{
-      clearInterval(this.voiceDriveTimeout);
-      this.drive(-1, 1, true);
-      this.voiceDriveTimeout = setInterval(() => {
         this.drive(-1, 1, true);
-      }, this.voiceDriveIntervalMillis);
-      setTimeout(()=>{
+        this.voiceDriveTimeout = setInterval(() => {
+          this.drive(-1, 1, true);
+        }, this.voiceDriveIntervalMillis);
+        setTimeout(()=>{
+          clearInterval(this.voiceDriveTimeout);
+        }, this.voiceRotateTimeoutMillis);
+      });
+      this.bot.addCommand("höger", ()=>{
         clearInterval(this.voiceDriveTimeout);
-      }, this.voiceRotateTimeoutMillis);
-    });
-    bot.addCommand("höger", ()=>{
-      clearInterval(this.voiceDriveTimeout);
-      this.drive(1, -1, true);
-      this.voiceDriveTimeout = setInterval(() => {
         this.drive(1, -1, true);
-      }, this.voiceDriveIntervalMillis);
-      setTimeout(()=>{
+        this.voiceDriveTimeout = setInterval(() => {
+          this.drive(1, -1, true);
+        }, this.voiceDriveIntervalMillis);
+        setTimeout(()=>{
+          clearInterval(this.voiceDriveTimeout);
+        }, this.voiceRotateTimeoutMillis);
+      });
+      this.bot.addCommand("stopp", ()=>{
         clearInterval(this.voiceDriveTimeout);
-      }, this.voiceRotateTimeoutMillis);
-    });
-    bot.addCommand("stopp", ()=>{
-      clearInterval(this.voiceDriveTimeout);
-    });
-    bot.addCommand("titta upp", ()=>{
-      this.angleChange(5);
-    });
-    bot.addCommand("titta ner", ()=>{
-      this.angleChange(-5);
-    });
-    bot.addCommand("räck upp handen", ()=>{
-      this.toggleWaving();
-    });
-    bot.addCommand("ta ner handen", ()=>{
-      this.isWaving = false;
-    });
-    bot.addCommand("avsluta", ()=>{
-      this.navCtrl.pop();
-    });
-    bot.addCommand("ring upp", ()=>{
-      this.initiateCall();
-    });
-    bot.addCommand("video", ()=>{
-      this.toggleCameraStream();
-    });
-    bot.addCommand("mikrofon", ()=>{
-      this.toggleAudioStream();
-    });
-    // bot.addCommand("lyssna", ()=>{
-    //   bot.setNoKeywordMode(true);
-    // });
-    // bot.addCommand("lyssna inte", ()=>{
-    //   bot.setNoKeywordMode(false);
-    // });
+      });
+      this.bot.addCommand("titta upp", ()=>{
+        this.angleChange(5);
+      });
+      this.bot.addCommand("titta ner", ()=>{
+        this.angleChange(-5);
+      });
+      this.bot.addCommand("räck upp handen", ()=>{
+        this.toggleWaving();
+      });
+      this.bot.addCommand("ta ner handen", ()=>{
+        this.isWaving = false;
+      });
+      this.bot.addCommand("avsluta", ()=>{
+        this.navCtrl.pop();
+      });
+      this.bot.addCommand("ring upp", ()=>{
+        this.initiateCall();
+      });
+      this.bot.addCommand("video", ()=>{
+        this.toggleCameraStream();
+      });
+      this.bot.addCommand("mikrofon", ()=>{
+        this.toggleAudioStream();
+      });
+      // this.bot.addCommand("lyssna", ()=>{
+      //   this.bot.setNoKeywordMode(true);
+      // });
+      // this.bot.addCommand("lyssna inte", ()=>{
+      //   this.bot.setNoKeywordMode(false);
+      // });
+    }
 
-    bot.run();
+    this.bot.run();
     this.voiceRecognitionState = 0;
+  }
+
+  setVoiceControl() {
+    if(this.voiceControlEnabled) {
+      console.log("starting voice control");
+      
+      this.setupSpeechRecognition();
+    }
+    else {
+      console.log("stopping voice control");
+      this.bot.stop();
+
+    }
   }
 
   drive(leftMotor:number, rightMotor:number, isRotation:boolean ) {

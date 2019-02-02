@@ -3,7 +3,7 @@
 
 
 .popover-content {
-  background: $seethrough !important;
+  background-color: rgba($seethrough, $seethrough-opacity) !important;
   border-radius: 5rem !important;
   //border-top-right-radius: 2rem !important;
   width: auto !important;
@@ -17,8 +17,9 @@ page-settings {
   
   .scroll-content {
     overflow: hidden;
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 40rem;
+    display: grid;
+    grid-template-columns: auto;
     justify-items: center;
     align-items: center;
   }
@@ -26,8 +27,22 @@ page-settings {
   .content {
     padding:2rem !important;
     background: #0000;
+    color: white;
+    font-size: 2rem;
+  }
+
+  .setting-row {
+    border: 0px solid red;
+    width: 100%;
+    display: grid;
+    margin: 2rem;
+    grid-template-columns: auto 10rem;
+    align-items: center;
   }
   
+  ion-label {
+    border: 0px solid green;
+  }
   
   #cancel-button {
     position: absolute;
