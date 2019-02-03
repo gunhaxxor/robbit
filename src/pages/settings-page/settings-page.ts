@@ -9,6 +9,7 @@ import { ViewController, NavParams  } from "ionic-angular";
 export class SettingsPage {
   driverPage: any;
   voiceControlEnabled: boolean;
+  chatSoundEnabled: boolean;
 
   constructor(
     public viewCtrl: ViewController,
@@ -32,10 +33,15 @@ export class SettingsPage {
   ionViewDidEnter() {
     this.driverPage = this.params.get('driverPage')();
     this.voiceControlEnabled = this.driverPage.voiceControlEnabled;
+    this.chatSoundEnabled = this.driverPage.chatSoundEnabled;
   }
 
   setVoiceControl() {
     this.driverPage.voiceControlEnabled = this.voiceControlEnabled;
     this.driverPage.setVoiceControl();
+  }
+
+  setChatSound() {
+    this.driverPage.chatSoundEnabled = this.chatSoundEnabled;
   }
 }

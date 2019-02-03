@@ -50,6 +50,8 @@ export class DriverInterfacePage {
   SERVO_SCALE: number = 5;
   robotName: string;
   attentionSound: any;
+  chatSound: any;
+  chatSoundEnabled: boolean = true;
   
   videoVerticalFlipped: boolean = false;
   chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 60 };
@@ -259,6 +261,9 @@ export class DriverInterfacePage {
     this.attentionSound = new Audio();
     this.attentionSound.src = "assets/sound/kickhat-open-button-2.mp3";
     this.attentionSound.load();
+    this.chatSound = new Audio();
+    this.chatSound.src = "assets/sound/ertfelda-correct.mp3";
+    this.chatSound.load();
 
     // ugly hack for now, to make it call the robot after a short delay
     // hoping that all webrtc setup is done by then.
@@ -572,6 +577,9 @@ export class DriverInterfacePage {
   sendChat() {
     console.log("sending chat");
     console.log(this.chat.text);
+    if(this.chatSoundEnabled) {
+      this.chatSound.play();
+    }
     this.chat.isShown = true;
     this.sendData({chat: {text: this.chat.text, isShown: this.chat.isShown}});
     this.chat.sendText = this.chat.text;
