@@ -101,10 +101,17 @@ export class RobotInterfacePage {
     }).catch((err) => console.log("failed to get permissions: " + err));
 
     this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then( ()=> {
-      console.log("Audio loaded.");
+      console.log("Wave audio loaded.");
     },
     (err)=> {
-      console.log("Failed to load audio!");
+      console.log("Failed to load wave audio!");
+      console.log(err);
+    } );
+    this.nativeAudio.preloadComplex('chat_sound', 'assets/sound/ertfelda-correct.mp3', 1, 1, 0).then( ()=> {
+      console.log("Chat audio loaded.");
+    },
+    (err)=> {
+      console.log("Failed to load chat audio!");
       console.log(err);
     } );
    
@@ -178,6 +185,9 @@ export class RobotInterfacePage {
       }
       if(msgObj.hasOwnProperty("chat")) {
         this.chat = msgObj.chat;
+        if(this.chat != "" && this.chat.isShown) {
+          this.nativeAudio.play('chat_sound');
+        }
         console.log("found chat:"+this.chat.text);
       }
       if(msgObj.hasOwnProperty("isParked")) {
