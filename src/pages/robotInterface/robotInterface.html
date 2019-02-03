@@ -20,8 +20,10 @@
       </div>
     </div>
     
-    
-    <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown"  [innerHTML]="chat.text" >
+    <div id="chat-bubble-container" [class.hidden-chat]="!this.chat.isShown" [hidden]="!this.videoLinkActive">
+      <div id="chat" [innerHTML]="chat.text" >
+      </div>
+      <div id="chat-bubble-point"></div>
     </div>
     <!-- <ble-button></ble-button> -->
     

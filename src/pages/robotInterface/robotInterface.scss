@@ -63,6 +63,41 @@ page-robotInterface {
     animation:wave 1s linear infinite;
   }
 
+  #chat-bubble-container {
+    border: 0px solid red;
+    position: absolute;
+    left: 2rem;
+    bottom: 2rem;
+    display: grid;
+    grid-template-columns: auto 4rem;
+  }
+
+  #chat {
+    font-size: 5rem;
+    color: $light-lighter;
+    background-color: $primary-lighter;
+    text-align:center;
+    vertical-align: middle;
+    padding: 2rem;
+    margin: 0rem;
+    border-radius: 3rem;
+    border-top-right-radius: 0;
+  }
+
+  .hidden-chat {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear;
+  }
+
+  #chat-bubble-point {
+    border: 0px solid yellow;
+    width: 0;
+    height: 0;
+    border-top: 4rem solid $primary-lighter;
+    border-right: 2rem solid transparent;
+  }
+
   #corner-div {
     border: 0px solid red;
     position: absolute;
@@ -243,24 +278,7 @@ page-robotInterface {
 
   
 
-  #chat {
-    font-size: 45pt;
-    color: $light-lighter;
-    background-color: $primary-lighter;
-    text-align:center;
-    vertical-align: middle;
-    position: absolute; 
-    left: 5pt;
-    bottom: 5pt;
-    padding: 5pt;
-    border-radius: 20px;
-  }
 
-  .hidden-chat {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s 2s, opacity 2s linear;
-  }
 
 
   
