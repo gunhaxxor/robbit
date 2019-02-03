@@ -22,6 +22,7 @@ export class DriverInterfacePage {
   peer: any;
   videoLinkActive: boolean = false;
   videoLinkWaitingForAnswer = false;
+  initiateCallTimeout: any;
   localStream: MediaStream;
   remoteStream: MediaStream;
   localVideoTrack: any;
@@ -329,6 +330,9 @@ export class DriverInterfacePage {
 
   initiateCall() {
     console.log("starting call as initiator");
+    this.initiateCallTimeout = setTimeout(() => {
+      this.initiateCall();
+    }, 10000);
     this.videoLinkWaitingForAnswer = true;
     let peerConfig = JSON.parse(process.env.PEER_CONFIG);
     this.peer = new Peer({ initiator: true, stream: this.localStream, config: peerConfig });
@@ -351,6 +355,7 @@ export class DriverInterfacePage {
       console.log(this.peer);
       this.videoLinkActive = true;
       this.videoLinkWaitingForAnswer = false;
+      clearTimeout(this.initiateCallTimeout);
 
       
       this.removeCameraStream(); // disable video as default
