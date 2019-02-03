@@ -296,7 +296,7 @@ export class DriverInterfacePage {
         case 'z':
           this.reverseActive = true;
           break;
-        case 's':
+        case 'i':
           this.presentSettingsPopover(undefined);
           break;
         case 'e':
