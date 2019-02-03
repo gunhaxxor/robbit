@@ -280,16 +280,24 @@ export class DriverInterfacePage {
     if(event.type == "keydown") {
       switch (event.key) {
         case 'ArrowUp':
-          this.angleChange(1);
+          if(this.videoLinkActive) {
+            this.angleChange(1);
+          }
           break;
         case 'ArrowDown':
-          this.angleChange(-1);
+          if(this.videoLinkActive) {
+            this.angleChange(-1);
+          }
           break;
         case 'ArrowLeft':
-          this.drive(-1, 1, true);
+          if(this.videoLinkActive) {
+            this.drive(-1, 1, true);
+          }
           break;
         case 'ArrowRight':
-          this.drive(1, -1, true);
+          if(this.videoLinkActive) {
+            this.drive(1, -1, true);
+          }
           break;
         case 'a':
           this.forwardActive = true;
@@ -312,7 +320,9 @@ export class DriverInterfacePage {
           this.toggleAudioStream();
           break;
         case 'w':
-          this.toggleWaving();
+          if(this.videoLinkActive) {
+            this.toggleWaving();
+          }
           break;
       }
     }
