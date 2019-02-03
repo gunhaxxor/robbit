@@ -141,6 +141,27 @@ page-robotInterface {
     border-top-left-radius: 3rem;
   }
 
+  .warning {
+    width: 6rem;
+    height: 6rem;
+    display: inline-block;
+    position: relative;
+    top: 2rem;
+    text-align: center;
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+    margin-top: -3rem;
+    background-color: $danger;
+    -webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+
+  .warning ion-icon {
+    line-height: 7.8rem;
+    font-size: 3rem;
+    color: white;
+  }
+
   .control-button {
     width: 6rem;
     height: 6rem;

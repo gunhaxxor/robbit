@@ -28,6 +28,9 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
+  networkConnected: boolean;
+  locationEnabled: boolean;
+  connectionInterval:any;
 
   constructor(
     public platform: Platform,
@@ -50,8 +53,8 @@ export class RobotInterfacePage {
   
   //user is leaving the selected page.
   ionViewWillLeave() {
-    this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
+    this.bleService.stop();
     this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
@@ -63,11 +66,18 @@ export class RobotInterfacePage {
     console.log("this.peer is:");
     console.log(this.peer);
     this.videoLinkActive = false;
+    clearInterval(this.connectionInterval);
   }
 
   ionViewDidEnter() {
     this.bleService.start();
 
+    
+    this.connectionInterval = setInterval(() => {
+      this.checkWifiAvailable();
+      this.checkLocationEnabled();
+    }, 5000);
+    
     this.robotName = this.navParams.get('robotName');
 
     this.socket.emit('join', this.robotName);
@@ -279,6 +289,25 @@ export class RobotInterfacePage {
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
+
+  checkWifiAvailable() {
+    this.diagnostic.isWifiAvailable().then((available:any)=> {
+      console.log("WiFi is " + (available ? "available" : "not available"));
+      this.networkConnected = available;
+    }).catch((error:any)=> {
+      console.error("Error while checking wifi: "+error);
+    });
+  }
+
+  checkLocationEnabled() {
+    this.diagnostic.isLocationEnabled().then((enabled:any)=> {
+      console.log("Location is " + (enabled ? "enabled" : "not enabled"));
+      this.locationEnabled = enabled;
+    }).catch((error:any)=> {
+      console.error("Error while checking location: "+error);
+    });
+  }
+
 
   toggleParking() {
     this.isParked = !this.isParked;
