@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
+import {Component, ElementRef, HostListener, ViewChild} from "@angular/core";
 import { IonicPage, NavController, NavParams, Platform, PopoverController, LoadingController, IonicFormInput } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
 // import { BleService } from "../../providers/bleservice/bleService";
@@ -73,6 +73,16 @@ export class DriverInterfacePage {
   //     "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
   //   );
   // }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handler(event: Event) {
+    console.log('beforeunload-event logged');
+    event.returnValue = false;
+  }
+
+  ionViewCanLeave(): boolean {
+    return window.confirm("Vill du värkligen lämna??")
+  }
 
   //user is leaving the selected page.
   ionViewDidLeave() {
