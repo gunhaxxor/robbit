@@ -6,6 +6,8 @@ import { DriverInterfacePage } from "../driverInterface/driverInterface";
 import { RobotInterfacePage } from "../robotInterface/robotInterface";
 import { Storage } from '@ionic/storage';
 import { Device } from '@ionic-native/device';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+
 
 import * as firebase from 'firebase/app';
 import 'firebase/database';
@@ -23,7 +25,7 @@ export class HomePage {
   invalidRobotName: string = undefined;
   objectKeys: any = Object.keys;
 
-  constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device) {
+  constructor(private navCtrl: NavController, private appRef: ApplicationRef, private bleService: BleService, private plt: Platform, private storage: Storage, private device: Device, private screenOrientation: ScreenOrientation) {
     console.log(`signaling server: ${process.env.SIGNALING_SERVER}`);
     let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
     
@@ -54,6 +56,12 @@ export class HomePage {
       }
     });
 
+  }
+
+  ionViewWillEnter() {
+    if(this.plt.is('cordova')) {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    }
   }
 
   ionViewDidLoad() {

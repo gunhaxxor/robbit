@@ -24,6 +24,7 @@ import { Diagnostic } from "@ionic-native/diagnostic"
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Device } from '@ionic-native/device'
 import { IonicStorageModule } from '@ionic/storage';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 const socketConfig: SocketIoConfig = {
   url: process.env.SIGNALING_SERVER,
@@ -69,6 +70,7 @@ const socketConfig: SocketIoConfig = {
     Diagnostic,
     NativeAudio,
     Device,
+    ScreenOrientation,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
