@@ -1,0 +1,19 @@
+<ion-content padding>
+    <div id="voice-control" class="setting-row">
+        <ion-label>Röststyrning (experimentellt)</ion-label>
+        <ion-toggle
+            (ionChange)="this.setVoiceControl();"
+            id="voice-control-toggle"
+            [(ngModel)]="this.voiceControlEnabled"></ion-toggle>
+    </div>
+    <div id="chat-sound" class="setting-row">
+        <ion-label>Spela ljud vid meddelande</ion-label>
+        <ion-toggle
+            (ionChange)="this.setChatSound();"
+            id="chat-sound-toggle"
+            [(ngModel)]="this.chatSoundEnabled"></ion-toggle>
+    </div>
+    <button ion-button (click)="this.viewCtrl.dismiss()" id="cancel-button" >
+        <ion-icon name="close"></ion-icon>
+    </button>
+</ion-content>

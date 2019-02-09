@@ -11,10 +11,15 @@ Following files are required in the root of the project, but are not included in
 
 # See also
 
+* All information about this project can be found in Swedish at https://www.robbit.se
 * 3D models for this project https://www.thingiverse.com/thing:3360113
 
 # Credits
 
 Using the sound Open Button 2 by Kickhat with creative commons 0 license.
 https://freesound.org/people/kickhat/sounds/264447/
+
+Using the sound Correct by Ertfelda with creative commons 0 license.
+https://freesound.org/people/ertfelda/sounds/243701/
+
 

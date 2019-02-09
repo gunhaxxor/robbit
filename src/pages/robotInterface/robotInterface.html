@@ -20,12 +20,22 @@
       </div>
     </div>
     
-    
-    <div id="chat" [hidden]="!this.videoLinkActive" [class.hidden-chat]="!this.chat.isShown"  [innerHTML]="chat.text" >
+    <div id="chat-bubble-container" [class.hidden-chat]="!this.chat.isShown" [hidden]="!this.videoLinkActive">
+      <div id="chat" [innerHTML]="chat.text" >
+      </div>
+      <div id="chat-bubble-point"></div>
     </div>
     <!-- <ble-button></ble-button> -->
     
     <div id="bottom-controls">
+      <span class="warning" [hidden]="this.networkConnected">
+          <ion-icon name="wifi"></ion-icon>
+      </span>
+      <span class="warning" [hidden]="this.locationEnabled">
+          <ion-icon name="pin"></ion-icon>
+      </span>
+      
+
       <button ion-button (click)="this.toggleParking()" id="toggle-park-button" class="control-button" [class.toggle-off]="!this.isParked">
         P
       </button>

@@ -9,9 +9,9 @@ basic.showLeds(`
 
 
 let SERVO_PIN = AnalogPin.P13
-let SERVO_START_VALUE = 105
-let SERVO_MAX_VALUE = 155
-let SERVO_MIN_VALUE = 75
+let SERVO_START_VALUE = 90
+let SERVO_MAX_VALUE = 100
+let SERVO_MIN_VALUE = 20
 let SERVO_Q = 0.3
 let MOTOR_RECEIVED_MAX = 1000;
 let receivedValues: number[] = [0, 0, 150]

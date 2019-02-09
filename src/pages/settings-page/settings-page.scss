@@ -1,0 +1,58 @@
+
+
+
+
+.popover-content {
+  background-color: rgba($seethrough, $seethrough-opacity) !important;
+  border-radius: 5rem !important;
+  //border-top-right-radius: 2rem !important;
+  width: auto !important;
+  position: absolute;
+  left: 50% !important;
+  top: 20% !important;
+  transform: translateX(-50%) !important;
+}
+
+page-settings {
+  
+  .scroll-content {
+    overflow: hidden;
+    width: 40rem;
+    display: grid;
+    grid-template-columns: auto;
+    justify-items: center;
+    align-items: center;
+  }
+  
+  .content {
+    padding:2rem !important;
+    background: #0000;
+    color: white;
+    font-size: 2rem;
+  }
+
+  .setting-row {
+    border: 0px solid red;
+    width: 100%;
+    display: grid;
+    margin: 2rem;
+    grid-template-columns: auto 10rem;
+    align-items: center;
+  }
+  
+  ion-label {
+    border: 0px solid green;
+  }
+  
+  #cancel-button {
+    position: absolute;
+    font-size: 3rem;
+    right: 0rem;
+    top: 0rem;
+    margin:0;
+    padding:1rem;
+    color: #aaa;
+    background: none;
+    box-shadow: none;
+  }
+}

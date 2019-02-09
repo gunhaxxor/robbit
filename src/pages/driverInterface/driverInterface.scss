@@ -22,7 +22,62 @@ page-driverInterface {
     background-color: #000;
   }
 
+  #progress-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10rem;
+    height: 10rem;
+    transform: translate(-50%, -50%);
+  }
+
+  #top-container {
+    border: 0px solid red;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: auto 25rem;
+  }
+
+  #chat-bubble-container {
+    position: relative;
+  }
+
+  #chat-bubble {
+    position: absolute;
+    right:0px;
+    margin: 2rem;
+    font-size: 3rem;
+    color: $light-lighter;
+    background-color: $primary-lighter;
+    display: inline-block;
+    text-align:center;
+    vertical-align: middle;
+    padding: 3rem;
+    border-radius: 3rem;
+    border-top-right-radius: 0px;
+  }
+
+  #chat-bubble-point {
+    position: absolute;
+    right:0;
+    top: 2rem;
+    width: 0;
+    height: 0;
+    border-top: 4rem solid $primary-lighter;
+    border-right: 2rem solid transparent;
+  }
+  
+  .hidden-chat {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear;
+  }
+
   #corner-div {
+    border: 0px solid yellow;
     position: absolute;
     top:0;
     right:0;
@@ -36,7 +91,7 @@ page-driverInterface {
 
   #driver-name {
     border: 0px solid red;
-    font-size: 2em;
+    font-size: 3rem;
     color:white;
     text-align: center;
     height: 2em;
@@ -92,7 +147,8 @@ page-driverInterface {
   #drive-buttons {
     border: 0px solid yellow;
     perspective: 100px;
-    padding: 0 0% 10% 20%;
+    padding: 0% 0% 10% 30%;
+    
     background-color: rgba($seethrough, $seethrough-opacity);
   }
 
@@ -111,8 +167,8 @@ page-driverInterface {
   
   #drive-buttons-perspective {
     border: 0px solid blue;
-    transform: rotateX(35deg);
-    width: 100%;
+    transform: rotateX(35deg) skewX(-14deg);
+    width: 120%;
     height: 100%;
     display:grid;
     align-items: center;
@@ -244,6 +300,47 @@ page-driverInterface {
     background-image: url('../assets/imgs/leave.svg');
   }
 
+  #chat-form {
+    border: 0px solid red;
+    display:grid;
+    grid-template-columns: auto 3rem;
+    align-items: center;
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+  }
+
+  #chat-input {
+    border: 3px solid $primary;
+    border-radius: 1rem;
+    height: 7rem;
+    font-size: 3rem;
+    margin-right: 0px;
+  }
+
+  .is-writing {
+    color: $light-lighter;
+    background-color: $primary-darker;
+  }
+
+  #chat-input.chat-input-disabled {
+    border-color: rgba($primary, 0.5);
+  }
+
+  #chat-send-button {
+    border: 0px solid yellow;
+    width: 7rem;
+    height: 5rem;
+    margin-left: -6rem;
+    transform: rotate(90deg);
+    box-shadow: none;
+    opacity: 0.5;
+    background-color: transparent;
+    background-image: url('../assets/imgs/forward_arrow.svg');
+    background-size: 4rem;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
   #zone-joystick {
     border: 0px solid red;
     z-index: 2;
@@ -251,6 +348,14 @@ page-driverInterface {
     height: 100%;
     width: 100%;
     background-color: rgba($seethrough, $seethrough-opacity);
+  }
+
+  #zone-joystick.joystick-disabled .nipple {
+    opacity: 0.5 !important;
+  }
+
+  #zone-joystick.joystick-disabled .front {
+    display: none !important;
   }
 
   #zone-joystick .nipple {
@@ -359,25 +464,7 @@ page-driverInterface {
     font-size: 40pt;
   }
   
-  #chat {
-    font-size: 18pt;
-    color: $light-lighter;
-    background-color: $primary-lighter;
-    text-align:center;
-    vertical-align: middle;
-    position: absolute; 
-    right: 5pt;
-    top: 5pt;
-    max-width: 75%;
-    padding: 5pt;
-    border-radius: 10px;
-  }
-  
-  .hidden-chat {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s 2s, opacity 2s linear;
-  }
+
   
   #control-panel {
     border: 0px solid red;
@@ -471,7 +558,7 @@ page-driverInterface {
     color: #fff;
   }
 
-  #toggle-camera-button, #toggle-audio-button, #toggle-park-button, #toggle-wave-button {
+  #toggle-camera-button, #toggle-audio-button, #toggle-park-button, #toggle-wave-button, #voice-recognition-icon {
     padding: 10px;
     font-size: 14pt;
   }
@@ -489,6 +576,24 @@ page-driverInterface {
     -webkit-animation:wave 1s linear infinite;
     -moz-animation:wave 1s linear infinite;
     animation:wave 1s linear infinite;
+  }
+
+  
+  #voice-recognition-icon {
+    background-color: $light-lighter;
+    display: inline-block;
+  }
+
+  .voice-recognition-keyword {
+    background-color: $light-darker !important;
+  }
+
+  .voice-recognition-command {
+    background-color: $approve !important;
+  }
+
+  .voice-recognition-no-command {
+    background-color: $danger !important;
   }
   
 

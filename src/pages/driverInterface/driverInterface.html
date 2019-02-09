@@ -19,6 +19,12 @@
     <button (click)="this.toggleWaving()" id="toggle-wave-button" *ngIf="this.videoLinkActive" [class.toggle-button-waving]="this.isWaving">
       <ion-icon name="hand"></ion-icon>
     </button>
+    <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+      [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
+      [class.voice-recognition-command]="this.voiceRecognitionState == 2"
+      [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
+      <ion-icon name="quote"></ion-icon>
+    </div>
   </ion-navbar>
 </ion-header>
   
@@ -57,56 +63,73 @@
 -->
 <ion-content>
   <div ion-fixed>
-  <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
-  </video>
-  <div id="corner-div">
-    <div id="driver-name"><span>{{this.robotName}}</span></div>
-    <video id="driver-local-video" autoplay [hidden]="!this.showCamera">
+    <div id="top-container">
+      <div id="chat-bubble-container" [class.hidden-chat]="!this.chat.isShown">
+        <div id="chat-bubble" [innerHTML]="chat.sendText" (click)="this.clearChat()"></div>
+        <div id="chat-bubble-point"></div>
+      </div>
+      <div id="corner-div">
+        <div id="driver-name"><span>{{this.robotName}}</span></div>
+        <video id="driver-local-video" autoplay [hidden]="!this.showCamera">
+        </video>
+        <div id="emoji-container" [hidden]="this.showCamera">
+          <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji">
+          </button>
+          <button ion-button id="emoji-edit-button" (click)="this.presentEmojiPopover($event)">
+          </button>
+        </div>
+      </div>
+    </div>
+    <ion-spinner id="progress-spinner" [hidden]="!this.videoLinkWaitingForAnswer"></ion-spinner>
+    <video [style.display]="this.videoLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
     </video>
-    <div id="emoji-container" [hidden]="this.showCamera">
-      <button (click)="this.presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="this.currentEmoji">
-      </button>
-      <button ion-button id="emoji-edit-button" (click)="this.presentEmojiPopover($event)">
-      </button>
+    <!-- <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
+      <ion-icon name="call"></ion-icon>
+    </button> -->
+    <!-- <div id="voice-recognition-icon" *ngIf="this.voiceRecognitionState > -1"
+      [class.voice-recognition-keyword]="this.voiceRecognitionState == 1"
+      [class.voice-recognition-command]="this.voiceRecognitionState == 2"
+      [class.voice-recognition-no-command]="this.voiceRecognitionState == 3">
+      <ion-icon name="quote"></ion-icon>
+    </div> -->
+    <div id="bottom-bar">
+      <div id="drive-buttons">
+        <div id="parked-icon" [hidden]="!isParked"></div>
+        <div id="drive-buttons-perspective">
+          <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked || !videoLinkActive">
+          </button>
+          <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked || !videoLinkActive">
+          </button>
+        </div>
+      </div>
+      <div id="bottom-bar-middle">
+        <div id="bar-curves">
+          <div id="curve-left"></div>
+          <div id="curve-right"></div>
+        </div>
+        <div id="bottom-controls">
+          <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving" [disabled]="!videoLinkActive">
+          </button>
+          <form (submit)="this.sendChat()" id="chat-form" >
+            <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text" [ngModelOptions]="{standalone: true}" [class.is-writing]="chat.text!=''" [disabled]="!videoLinkActive" [class.chat-input-disabled]="!videoLinkActive">
+            </ion-input>
+            <button ion-button id="chat-send-button" [disabled]="!videoLinkActive"></button>
+          </form>
+          <button ion-button id="settings-button"
+            (click)="this.presentSettingsPopover($event)"
+            class="control-button control-button-right">
+            <ion-icon name="settings"></ion-icon>
+          </button>
+          <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button" [class.toggle-off]="!this.showCamera">
+          </button>
+          <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-off]="this.muteAudio">
+          </button>
+          <button ion-button (click)="endCall()" id="end-call-button" class="control-button">
+          </button>
+        </div>
+      </div>
+      <div id="zone-joystick" [class.joystick-disabled]="!videoLinkActive">
+      </div>
     </div>
-
   </div>
-  <button (click)="initiateCall()" [disabled]="this.videoLinkWaitingForAnswer">
-    <ion-icon name="call"></ion-icon>
-  </button>
-  <div id="bottom-bar">
-    <div id="drive-buttons">
-      <div id="parked-icon" [hidden]="!isParked"></div>
-      <div id="drive-buttons-perspective">
-        <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true" (mouseup)="forwardActive = false" [disabled]="isParked">
-          
-        </button>
-        <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true" (mouseup)="reverseActive = false" [disabled]="isParked">
-          
-        </button>
-      </div>
-    </div>
-    <div id="bottom-bar-middle">
-      <div id="bar-curves">
-        <div id="curve-left"></div>
-        <div id="curve-right"></div>
-      </div>
-      <div id="bottom-controls">
-        <button ion-button (click)="this.toggleWaving()" id="toggle-wave-button" class="control-button" [class.toggle-off]="!this.isWaving">
-        </button>
-        <button ion-button id="toggle-chat-button" class="control-button">
-          <ion-icon name="chatboxes"></ion-icon>
-        </button>
-        <button ion-button (click)="this.toggleCameraStream()" id="toggle-camera-button" class="control-button control-button-right" [class.toggle-off]="!this.showCamera">
-        </button>
-        <button ion-button (click)="this.toggleAudioStream()" id="toggle-audio-button" class="control-button" [class.toggle-off]="this.muteAudio">
-        </button>
-        <button ion-button (click)="endCall()" id="end-call-button" class="control-button">
-        </button>
-      </div>
-    </div>
-    <div id="zone-joystick">
-    </div>
-  </div>
-</div>
 </ion-content>

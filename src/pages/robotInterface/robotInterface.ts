@@ -29,6 +29,9 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
+  networkConnected: boolean;
+  locationEnabled: boolean;
+  connectionInterval:any;
 
   constructor(
     public platform: Platform,
@@ -52,8 +55,8 @@ export class RobotInterfacePage {
   
   //user is leaving the selected page.
   ionViewWillLeave() {
-    this.bleService.stop();
     console.log("will leave robot interface page. Cleaning up som shit");
+    this.bleService.stop();
     this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
@@ -65,6 +68,7 @@ export class RobotInterfacePage {
     console.log("this.peer is:");
     console.log(this.peer);
     this.videoLinkActive = false;
+    clearInterval(this.connectionInterval);
   }
 
   ionViewWillEnter() {
@@ -74,6 +78,12 @@ export class RobotInterfacePage {
   ionViewDidEnter() {
     this.bleService.start();
 
+    
+    this.connectionInterval = setInterval(() => {
+      this.checkWifiAvailable();
+      this.checkLocationEnabled();
+    }, 5000);
+    
     this.robotName = this.navParams.get('robotName');
 
     this.socket.emit('join', this.robotName);
@@ -107,10 +117,17 @@ export class RobotInterfacePage {
     }).catch((err) => console.log("failed to get permissions: " + err));
 
     this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then( ()=> {
-      console.log("Audio loaded.");
+      console.log("Wave audio loaded.");
     },
     (err)=> {
-      console.log("Failed to load audio!");
+      console.log("Failed to load wave audio!");
+      console.log(err);
+    } );
+    this.nativeAudio.preloadComplex('chat_sound', 'assets/sound/ertfelda-correct.mp3', 1, 1, 0).then( ()=> {
+      console.log("Chat audio loaded.");
+    },
+    (err)=> {
+      console.log("Failed to load chat audio!");
       console.log(err);
     } );
    
@@ -120,19 +137,11 @@ export class RobotInterfacePage {
 
   initiateListen() {
     console.log("initiating listen");
+    let peerConfig = JSON.parse(process.env.PEER_CONFIG);
     this.peer = new Peer({
       initiator: false,
       stream: this.localStream,
-      config: {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          {
-            urls: "turn:54.197.33.120:3478",
-            username: "greger",
-            credential: "bajsmannen"
-          }
-        ]
-      }
+      config: peerConfig
     });
     console.log("peer object is:");
     console.log(this.peer);
@@ -192,6 +201,9 @@ export class RobotInterfacePage {
       }
       if(msgObj.hasOwnProperty("chat")) {
         this.chat = msgObj.chat;
+        if(this.chat != "" && this.chat.isShown) {
+          this.nativeAudio.play('chat_sound');
+        }
         console.log("found chat:"+this.chat.text);
       }
       if(msgObj.hasOwnProperty("isParked")) {
@@ -283,6 +295,25 @@ export class RobotInterfacePage {
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
+
+  checkWifiAvailable() {
+    this.diagnostic.isWifiAvailable().then((available:any)=> {
+      console.log("WiFi is " + (available ? "available" : "not available"));
+      this.networkConnected = available;
+    }).catch((error:any)=> {
+      console.error("Error while checking wifi: "+error);
+    });
+  }
+
+  checkLocationEnabled() {
+    this.diagnostic.isLocationEnabled().then((enabled:any)=> {
+      console.log("Location is " + (enabled ? "enabled" : "not enabled"));
+      this.locationEnabled = enabled;
+    }).catch((error:any)=> {
+      console.error("Error while checking location: "+error);
+    });
+  }
+
 
   toggleParking() {
     this.isParked = !this.isParked;
