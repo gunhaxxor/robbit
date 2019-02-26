@@ -98,5 +98,6 @@
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-sqlite-storage" spec="^2.6.0" />
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
-    <engine name="android" spec="7.0.0" />
+    <plugin name="cordova-plugin-screen-orientation" spec="3.0.1" />
+    <engine name="android" spec="7.1.4" />
 </widget>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
+import {Component, ElementRef, HostListener, ViewChild} from "@angular/core";
 import { NavController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
 import { SettingsPage } from '../settings-page/settings-page';
@@ -9,7 +9,6 @@ import nipplejs from "nipplejs";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import "webrtc-adapter";
-import { HostListener } from '@angular/core';
 // import encoding from 'text-encoding';
 
 declare var CommandBot: any;
@@ -85,6 +84,16 @@ export class DriverInterfacePage {
   //     "Intervals are the same as a backwards clock. Thus its effeciency will be decesed."
   //   );
   // }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handler(event: Event) {
+    console.log('beforeunload-event logged');
+    event.returnValue = false;
+  }
+
+  ionViewCanLeave(): boolean {
+    return window.confirm("Vill du värkligen lämna??")
+  }
 
   //user is leaving the selected page.
   ionViewDidLeave() {

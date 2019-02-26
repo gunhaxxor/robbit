@@ -7,6 +7,7 @@ import * as Peer from "simple-peer";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { NativeAudio } from '@ionic-native/native-audio';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
@@ -42,7 +43,8 @@ export class RobotInterfacePage {
     // private camera: Camera,
     public diagnostic: Diagnostic,
     private nativeAudio: NativeAudio,
-    private zone: NgZone
+    private zone: NgZone,
+    private screenOrientation: ScreenOrientation
   ) {
   }
 
@@ -67,6 +69,10 @@ export class RobotInterfacePage {
     console.log(this.peer);
     this.videoLinkActive = false;
     clearInterval(this.connectionInterval);
+  }
+
+  ionViewWillEnter() {
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
   }
 
   ionViewDidEnter() {
