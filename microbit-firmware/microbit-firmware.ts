@@ -187,11 +187,11 @@ control.inBackground(() => {
 
         updateMotors();
 
-        motorTargetSpeeds[0]++;
-        motorTargetSpeeds[0] %= 600;
+        // motorTargetSpeeds[0]++;
+        // motorTargetSpeeds[0] %= 600;
 
-        motorTargetSpeeds[1]--;
-        motorTargetSpeeds[1] %= 600;
+        // motorTargetSpeeds[1]--;
+        // motorTargetSpeeds[1] %= 600;
 
         if (input.runningTime() - servoStamp > servoInterval) {
             servoStamp = input.runningTime();
