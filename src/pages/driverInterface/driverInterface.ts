@@ -314,10 +314,14 @@ export class DriverInterfacePage {
           }
           break;
         case 'a':
-          this.forwardActive = true;
+          if(!this.isParked) {
+            this.forwardActive = true;
+          }
           break;
         case 'z':
-          this.reverseActive = true;
+          if(!this.isParked) {
+            this.reverseActive = true;
+          }
           break;
         case 'i':
           this.presentSettingsPopover(undefined);
