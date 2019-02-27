@@ -2,7 +2,7 @@
   <ng-container *ngIf="plt.is('cordova')">
     <div ionic full class="welcome-panel" >
       <ng-container *ngIf="!storedName; else noStoredName">
-          <h1>ROBOT</h1>
+          <h1>Robbit</h1>
           <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp sig till roboten.</p>
           <form (submit)="saveNameAndGoToRobotInterface()">
             <ion-item>
@@ -15,16 +15,17 @@
           </form>
       </ng-container>
       <ng-template #noStoredName>
-        <h1>ROBOT</h1>
+        <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{storedName}}</p>
         <button ion-button (click)="goToRobotInterface()">Starta {{storedName}}</button>
       </ng-template>
+      <div class="version-nr">v0.0.2</div>
     </div>
     
   </ng-container>
   
   <div ionic full class="welcome-panel" *ngIf="!plt.is('cordova')">
-    <h1>ELEV</h1>
+    <h1>Robbit</h1>
     <p>Vilken robot vill du ringa upp?</p>
     <form (submit)="checkNameAndGoToDriverInterface()">
       <ion-item>
@@ -38,5 +39,6 @@
         <button ion-button class="recent-robot-button" (click)="this.robotName = robot" >{{robot}}  <span class="recent-robot-call-icon"></span></button>
       </ng-container>
     </form>
+    <div class="version-nr">v0.0.2</div>
   </div>
 </ion-content>

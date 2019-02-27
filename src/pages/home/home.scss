@@ -53,4 +53,12 @@ page-home {
     background-position: center;
     background-image: url('../assets/imgs/call.svg');
   }
+
+  .version-nr {
+    position: absolute;
+    right:2rem;
+    top: 2rem;
+    font-size: 1rem;
+    color: $primary-darker;
+  }
 }
