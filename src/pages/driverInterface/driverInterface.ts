@@ -36,6 +36,9 @@ export class DriverInterfacePage {
   // arrowBackwardActive: boolean;
   forwardActive: boolean;
   reverseActive: boolean;
+  robotThrottle: number = 0;
+  robotRotation: number = 0;
+  servoAngleChange: number = 0;
   isParked: boolean = false;
   isWaving: boolean = false;
   cameraOption: string = "constraint";
@@ -147,9 +150,9 @@ export class DriverInterfacePage {
 
 
     // Let's divide the motorvariables into drive and look components.
-    let robotThrottle = 0;
-    let robotRotation = 0;
-    let servoAngleChange = 0;
+    this.robotThrottle = 0;
+    this.robotRotation = 0;
+    this.servoAngleChange = 0;
     let options = {
       zone: document.getElementById("zone-joystick"),
       mode: 'static',
@@ -175,8 +178,8 @@ export class DriverInterfacePage {
         let x = px / joystickMaxDistance;
         let y = py / joystickMaxDistance;
 
-        robotRotation = x;
-        servoAngleChange = y;
+        this.robotRotation = x;
+        this.servoAngleChange = y;
 
         // Source of algorithm:
         // http://home.kendra.com/mauser/Joystick.html
@@ -201,8 +204,8 @@ export class DriverInterfacePage {
       }
     })
     .on("end", (evt, nipple) => {
-      robotRotation = 0;
-      servoAngleChange = 0;
+      this.robotRotation = 0;
+      this.servoAngleChange = 0;
       console.log("joystick released");
     });
 
@@ -215,18 +218,18 @@ export class DriverInterfacePage {
       }
 
       if (this.forwardActive) {
-        robotThrottle = this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
+        this.robotThrottle = this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }
       else if (this.reverseActive) {
-        robotThrottle = -this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
+        this.robotThrottle = -this.ROBOT_MOTOR_MAX_THROTTLE * this.DRIVE_MOTOR_SCALE;
       }else{
-        robotThrottle = 0;
+        this.robotThrottle = 0;
       }
 
-      let rotationMotorAdjustment = robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
+      let rotationMotorAdjustment = this.robotRotation * this.ROBOT_MOTOR_MAX_THROTTLE * this.TURN_MOTOR_SCALE; // -20 to +20
 
-      let leftMotor = robotThrottle + rotationMotorAdjustment;
-      let rightMotor = robotThrottle - rotationMotorAdjustment;
+      let leftMotor = this.robotThrottle + rotationMotorAdjustment;
+      let rightMotor = this.robotThrottle - rotationMotorAdjustment;
 
       //Section for constraining motor values within max allowed throttle
       let ratio = 1;
@@ -239,7 +242,7 @@ export class DriverInterfacePage {
       let leftMotorFloored = Math.floor(leftMotor);
       let rightMotorFloored = Math.floor(rightMotor);
 
-      this.servoAngle += servoAngleChange * this.SERVO_SCALE;
+      this.servoAngle += this.servoAngleChange * this.SERVO_SCALE;
       this.servoAngle = Math.max(this.SERVO_MIN_VALUE, Math.min(this.SERVO_MAX_VALUE, this.servoAngle));
       let servoFloored = Math.floor(this.servoAngle);
       // if (turnAmt == 0) {
@@ -295,22 +298,22 @@ export class DriverInterfacePage {
       switch (event.key) {
         case 'ArrowUp':
           if(this.videoLinkActive) {
-            this.angleChange(1);
+            this.servoAngleChange = 1;
           }
           break;
         case 'ArrowDown':
           if(this.videoLinkActive) {
-            this.angleChange(-1);
+            this.servoAngleChange = -1;
           }
           break;
         case 'ArrowLeft':
           if(this.videoLinkActive) {
-            this.drive(-1, 1, true);
+            this.robotRotation = -0.8;
           }
           break;
         case 'ArrowRight':
           if(this.videoLinkActive) {
-            this.drive(1, -1, true);
+            this.robotRotation = 0.8;
           }
           break;
         case 'a':
@@ -351,6 +354,18 @@ export class DriverInterfacePage {
           break;
         case "z":
           this.reverseActive = false;
+          break;
+        case 'ArrowLeft':
+          this.robotRotation = 0;
+          break;
+        case 'ArrowRight':
+          this.robotRotation = 0;
+          break;
+        case 'ArrowUp':
+          this.servoAngleChange = 0;
+          break;
+        case 'ArrowDown':
+          this.servoAngleChange = 0;
           break;
       }
     }
