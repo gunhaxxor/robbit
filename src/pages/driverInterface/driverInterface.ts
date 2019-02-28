@@ -92,7 +92,7 @@ export class DriverInterfacePage {
   }
 
   ionViewCanLeave(): boolean {
-    return window.confirm("Vill du värkligen lämna??")
+    return window.confirm("Vill du värkligen lämna?")
   }
 
   //user is leaving the selected page.
