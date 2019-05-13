@@ -21,7 +21,7 @@ export class RobotInterfacePage {
   remoteStream: MediaStream;
   cameraOption: string = "constraint";
   keepPeerActive: boolean = true;
-  videoLinkActive: boolean = false;
+  peerLinkActive: boolean = false;
   videoVerticalFlipped: boolean = false;
   showDriver: boolean = true;
   connected: boolean = false;
@@ -31,7 +31,7 @@ export class RobotInterfacePage {
   robotName: string;
   networkConnected: boolean;
   locationEnabled: boolean;
-  connectionInterval:any;
+  connectionInterval: any;
 
   constructor(
     public platform: Platform,
@@ -52,7 +52,7 @@ export class RobotInterfacePage {
   //   // console.log("Listening on calls!");
   //   this.initiateListen();
   // }
-  
+
   //user is leaving the selected page.
   ionViewWillLeave() {
     console.log("will leave robot interface page. Cleaning up som shit");
@@ -60,14 +60,15 @@ export class RobotInterfacePage {
     this.socket.emit("leave", this.robotName);
     this.socket.removeAllListeners("robotControl");
     this.socket.removeAllListeners("signal");
-    
+    this.socket.removeAllListeners("room");
+
 
     this.keepPeerActive = false; //avoid retrying peer on close event
     this.peer.destroy();
     delete this.peer;
-    console.log("this.peer is:");
-    console.log(this.peer);
-    this.videoLinkActive = false;
+    // console.log("this.peer is:");
+    // console.log(this.peer);
+    this.peerLinkActive = false;
     clearInterval(this.connectionInterval);
   }
 
@@ -78,60 +79,87 @@ export class RobotInterfacePage {
   ionViewDidEnter() {
     this.bleService.start();
 
-    
+    // check instantly, then every 5 seconds.
+    {
+      this.checkWifiAvailable();
+      this.checkLocationEnabled();
+    }
     this.connectionInterval = setInterval(() => {
       this.checkWifiAvailable();
       this.checkLocationEnabled();
     }, 5000);
-    
+
     this.robotName = this.navParams.get('robotName');
 
-    this.socket.emit('join', this.robotName);
+    // this.socket.emit('join', this.robotName);
+    if (this.socket.ioSocket.connected) {
+      console.log('socket was already connected. Trying to join room');
+      this.socket.emit('join', this.robotName);
+    } else {
+      this.socket.on('connect', () => {
+        console.log('socket connected event. Trying to join room');
+        this.socket.emit('join', this.robotName);
+      });
+    }
 
-    console.log("attaching socket events");
-    this.socket.on("robotControl", msg => {
-      //console.log("received socket msg: " + JSON.stringify(msg));
-      this.bleService.send(msg);
-    });
+    let roomJoined: Promise<{}> = new Promise((resolve, reject) => {
+      this.socket.on("room", msg => {
+        if (msg.room == this.robotName && msg.joined) {
+          console.log("attaching socket events");
+          this.socket.on("robotControl", msg => {
+            //console.log("received socket msg: " + JSON.stringify(msg));
+            this.bleService.send(msg);
+          });
 
-    this.socket.on("signal", data => {
-      console.log("Robot received signal message from socket");
-      console.log(data);
+          this.socket.on("signal", data => {
+            console.log("Robot received signal message from socket");
+            console.log(data);
 
-      if(this.peer){
-        this.peer.signal(data);
-      }
+            if (this.peer) {
+              this.peer.signal(data);
+            }
+          });
+        }
+
+        resolve();
+      });
     });
 
     console.log("Trying to fetch camera");
-    this.checkNeededPermissions().then(() => {
-      this.retrieveCamera().then( () => {
-        navigator.mediaDevices.enumerateDevices().then(function(devices) {
-          devices.forEach(function(device) {
-              console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
+    let cameraRetrieved = this.checkNeededPermissions().then(() => {
+      return this.retrieveCamera().then(() => {
+        return navigator.mediaDevices.enumerateDevices().then(function (devices) {
+          devices.forEach(function (device) {
+            console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
           });
         });
-        this.keepPeerActive = true; //retry in close event if peer closes.
-        this.initiateListen();
+
       });
     }).catch((err) => console.log("failed to get permissions: " + err));
 
-    this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then( ()=> {
+    //Wait for init to finish. Then initiate listen
+    Promise.all([roomJoined, cameraRetrieved]).then(() => {
+      console.log("init promises finished. Let's initiate listen");
+      this.keepPeerActive = true; //retry in close event if peer closes.
+      this.initiateListen();
+    })
+
+    this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then(() => {
       console.log("Wave audio loaded.");
     },
-    (err)=> {
-      console.log("Failed to load wave audio!");
-      console.log(err);
-    } );
-    this.nativeAudio.preloadComplex('chat_sound', 'assets/sound/ertfelda-correct.mp3', 1, 1, 0).then( ()=> {
+      (err) => {
+        console.log("Failed to load wave audio!");
+        console.log(err);
+      });
+    this.nativeAudio.preloadComplex('chat_sound', 'assets/sound/ertfelda-correct.mp3', 1, 1, 0).then(() => {
       console.log("Chat audio loaded.");
     },
-    (err)=> {
-      console.log("Failed to load chat audio!");
-      console.log(err);
-    } );
-   
-    console.log("ionViewWillEnter triggered");
+      (err) => {
+        console.log("Failed to load chat audio!");
+        console.log(err);
+      });
+
+    console.log("ionViewDidEnter finished");
   }
 
 
@@ -158,62 +186,63 @@ export class RobotInterfacePage {
     });
     this.peer.on('connect', () => {
       console.log('connection event!!!');
-      this.videoLinkActive = true;
+      this.peerLinkActive = true;
     });
     this.peer.on('close', () => {
       console.log('peer connection closed');
       console.log('this.peer: ');
       console.log(this.peer);
-      if(this.keepPeerActive){
+      if (this.keepPeerActive) {
+        console.log("trying to reinitiate listen. Wonder if peer object will be invalid/leaked when we just create a new one to replace the previous??");
         this.initiateListen();
       }
-      this.videoLinkActive = false;
+      this.peerLinkActive = false;
     });
     this.peer.on("data", msg => {
       //console.log("received callInfo  msg: " + JSON.stringify(msg));
       let msgObj = JSON.parse(String(msg));
-      
-      if(msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
+
+      if (msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
         console.log("Received endcall.");
-        this.zone.run(()=> {
+        this.zone.run(() => {
           // because we are in a callback this would have happened outside angulars zone
           // which wouldn't update the template
           // that's why we force it to run inside the zone
           // and update the interface instantly
-          this.videoLinkActive = false;
+          this.peerLinkActive = false;
           this.initiateListen();
         });
       }
-      if(msgObj.hasOwnProperty("showDriverCamera")) {
+      if (msgObj.hasOwnProperty("showDriverCamera")) {
         this.showDriver = msgObj.showDriverCamera;
         console.log(this.showDriver);
       }
-      if(msgObj.hasOwnProperty("muteDriver")) {
+      if (msgObj.hasOwnProperty("muteDriver")) {
         // TODO: Not implemented yet.
         // Probably want to show this in the interface somehow
         //this.muteDriver = msgObj.muteDriver;
         //console.log(this.muteDriver);
       }
-      if(msgObj.hasOwnProperty("emoji")) {
+      if (msgObj.hasOwnProperty("emoji")) {
         let emojiDiv: HTMLElement = document.getElementById("emoji");
         emojiDiv.innerHTML = msgObj.emoji;
-        console.log("found emoji:"+msgObj.emoji);
+        console.log("found emoji:" + msgObj.emoji);
       }
-      if(msgObj.hasOwnProperty("chat")) {
+      if (msgObj.hasOwnProperty("chat")) {
         this.chat = msgObj.chat;
-        if(this.chat != "" && this.chat.isShown) {
+        if (this.chat != "" && this.chat.isShown) {
           this.nativeAudio.play('chat_sound');
         }
-        console.log("found chat:"+this.chat.text);
+        console.log("found chat:" + this.chat.text);
       }
-      if(msgObj.hasOwnProperty("isParked")) {
+      if (msgObj.hasOwnProperty("isParked")) {
         this.isParked = msgObj.isParked;
         console.log(this.isParked);
       }
-      if(msgObj.hasOwnProperty("isWaving")) {
+      if (msgObj.hasOwnProperty("isWaving")) {
         this.isWaving = msgObj.isWaving;
         console.log(this.isWaving);
-        if(this.isWaving) {
+        if (this.isWaving) {
           this.nativeAudio.play('attention_sound');
         }
       }
@@ -247,12 +276,12 @@ export class RobotInterfacePage {
       //         let emojiDiv: HTMLElement = document.getElementById("emoji");
       //         emojiDiv.innerHTML = msg;
       //       }
-            
+
       //       break;
       //   }
       // }
 
-      
+
     });
   }
 
@@ -271,7 +300,7 @@ export class RobotInterfacePage {
     // get video/voice stream
     console.log("retrieving camera!");
     let promise = navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate:15 }, audio: true })
+      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate: 15 }, audio: true })
       .then(stream => {
         console.log("Robot got local media as a stream");
         this.localStream = stream;
@@ -288,56 +317,62 @@ export class RobotInterfacePage {
     return promise;
   }
 
-  checkNeededPermissions(){
+  checkNeededPermissions() {
     // let returnPromise = new Promise();
-    if(this.diagnostic.isCameraAuthorized(false) && this.diagnostic.isMicrophoneAuthorized()){
+    if (this.diagnostic.isCameraAuthorized(false) && this.diagnostic.isMicrophoneAuthorized()) {
       return Promise.resolve();
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
   checkWifiAvailable() {
-    this.diagnostic.isWifiAvailable().then((available:any)=> {
+    this.diagnostic.isWifiAvailable().then((available: any) => {
       console.log("WiFi is " + (available ? "available" : "not available"));
       this.networkConnected = available;
-    }).catch((error:any)=> {
-      console.error("Error while checking wifi: "+error);
+    }).catch((error: any) => {
+      console.error("Error while checking wifi: " + error);
     });
   }
 
   checkLocationEnabled() {
-    this.diagnostic.isLocationEnabled().then((enabled:any)=> {
+    this.diagnostic.isLocationEnabled().then((enabled: any) => {
       console.log("Location is " + (enabled ? "enabled" : "not enabled"));
       this.locationEnabled = enabled;
-    }).catch((error:any)=> {
-      console.error("Error while checking location: "+error);
+    }).catch((error: any) => {
+      console.error("Error while checking location: " + error);
     });
   }
 
 
   toggleParking() {
     this.isParked = !this.isParked;
-    this.sendData({isParked: this.isParked});
+    this.sendData({ isParked: this.isParked });
   }
 
-  sendData(sendObj:object) {
-    if(this.peer != null){
-      try{
+  sendData(sendObj: object) {
+    if (this.peer != null && this.peerLinkActive) {
+      try {
         this.peer.send(JSON.stringify(sendObj));
       }
-      catch(err) {
+      catch (err) {
         console.log("Error while trying to send data:");
         console.log(err);
       }
+    } else {
+      console.log("no peer or peerLinkActive. Won't send any RTC-datachannel stuff");
     }
   }
 
-  endCall() {
-    this.sendData({endcall: true});
-    if(this.peer)
-    {
+  hangUp() {
+    this.sendData({ endcall: true });
+    this.tearDownPeer();
+    this.navCtrl.pop();
+  }
+
+  tearDownPeer() {
+
+    if (this.peer) {
       this.peer.destroy();
     }
-    this.navCtrl.pop();
   }
 }

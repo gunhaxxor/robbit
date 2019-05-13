@@ -6,40 +6,42 @@
       <video id="robot-local-video" autoplay>
       </video>
     </div>
-    
-    <video id="robot-remote-video" autoplay [class.video-vertical-flip]="this.videoVerticalFlipped" [hidden]="!this.videoLinkActive || !this.showDriver">
+
+    <video id="robot-remote-video" autoplay [class.video-vertical-flip]="videoVerticalFlipped"
+      [hidden]="!peerLinkActive || !showDriver">
     </video>
     <div id="emoji-container">
-      <div id="emoji" [hidden]="!this.videoLinkActive || this.showDriver">
+      <div id="emoji" [hidden]="!peerLinkActive || showDriver">
         🙂
       </div>
     </div>
 
     <div id="waving-container">
-      <div id="waving" [hidden]="!this.videoLinkActive || !this.isWaving">
+      <div id="waving" [hidden]="!peerLinkActive || !isWaving">
       </div>
     </div>
-    
-    <div id="chat-bubble-container" [class.hidden-chat]="!this.chat.isShown" [hidden]="!this.videoLinkActive">
-      <div id="chat" [innerHTML]="chat.text" >
+
+    <div id="chat-bubble-container" [class.hidden-chat]="!chat.isShown" [hidden]="!peerLinkActive">
+      <div id="chat" [innerHTML]="chat.text">
       </div>
       <div id="chat-bubble-point"></div>
     </div>
     <ble-button></ble-button>
-    
-    <div id="bottom-controls">
-      <span class="warning" [hidden]="this.networkConnected">
-          <ion-icon name="wifi"></ion-icon>
-      </span>
-      <span class="warning" [hidden]="this.locationEnabled">
-          <ion-icon name="pin"></ion-icon>
-      </span>
-      
 
-      <button ion-button (click)="this.toggleParking()" id="toggle-park-button" class="control-button" [class.toggle-off]="!this.isParked">
+    <div id="bottom-controls">
+      <span class="warning" [hidden]="networkConnected">
+        <ion-icon name="wifi"></ion-icon>
+      </span>
+      <span class="warning" [hidden]="locationEnabled">
+        <ion-icon name="pin"></ion-icon>
+      </span>
+
+
+      <button ion-button (click)="toggleParking()" id="toggle-park-button" class="control-button"
+        [class.toggle-off]="!isParked">
         P
       </button>
-      <button ion-button (click)="this.endCall()" id="end-call-button" class="control-button"></button>
+      <button ion-button (click)="hangUp()" id="end-call-button" class="control-button"></button>
     </div>
   </div>
 </ion-content>

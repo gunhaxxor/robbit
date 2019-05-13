@@ -25,7 +25,7 @@ export class BleService {
   }
 
   public start() {
-    if(this.started){
+    if (this.started) {
       console.log("Scan already active");
       return;
     }
@@ -36,7 +36,7 @@ export class BleService {
 
   public stop() {
     this.started = false;
-    
+
     this.ble.stopScan();
     this.disconnect();
   }
@@ -67,7 +67,7 @@ export class BleService {
   private devFound(device) {
     console.log("found device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
-        this.devices.push(device);
+      this.devices.push(device);
       //Automatically connect to the first uBit in the list
       if (
         this.devices.length == 1 &&
@@ -96,7 +96,7 @@ export class BleService {
 
   public disconnect() {
     if (!this.connectedDevice) {
-      console.error("device is not set. Nothing to disconnect from!");
+      console.error("BLE device is not set. Nothing to disconnect from!");
       return;
     }
     console.log(
@@ -133,7 +133,7 @@ export class BleService {
     this.uartService = peripheral.services.find(element => {
       return element.includes("b5a");
     });
-    if(!this.uartService){
+    if (!this.uartService) {
       console.log("didn't find the uart service!");
     }
     console.log("uartservice is: " + JSON.stringify(this.uartService));
@@ -160,7 +160,7 @@ export class BleService {
     console.log("disconnected from: " + JSON.stringify(peripheral));
     this.isConnectedToDevice = false;
     this.connectedDevice = undefined;
-    if(this.started){
+    if (this.started) {
       this.scanAndAutoConnect();
     }
 
