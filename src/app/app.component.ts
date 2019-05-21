@@ -2,7 +2,6 @@ import { Component } from "@angular/core";
 import { Platform } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
-// import { TabsPage } from "../pages/tabs/tabs";
 import { BLE } from "@ionic-native/ble";
 import { BleService } from "../providers/bleservice/bleService";
 import { Diagnostic } from "@ionic-native/diagnostic";
@@ -24,14 +23,17 @@ export class MyApp {
   ) {
     platform.ready().then(() => {
       this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA, this.diagnostic.permission.RECORD_AUDIO])
-      .then(() => {
-        console.log("runtime permission requests were approved");
-      })
-      .catch((err) => console.log("permissions request rejected: " + err));
+        .then(() => {
+          console.log("runtime permission requests were approved");
+        })
+        .catch((err) => console.log("permissions request rejected: " + err));
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
+
+      // statusBar.styleDefault();
+      console.log('Hiding the status bar');
+      statusBar.hide();
       splashScreen.hide();
     });
   }

@@ -8,7 +8,6 @@ import * as Peer from "simple-peer";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { NativeAudio } from '@ionic-native/native-audio';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
-import "webrtc-adapter";
 // import encoding from 'text-encoding';
 
 @Component({
@@ -29,9 +28,8 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
-  networkConnected: boolean;
   locationEnabled: boolean;
-  connectionInterval: any;
+  // connectionInterval: any;
 
   constructor(
     public platform: Platform,
@@ -64,12 +62,11 @@ export class RobotInterfacePage {
 
 
     this.keepPeerActive = false; //avoid retrying peer on close event
-    this.peer.destroy();
-    delete this.peer;
+    this.tearDownPeer();
     // console.log("this.peer is:");
     // console.log(this.peer);
     this.peerLinkActive = false;
-    clearInterval(this.connectionInterval);
+    // clearInterval(this.connectionInterval);
   }
 
   ionViewWillEnter() {
@@ -81,13 +78,13 @@ export class RobotInterfacePage {
 
     // check instantly, then every 5 seconds.
     {
-      this.checkWifiAvailable();
+      // this.checkWifiAvailable();
       this.checkLocationEnabled();
     }
-    this.connectionInterval = setInterval(() => {
-      this.checkWifiAvailable();
-      this.checkLocationEnabled();
-    }, 5000);
+    // this.connectionInterval = setInterval(() => {
+    //   this.checkWifiAvailable();
+    //   this.checkLocationEnabled();
+    // }, 5000);
 
     this.robotName = this.navParams.get('robotName');
 
@@ -194,10 +191,15 @@ export class RobotInterfacePage {
       console.log(this.peer);
       if (this.keepPeerActive) {
         console.log("trying to reinitiate listen. Wonder if peer object will be invalid/leaked when we just create a new one to replace the previous??");
+        this.tearDownPeer();
         this.initiateListen();
       }
       this.peerLinkActive = false;
     });
+    this.peer.on('error', err => {
+      console.error("!! error " + err);
+    })
+
     this.peer.on("data", msg => {
       //console.log("received callInfo  msg: " + JSON.stringify(msg));
       let msgObj = JSON.parse(String(msg));
@@ -210,6 +212,7 @@ export class RobotInterfacePage {
           // that's why we force it to run inside the zone
           // and update the interface instantly
           this.peerLinkActive = false;
+          this.tearDownPeer();
           this.initiateListen();
         });
       }
@@ -246,42 +249,6 @@ export class RobotInterfacePage {
           this.nativeAudio.play('attention_sound');
         }
       }
-      // console.log("received data: " + msg);
-
-      // if(msg.substring(0, 10) == "callInfo: ") {
-      //   msg = msg.substring(10);
-      //   switch(msg) {
-      //     case "endcall":
-      //       console.log("Received endcall.");
-      //       this.zone.run(()=> {
-      //         // because we are in a callback this would have happened outside angulars zone
-      //         // which wouldn't update the template
-      //         // that's why we force it to run inside the zone
-      //         // and update the interface instantly
-      //         this.videoLinkActive = false;
-      //         this.initiateListen();
-      //       });
-      //       break;
-      //     case "driver showCamera true":
-      //       this.showDriver = true;
-      //       break;
-      //     case "driver showCamera false":
-      //       this.showDriver = false;
-      //       break;
-      //     default:
-      //       console.log("default switch");
-      //       if(msg.substring(0,6) == "emoji "){
-      //         msg = msg.substring(6);
-      //         console.log("found emoji:"+msg);
-      //         let emojiDiv: HTMLElement = document.getElementById("emoji");
-      //         emojiDiv.innerHTML = msg;
-      //       }
-
-      //       break;
-      //   }
-      // }
-
-
     });
   }
 
@@ -325,15 +292,6 @@ export class RobotInterfacePage {
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
-  checkWifiAvailable() {
-    this.diagnostic.isWifiAvailable().then((available: any) => {
-      console.log("WiFi is " + (available ? "available" : "not available"));
-      this.networkConnected = available;
-    }).catch((error: any) => {
-      console.error("Error while checking wifi: " + error);
-    });
-  }
-
   checkLocationEnabled() {
     this.diagnostic.isLocationEnabled().then((enabled: any) => {
       console.log("Location is " + (enabled ? "enabled" : "not enabled"));
@@ -374,5 +332,7 @@ export class RobotInterfacePage {
     if (this.peer) {
       this.peer.destroy();
     }
+    // delete this.peer;
+    this.peer = null;
   }
 }

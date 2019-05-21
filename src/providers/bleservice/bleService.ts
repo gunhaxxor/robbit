@@ -65,7 +65,7 @@ export class BleService {
 
   // When a device is discovered
   private devFound(device) {
-    console.log("found device named: " + device.name);
+    console.log("found BLE device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
         this.devices.push(device);
       //Automatically connect to the first uBit in the list
@@ -82,7 +82,7 @@ export class BleService {
   // Attempts to connect to the specified device.
   connectToMicrobit(device) {
     if (this.isConnectedToDevice) {
-      console.log("was already connected to a device. First disconnects!");
+      console.log("was already connected to a BLE device. First disconnects!");
       this.disconnect();
     }
     console.log("Connecting to micro:bit");
@@ -96,7 +96,7 @@ export class BleService {
 
   public disconnect() {
     if (!this.connectedDevice) {
-      console.error("device is not set. Nothing to disconnect from!");
+      console.error("BLE device is not set. Nothing to disconnect from!");
       return;
     }
     console.log(

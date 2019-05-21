@@ -7,6 +7,14 @@
       </video>
     </div>
 
+    <ble-button></ble-button>
+
+    <div id="wait-box" [hidden]="peerLinkActive">
+      <ion-spinner id="progress-spinner"></ion-spinner>
+      <p id="wait-message">Väntar på att någon ska ansluta</p>
+    </div>
+
+
     <video id="robot-remote-video" autoplay [class.video-vertical-flip]="videoVerticalFlipped"
       [hidden]="!peerLinkActive || !showDriver">
     </video>
@@ -26,12 +34,9 @@
       </div>
       <div id="chat-bubble-point"></div>
     </div>
-    <ble-button></ble-button>
+
 
     <div id="bottom-controls">
-      <span class="warning" [hidden]="networkConnected">
-        <ion-icon name="wifi"></ion-icon>
-      </span>
       <span class="warning" [hidden]="locationEnabled">
         <ion-icon name="pin"></ion-icon>
       </span>

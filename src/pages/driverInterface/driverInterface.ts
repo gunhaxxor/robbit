@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from "@angular/core";
-import { NavController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
+import { NavController, AlertController, NavParams, Platform, PopoverController, LoadingController } from "ionic-angular";
 import { EmojiPage } from '../emoji-page/emoji-page';
 import { SettingsPage } from '../settings-page/settings-page';
 // import { BleService } from "../../providers/bleservice/bleService";
@@ -8,7 +8,9 @@ import * as Peer from "simple-peer";
 import nipplejs from "nipplejs";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
-import "webrtc-adapter";
+// import "webrtc-adapter";
+import 'zone.js/dist/webapis-rtc-peer-connection';
+import 'zone.js/dist/zone-patch-user-media';
 // import encoding from 'text-encoding';
 
 declare var CommandBot: any;
@@ -23,9 +25,11 @@ export class DriverInterfacePage {
   videoLinkWaitingForAnswer = false;
   initiateCallTimeout: any;
   localStream: MediaStream;
-  remoteStream: MediaStream;
+  localVideoTag: HTMLVideoElement;
   localVideoTrack: any;
   localAudioTrack: any;
+  remoteStream: MediaStream;
+  remoteVideoTag: HTMLVideoElement
   showCamera: boolean;
   muteAudio: boolean;
   currentEmoji: string = "🙂";
@@ -41,13 +45,13 @@ export class DriverInterfacePage {
   servoAngleChange: number = 0;
   isParked: boolean = false;
   isWaving: boolean = false;
-  cameraOption: string = "constraint";
-  SERVO_START_VALUE: number = 90;
+  cameraOption: string = "user";
+  SERVO_START_VALUE: number = 65;
   SERVO_MAX_VALUE: number = 100;
   SERVO_MIN_VALUE: number = 20;
   ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
-  DRIVE_MOTOR_SCALE: number = 0.8;
-  TURN_MOTOR_SCALE: number = 0.8;
+  DRIVE_MOTOR_SCALE: number = 0.3;
+  TURN_MOTOR_SCALE: number = 0.3;
   servoAngle: number = this.SERVO_START_VALUE;
   SERVO_SCALE: number = 5;
   robotName: string;
@@ -70,6 +74,7 @@ export class DriverInterfacePage {
   constructor(
     public platform: Platform,
     public navCtrl: NavController,
+    private alertCtrl: AlertController,
     public loading: LoadingController,
     public navParams: NavParams,
     // public bleService: BleService,
@@ -88,9 +93,9 @@ export class DriverInterfacePage {
     event.returnValue = false;
   }
 
-  ionViewCanLeave(): boolean {
-    return window.confirm("Vill du verkligen lämna?")
-  }
+  // ionViewCanLeave(): boolean {
+  //   return window.confirm("Vill du verkligen lämna?")
+  // }
 
   //user is leaving the selected page.
   ionViewDidLeave() {
@@ -121,6 +126,8 @@ export class DriverInterfacePage {
   ionViewDidEnter() {
 
     this.robotName = this.navParams.get('robotName');
+    this.localVideoTag = document.querySelector("#driver-local-video");
+    this.remoteVideoTag = document.querySelector("#driver-remote-video");
 
     if (this.socket.ioSocket.connected) {
       console.log('socket was already connected. Trying to join room');
@@ -159,16 +166,21 @@ export class DriverInterfacePage {
       console.log("message from socket server: " + msg);
     });
 
-    let cameraRetrieved = this.checkNeededPermissions().then(() => {
-      return this.retrieveCamera();
-    }).catch((err) => console.log("failed to get permissions: " + err));
+    let cameraRetrieved = this.retrieveCamera();
+    // let cameraRetrieved = this.checkNeededPermissions().then(() => {
+    //   return this.retrieveCamera();
+    // }).catch((err) => console.log("failed to get permissions: " + err));
+    // console.log(cameraRetrieved);
 
     Promise.all([roomJoined, cameraRetrieved]).then(() => {
       console.log("setup promises resolved. Inititating call!");
       // console.log(roomJoined);
       // console.log(cameraRetrieved);
       this.initiateCall();
-    });
+    }).catch(err => {
+      console.error("FAILED TO SETUP ALL THE STUFFZ! NOW CRY!!!");
+      console.error(err);
+    })
 
 
     // Let's divide the motorvariables into drive and look components.
@@ -329,12 +341,12 @@ export class DriverInterfacePage {
           break;
         case 'ArrowLeft':
           if (this.peerLinkActive) {
-            this.robotRotation = -0.8;
+            this.robotRotation = -1;
           }
           break;
         case 'ArrowRight':
           if (this.peerLinkActive) {
-            this.robotRotation = 0.8;
+            this.robotRotation = 1;
           }
           break;
         case 'a':
@@ -395,7 +407,14 @@ export class DriverInterfacePage {
   // Make sure this won't get called before we have retrieved local media and joined the correct socket room!
   initiateCall() {
     console.log("starting call as initiator");
+    // make sure we won't let a set timer roam free before we create a new one.
+    // makes no sense when I think about it...
+    // if (this.initiateCallTimeout != undefined) {
+    //   console.log("There was already a timeout set. Clearing it.");
+    //   clearInterval(this.initiateCallTimeout);
+    // }
     this.initiateCallTimeout = setTimeout(() => {
+      this.tearDownPeer();
       this.initiateCall();
     }, 10000);
     this.videoLinkWaitingForAnswer = true;
@@ -410,8 +429,8 @@ export class DriverInterfacePage {
     this.peer.on("stream", stream => {
       console.log("I am Driver and I am initiator. Received stream from listening peer");
       // got remote video stream, now let's show it in a video tag
-      var video: any = document.querySelector("#driver-remote-video");
-      video.srcObject = stream;
+      // var video: any = document.querySelector("#driver-remote-video");
+      this.remoteVideoTag.srcObject = stream;
       // video.play();
     });
     this.peer.on('connect', () => {
@@ -437,18 +456,30 @@ export class DriverInterfacePage {
       this.peerLinkActive = false;
       this.videoLinkWaitingForAnswer = false;
     });
-    this.peer.on('unhandledRejection', (reason, p) => {
-      console.log("!! unhandledRejection " + reason + " " + p);
-    });
-    this.peer.on('uncaughtException', err => {
-      // HANDLE ERROR HERE
-      console.log("!! uncaughtException " + err);
-    });
+    // this.peer.on('unhandledRejection', (reason, p) => {
+    //   console.log("!! unhandledRejection " + reason + " " + p);
+    // });
+    // this.peer.on('uncaughtException', err => {
+    //   // HANDLE ERROR HERE
+    //   console.log("!! uncaughtException " + err);
+    // });
     this.peer.on('error', err => {
-      console.log("!! error " + err);
+      console.error("!! error " + err);
     });
     this.peer.on("data", msg => {
       let msgObj = JSON.parse(String(msg));
+
+      if (msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
+        console.log("Received endcall.");
+        // this.zone.run(() => {
+        // because we are in a callback this would have happened outside angulars zone
+        // which wouldn't update the template
+        // that's why we force it to run inside the zone
+        // and update the interface instantly
+        this.tearDownPeer();
+        this.navCtrl.pop();
+        // });
+      }
 
       if (msgObj.hasOwnProperty("isParked")) {
         this.isParked = msgObj.isParked;
@@ -459,26 +490,70 @@ export class DriverInterfacePage {
   }
 
   hangUp() {
-    clearInterval(this.initiateCallTimeout);
-    this.sendData({ endcall: true });
-    this.tearDownPeer();
-    this.navCtrl.pop();
+    let alert = this.alertCtrl.create({
+      title: 'Avsluta samtal',
+      message: 'Vill du lägga på?',
+      buttons: [
+        {
+          text: 'Stanna',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Avsluta',
+          handler: () => {
+            console.log('Exit confirmed');
+            clearInterval(this.initiateCallTimeout);
+            this.sendData({ endcall: true });
+            this.tearDownPeer();
+            this.navCtrl.pop();
+          }
+        }
+      ]
+    });
+    alert.present();
+
   }
 
   tearDownPeer() {
+    this.peerLinkActive = false;
     if (this.peer) {
+      // This wa an effort to make the browser release the camera when returning to home screen. Doesn't seem to work though...
+      if (this.localStream && this.localStream.getTracks) {
+        console.log('stopping all mediatracks on localstream');
+        this.localStream.getTracks().forEach(track => track.stop());
+        // for (let track of tracks) {
+        //   track.stop();
+        // }
+        this.localVideoTag.srcObject = null;
+
+        this.localStream = null;
+      }
+      // if (this.remoteStream && this.remoteStream.getTracks) {
+      //   console.log('stopping all mediatracks on remotestream');
+      //   let tracks = this.remoteStream.getTracks();
+      //   for (let track of tracks) {
+      //     track.stop();
+      //   }
+      //   this.remoteStream = null;
+      // }
+
+      console.log("destroying peer object");
       this.peer.destroy();
+      this.peer = null;
     }
   }
 
   changeCamera() {
     if (this.cameraOption == "environment") {
-      this.cameraOption = "constraint";
+      this.cameraOption = "user";
     } else {
       this.cameraOption = "environment";
     }
-    let video: HTMLVideoElement = document.querySelector("#driver-local-video");
-    video.pause();
+    // let video: HTMLVideoElement = document.querySelector("#driver-local-video");
+    this.localVideoTag.pause();
     this.retrieveCamera();
   }
 
@@ -495,35 +570,41 @@ export class DriverInterfacePage {
   removeVideoTrack() {
     console.log("removing camera stream");
     if (!this.localStream) {
-      console.log("no local stream available for removal!");
+      console.log("this.localStream is undefined. Can't remove (video)track from it");
       return;
     }
     let videoTracks = this.localStream.getVideoTracks();
-    if (!videoTracks || videoTracks.length == 0) {
+    if (videoTracks.length == 0) {
       console.log("No video tracks found on local stream");
       return;
     }
-    if (this.peer != null) {
-      this.peer.removeTrack(videoTracks[0], this.localStream);
-    }
+    // if (this.peer != null) {
+    this.peer.removeTrack(videoTracks[0], this.localStream);
+    // }
     this.showCamera = false;
     this.sendData({ showDriverCamera: this.showCamera });
-    console.log("Video track removed.");
+    console.log("Video track removed from stream.");
   }
 
   addVideoTrack() {
     if (!this.peer) {
       return;
     }
-    if (this.localVideoTrack != null) {
-      console.log("Adding video track to stream.");
-      if (this.peer != null) {
-        this.peer.addTrack(this.localVideoTrack, this.localStream);
-      }
-      this.showCamera = true;
-      this.sendData({ showDriverCamera: this.showCamera });
+    if (!this.localStream) {
+      console.error("this.localStream is undefined. Can't add (video)track to it");
+      return;
     }
+    if (!this.localVideoTrack) {
+      console.error("no local video track defined. Can't add it to the stream");
+      return;
+    }
+    // if (this.peer != null) {
+    this.peer.addTrack(this.localVideoTrack, this.localStream);
+    // }
+    this.showCamera = true;
+    this.sendData({ showDriverCamera: this.showCamera });
 
+    console.log("video track added to stream.");
   }
 
   toggleAudioTrack() {
@@ -540,50 +621,63 @@ export class DriverInterfacePage {
     if (!this.peer) {
       return;
     }
+    if (!this.localStream) {
+      console.error("this.localStream is undefined. Can't remove track from it");
+      return;
+    }
     let audioTracks = this.localStream.getAudioTracks();
     if (audioTracks.length == 0) {
       console.log("No audio tracks found on local stream");
       return;
     }
-    if (this.peer != null) {
-      this.peer.removeTrack(audioTracks[0], this.localStream);
-    }
+
+    // if (this.peer != null) {
+    this.peer.removeTrack(audioTracks[0], this.localStream);
+    // }
     this.muteAudio = true;
     this.sendData({ muteDriver: this.muteAudio });
-    console.log("audio track removed.");
+    console.log("audio track removed from stream.");
   }
 
   addAudioTrack() {
     if (!this.peer) {
       return;
     }
-    if (this.localAudioTrack != null) {
-      console.log("Adding audio track to stream.");
-      if (this.peer != null) {
-        this.peer.addTrack(this.localAudioTrack, this.localStream);
-      }
-      this.muteAudio = false;
-      this.sendData({ muteDriver: this.muteAudio });
+    if (!this.localStream) {
+      console.error("this.localStream is undefined. Can't add track to it");
+      return;
     }
+    if (!this.localAudioTrack) {
+      console.error("no local audio track defined. Can't add it to the stream");
+      return;
+    }
+
+    // if (this.peer != null) {
+    this.peer.addTrack(this.localAudioTrack, this.localStream);
+    // }
+    this.muteAudio = false;
+    this.sendData({ muteDriver: this.muteAudio });
+    console.log("audio track added to stream.");
   }
 
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
-    return navigator.mediaDevices.getUserMedia({ video: { facingMode: this.cameraOption }, audio: true })
+    return navigator.mediaDevices.getUserMedia({ video: true /*{ facingMode: this.cameraOption }*/, audio: true })
       .then((stream) => {
         console.log("Driver got local media as a stream");
         this.localStream = stream;
-        let video: HTMLVideoElement = document.querySelector("#driver-local-video");
+        // let video: HTMLVideoElement = document.querySelector("#driver-local-video");
         this.localVideoTrack = stream.getVideoTracks()[0];
         this.localAudioTrack = stream.getAudioTracks()[0];
-        video.srcObject = stream;
-        video.volume = 0;
+        this.localVideoTag.srcObject = stream;
+        this.localVideoTag.volume = 0;
         // video.play();
         this.showCamera = true;
         this.muteAudio = false;
       }).catch(err => {
         console.log("error: " + err);
+        return Promise.reject(err);
       });
   }
 
@@ -664,16 +758,6 @@ export class DriverInterfacePage {
       console.log("no peer or peerLinkActive. Won't send any RTC-datachannel stuff");
     }
   }
-
-  // permissionCheck(permission, name) {
-  //   this.androidPermissions.checkPermission(permission).then(res => {
-  //     console.log(name + " permission: " + res.hasPermission);
-  //     if (!res.hasPermission) {
-  //       return Promise.reject("no permission for " + name + "!");
-  //     }
-  //     return Promise.resolve();
-  //   });
-  // }
 
   checkNeededPermissions() {
     // let returnPromise = new Promise();

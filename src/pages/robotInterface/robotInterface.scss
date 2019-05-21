@@ -98,6 +98,28 @@ page-robotInterface {
     border-right: 2rem solid transparent;
   }
 
+  #wait-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #wait-message {
+    border: 0px solid red;
+    font-size: 3rem;
+    color:white;
+    text-align: center;
+    // margin-top: 15rem;
+  }
+
+  #progress-spinner {
+    width: 10rem;
+    height: 10rem;
+    margin: auto;
+  }
+
+
   #corner-div {
     border: 0px solid red;
     position: absolute;

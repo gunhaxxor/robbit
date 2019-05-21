@@ -1,18 +1,20 @@
 <ion-content>
   <ng-container *ngIf="plt.is('cordova')">
-    <div ionic full class="welcome-panel" >
+    <div ionic full class="welcome-panel">
       <ng-container *ngIf="!storedName; else noStoredName">
-          <h1>Robbit</h1>
-          <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp sig till roboten.</p>
-          <form (submit)="saveNameAndGoToRobotInterface()">
-            <ion-item>
-              <ion-label floating>Robotnamn</ion-label>
-              <ion-input type="text" name="robotname" id="robot-name-input" [(ngModel)]="robotName"></ion-input>
-              <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
-            </ion-item>
-            <p *ngIf="invalidRobotName">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
-            <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Namnge och starta!</button> 
-          </form>
+        <h1>Robbit</h1>
+        <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn
+          eleven anger för att koppla upp sig till roboten.</p>
+        <form (submit)="saveNameAndGoToRobotInterface()">
+          <ion-item>
+            <ion-label floating>Robotnamn</ion-label>
+            <ion-input type="text" name="robotname" id="robot-name-input" [(ngModel)]="robotName"></ion-input>
+            <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
+          </ion-item>
+          <p *ngIf="invalidRobotName">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
+          <button ion-button [disabled]="!signedIn ||!robotName || invalidRobotName === robotName">Namnge och
+            starta!</button>
+        </form>
       </ng-container>
       <ng-template #noStoredName>
         <h1>Robbit</h1>
@@ -20,10 +22,14 @@
         <button ion-button (click)="goToRobotInterface()">Starta {{storedName}}</button>
       </ng-template>
       <div class="version-nr">v0.0.3</div>
+      <div class="connection-info">
+        <p>{{internetAvailable?"Internet anslutet":"Inget Internet!!!"}}</p>
+        <p>{{wifiEnabled?"Wifi är påslaget":"wifi är avstängt!!!"}}</p>
+      </div>
     </div>
-    
+
   </ng-container>
-  
+
   <div ionic full class="welcome-panel" *ngIf="!plt.is('cordova')">
     <h1>Robbit</h1>
     <p>Vilken robot vill du ringa upp?</p>
@@ -36,7 +42,8 @@
       <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Ring upp {{this.robotName}}</button>
       <h3>Tidigare anslutna robotar:</h3>
       <ng-container *ngFor="let robot of objectKeys(recentConnectedRobots)">
-        <button ion-button class="recent-robot-button" (click)="this.robotName = robot" >{{robot}}  <span class="recent-robot-call-icon"></span></button>
+        <button ion-button class="recent-robot-button" (click)="this.robotName = robot">{{robot}} <span
+            class="recent-robot-call-icon"></span></button>
       </ng-container>
     </form>
     <div class="version-nr">v0.0.3</div>

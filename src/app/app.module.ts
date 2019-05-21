@@ -22,6 +22,7 @@ import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic"
+import { Network } from "@ionic-native/network"
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Device } from '@ionic-native/device'
 import { IonicStorageModule } from '@ionic/storage';
@@ -71,10 +72,11 @@ const socketConfig: SocketIoConfig = {
     LoadingController,
     Camera,
     Diagnostic,
+    Network,
     NativeAudio,
     Device,
     ScreenOrientation,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
+export class AppModule { }
