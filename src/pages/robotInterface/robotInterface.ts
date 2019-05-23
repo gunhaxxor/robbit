@@ -28,7 +28,6 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
-  locationEnabled: boolean;
   // connectionInterval: any;
 
   constructor(
@@ -75,17 +74,6 @@ export class RobotInterfacePage {
 
   ionViewDidEnter() {
     this.bleService.start();
-
-    // check instantly, then every 5 seconds.
-    {
-      // this.checkWifiAvailable();
-      this.checkLocationEnabled();
-    }
-    // this.connectionInterval = setInterval(() => {
-    //   this.checkWifiAvailable();
-    //   this.checkLocationEnabled();
-    // }, 5000);
-
     this.robotName = this.navParams.get('robotName');
 
     // this.socket.emit('join', this.robotName);
@@ -292,14 +280,7 @@ export class RobotInterfacePage {
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
 
-  checkLocationEnabled() {
-    this.diagnostic.isLocationEnabled().then((enabled: any) => {
-      console.log("Location is " + (enabled ? "enabled" : "not enabled"));
-      this.locationEnabled = enabled;
-    }).catch((error: any) => {
-      console.error("Error while checking location: " + error);
-    });
-  }
+
 
 
   toggleParking() {

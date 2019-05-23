@@ -4,13 +4,14 @@ body {
 }
 
 page-home {
-
-  
   ion-spinner {
     position: absolute;
     right: 50px;
   }
   
+  .hardware-info p{
+    color: #ff0000;
+  }
 
   .content{
     // för allt

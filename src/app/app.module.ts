@@ -13,6 +13,7 @@ import { SettingsPage } from "../pages/settings-page/settings-page";
 
 import { BleButtonComponent } from "../components/ble-button/ble-button";
 
+import { AppVersion } from "@ionic-native/app-version";
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
@@ -22,6 +23,7 @@ import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic"
+import { LocationAccuracy } from "@ionic-native/location-accuracy";
 import { Network } from "@ionic-native/network"
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Device } from '@ionic-native/device'
@@ -54,17 +56,12 @@ const socketConfig: SocketIoConfig = {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    // DeviceListPage,
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
-    BlePage,
-    BleButtonComponent,
-    EmojiPage,
-    SettingsPage
   ],
   providers: [
+    AppVersion,
     StatusBar,
     SplashScreen,
     BLE,
@@ -72,6 +69,7 @@ const socketConfig: SocketIoConfig = {
     LoadingController,
     Camera,
     Diagnostic,
+    LocationAccuracy,
     Network,
     NativeAudio,
     Device,

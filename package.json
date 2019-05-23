@@ -21,11 +21,13 @@
     "@angular/http": "5.2.11",
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
+    "@ionic-native/app-version": "^4.20.0",
     "@ionic-native/ble": "^4.8.0",
     "@ionic-native/camera": "^4.11.0",
     "@ionic-native/core": "4.7.0",
     "@ionic-native/device": "^4.19.0",
     "@ionic-native/diagnostic": "^4.11.0",
+    "@ionic-native/location-accuracy": "^4.20.0",
     "@ionic-native/native-audio": "^4.19.0",
     "@ionic-native/network": "^4.20.0",
     "@ionic-native/screen-orientation": "^4.11.0",
@@ -34,6 +36,7 @@
     "@ionic/storage": "^2.2.0",
     "cordova-android": "7.1.4",
     "cordova-custom-config": "^5.0.3",
+    "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-ble-central": "^1.2.2",
     "cordova-plugin-camera": "^4.0.3",
     "cordova-plugin-compat": "^1.2.0",
@@ -42,6 +45,7 @@
     "cordova-plugin-ionic-webview": "^3.1.1",
     "cordova-plugin-nativeaudio": "^3.0.9",
     "cordova-plugin-network-information": "^2.0.1",
+    "cordova-plugin-request-location-accuracy": "^2.3.0",
     "cordova-plugin-screen-orientation": "3.0.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
@@ -82,7 +86,11 @@
       "cordova-plugin-nativeaudio": {},
       "cordova-sqlite-storage": {},
       "cordova-plugin-screen-orientation": {},
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-request-location-accuracy": {
+        "PLAY_SERVICES_LOCATION_VERSION": "16.+"
+      },
+      "cordova-plugin-app-version": {}
     },
     "platforms": [
       "android"

@@ -12,20 +12,33 @@
             <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
           </ion-item>
           <p *ngIf="invalidRobotName">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
-          <button ion-button [disabled]="!signedIn ||!robotName || invalidRobotName === robotName">Namnge och
+          <button ion-button [disabled]="!readyToEnterDriverInterface">Namnge
+            och
             starta!</button>
         </form>
       </ng-container>
       <ng-template #noStoredName>
         <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{storedName}}</p>
-        <button ion-button (click)="goToRobotInterface()">Starta {{storedName}}</button>
+        <button ion-button [disabled]="!readyToEnterDriverInterface" (click)="goToRobotInterface()">Starta
+          {{storedName}}</button>
       </ng-template>
-      <div class="version-nr">v0.0.3</div>
-      <div class="connection-info">
-        <p>{{internetAvailable?"Internet anslutet":"Inget Internet!!!"}}</p>
-        <p>{{wifiEnabled?"Wifi är påslaget":"wifi är avstängt!!!"}}</p>
+      <div class="version-nr">v{{appVersionString}}</div>
+      <div class="hardware-info">
+        <p *ngIf="!internetAvailable">Hittar inget Internet! Behöver anslutning för att kunna koppla upp.</p>
+        <p *ngIf="!bluetoothEnabled">
+          Du behöver slå på bluetooth!
+          <button ion-button (click)="ble.enable()">Slå på</button>
+        </p>
+        <p *ngIf="!locationEnabled">
+          Du behöver slå på platstjänster (annars funkar inte bluetooth)!
+          <button ion-button (click)="enableLocation()">Slå på</button>
+        </p>
       </div>
+      <p *ngIf="!wifiEnabled">
+        WIFI är avstängt! Vi rekommenderar att du undviker att köra Robbit över mobildata.
+        <button ion-button (click)="enableWifi()">Slå på WIFI</button>
+      </p>
     </div>
 
   </ng-container>
@@ -46,6 +59,6 @@
             class="recent-robot-call-icon"></span></button>
       </ng-container>
     </form>
-    <div class="version-nr">v0.0.3</div>
+    <div class="version-nr">v{{appVersionString}}</div>
   </div>
 </ion-content>
