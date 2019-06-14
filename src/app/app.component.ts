@@ -25,28 +25,30 @@ export class MyApp {
     private diagnostic: Diagnostic
   ) {
     platform.ready().then(() => {
-      this.appVersion.getVersionNumber().then(
-        (versionNumber) => {
-          console.log("app version: v" + versionNumber);
-        },
-        (err) => console.error(err)
-      )
-      this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA,
-      this.diagnostic.permission.RECORD_AUDIO
-        // ,this.diagnostic.permission.ACCESS_COARSE_LOCATION
-      ])
-        .then(() => {
-          console.log("runtime permission requests were approved");
-        })
-        .catch((err) => console.log("permissions request rejected: " + err));
+      if (platform.is('cordova')) {
+        this.appVersion.getVersionNumber().then(
+          (versionNumber) => {
+            console.log("app version: v" + versionNumber);
+          },
+          (err) => console.error(err)
+        )
+        this.diagnostic.requestRuntimePermissions([this.diagnostic.permission.CAMERA,
+        this.diagnostic.permission.RECORD_AUDIO
+          // ,this.diagnostic.permission.ACCESS_COARSE_LOCATION
+        ])
+          .then(() => {
+            console.log("runtime permission requests were approved");
+          })
+          .catch((err) => console.log("permissions request rejected: " + err));
 
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
+        // Okay, so the platform is ready and our plugins are available.
+        // Here you can do any higher level native things you might need.
 
-      // statusBar.styleDefault();
-      console.log('Hiding the status bar');
-      statusBar.hide();
-      splashScreen.hide();
+        // statusBar.styleDefault();
+        console.log('Hiding the status bar');
+        statusBar.hide();
+        splashScreen.hide();
+      }
     });
   }
 }

@@ -1,7 +1,7 @@
 <ion-content>
   <ng-container *ngIf="plt.is('cordova')">
     <div ionic full class="welcome-panel">
-      <ng-container *ngIf="!storedName; else noStoredName">
+      <ng-container *ngIf="!storedName; else nameIsSet">
         <h1>Robbit</h1>
         <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn
           eleven anger för att koppla upp sig till roboten.</p>
@@ -17,10 +17,10 @@
             starta!</button>
         </form>
       </ng-container>
-      <ng-template #noStoredName>
+      <ng-template #nameIsSet>
         <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{storedName}}</p>
-        <button ion-button [disabled]="!readyToEnterDriverInterface" (click)="goToRobotInterface()">Starta
+        <button ion-button [disabled]="!readyToEnterDriverInterface" (click)="checkNameAndGoToDriverInterface()">Starta
           {{storedName}}</button>
       </ng-template>
       <div class="version-nr">v{{appVersionString}}</div>
@@ -39,6 +39,8 @@
         WIFI är avstängt! Vi rekommenderar att du undviker att köra Robbit över mobildata.
         <button ion-button (click)="enableWifi()">Slå på WIFI</button>
       </p>
+
+      <!-- <button ion-button (click)="deleteAllPreviousNames()">ta bort namn!!!</button> -->
     </div>
 
   </ng-container>
@@ -54,8 +56,8 @@
       <p *ngIf="invalidRobotName">Hittade ingen robot med det namnet. Säker på att du stavade rätt?</p>
       <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Ring upp {{this.robotName}}</button>
       <h3>Tidigare anslutna robotar:</h3>
-      <ng-container *ngFor="let robot of objectKeys(recentConnectedRobots)">
-        <button ion-button class="recent-robot-button" (click)="this.robotName = robot">{{robot}} <span
+      <ng-container *ngFor="let robot of recentConnectedRobots">
+        <button ion-button class="recent-robot-button" (click)="this.robotName = robot.name">{{robot.name}} <span
             class="recent-robot-call-icon"></span></button>
       </ng-container>
     </form>

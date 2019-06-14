@@ -34,6 +34,7 @@
     "@ionic-native/splash-screen": "4.7.0",
     "@ionic-native/status-bar": "^4.20.0",
     "@ionic/storage": "^2.2.0",
+    "@types/parse": "^2.2.4",
     "cordova-android": "7.1.4",
     "cordova-custom-config": "^5.0.3",
     "cordova-plugin-app-version": "^0.1.9",
@@ -58,6 +59,7 @@
     "ionicons": "3.0.0",
     "ng-socket-io": "^0.2.4",
     "nipplejs": "^0.7.1",
+    "parse": "^2.4.0",
     "rxjs": "5.5.11",
     "simple-peer": "^9.2.0",
     "sw-toolbox": "3.6.0",
@@ -66,6 +68,7 @@
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.2.2",
+    "@types/text-encoding": "0.0.35",
     "typescript": "~2.6.2"
   },
   "description": "Gunnar är bäst!",
