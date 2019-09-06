@@ -6,8 +6,8 @@ import { Socket } from "ng-socket-io";
 import * as Peer from "simple-peer";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
-import { NativeAudio } from '@ionic-native/native-audio';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { NativeAudio } from "@ionic-native/native-audio";
+import { ScreenOrientation } from "@ionic-native/screen-orientation";
 // import encoding from 'text-encoding';
 
 @Component({
@@ -17,12 +17,13 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
 export class RobotInterfacePage {
   peer: any;
   localStream: MediaStream;
+  localVideoTrack: MediaStreamTrack;
   remoteStream: MediaStream;
-  cameraOption: string = "constraint";
+  cameraFacingMode: string = "user";
   keepPeerActive: boolean = true;
   peerLinkActive: boolean = false;
   videoVerticalFlipped: boolean = false;
-  showDriver: boolean = true;
+  showDriver: boolean = false;
   connected: boolean = false;
   isParked: boolean = false;
   isWaving: boolean = false;
@@ -37,13 +38,11 @@ export class RobotInterfacePage {
     public navParams: NavParams,
     public bleService: BleService,
     public socket: Socket,
-    // private camera: Camera,
     public diagnostic: Diagnostic,
     private nativeAudio: NativeAudio,
     private zone: NgZone,
     private screenOrientation: ScreenOrientation
-  ) {
-  }
+  ) {}
 
   // startWebRTC() {
   //   // console.log("Listening on calls!");
@@ -59,7 +58,6 @@ export class RobotInterfacePage {
     this.socket.removeAllListeners("signal");
     this.socket.removeAllListeners("room");
 
-
     this.keepPeerActive = false; //avoid retrying peer on close event
     this.tearDownPeer();
     // console.log("this.peer is:");
@@ -74,16 +72,16 @@ export class RobotInterfacePage {
 
   ionViewDidEnter() {
     this.bleService.start();
-    this.robotName = this.navParams.get('robotName');
+    this.robotName = this.navParams.get("robotName");
 
     // this.socket.emit('join', this.robotName);
     if (this.socket.ioSocket.connected) {
-      console.log('socket was already connected. Trying to join room');
-      this.socket.emit('join', this.robotName);
+      console.log("socket was already connected. Trying to join room");
+      this.socket.emit("join", this.robotName);
     } else {
-      this.socket.on('connect', () => {
-        console.log('socket connected event. Trying to join room');
-        this.socket.emit('join', this.robotName);
+      this.socket.on("connect", () => {
+        console.log("socket connected event. Trying to join room");
+        this.socket.emit("join", this.robotName);
       });
     }
 
@@ -102,6 +100,8 @@ export class RobotInterfacePage {
 
             if (this.peer) {
               this.peer.signal(data);
+            } else {
+              console.error("no peer object to pass the signal on to!!!");
             }
           });
         }
@@ -111,46 +111,80 @@ export class RobotInterfacePage {
     });
 
     console.log("Trying to fetch camera");
-    let cameraRetrieved = this.checkNeededPermissions().then(() => {
-      return this.retrieveCamera().then(() => {
-        return navigator.mediaDevices.enumerateDevices().then(function (devices) {
-          devices.forEach(function (device) {
-            console.log(device.kind + ": " + device.label + " id: " + device.deviceId);
-          });
-        });
-
-      });
-    }).catch((err) => console.log("failed to get permissions: " + err));
+    let cameraRetrieved = this.checkNeededPermissions()
+      .then(() => {
+        return this.retrieveCamera();
+        // .then(() => {
+        //   return navigator.mediaDevices
+        //     .enumerateDevices()
+        //     .then(function(devices) {
+        //       devices.forEach(function(device) {
+        //         console.log(
+        //           device.kind + ": " + device.label + " id: " + device.deviceId
+        //         );
+        //       });
+        //     });
+        // });
+      })
+      .catch(err => console.log("failed to get permissions: " + err));
 
     //Wait for init to finish. Then initiate listen
     Promise.all([roomJoined, cameraRetrieved]).then(() => {
       console.log("init promises finished. Let's initiate listen");
       this.keepPeerActive = true; //retry in close event if peer closes.
       this.initiateListen();
-    })
+    });
 
-    this.nativeAudio.preloadComplex('attention_sound', 'assets/sound/kickhat-open-button-2.mp3', 1, 1, 0).then(() => {
-      console.log("Wave audio loaded.");
-    },
-      (err) => {
-        console.log("Failed to load wave audio!");
-        console.log(err);
-      });
-    this.nativeAudio.preloadComplex('chat_sound', 'assets/sound/ertfelda-correct.mp3', 1, 1, 0).then(() => {
-      console.log("Chat audio loaded.");
-    },
-      (err) => {
-        console.log("Failed to load chat audio!");
-        console.log(err);
-      });
+    this.nativeAudio
+      .preloadComplex(
+        "attention_sound",
+        "assets/sound/kickhat-open-button-2.mp3",
+        1,
+        1,
+        0
+      )
+      .then(
+        () => {
+          console.log("Wave audio loaded.");
+        },
+        err => {
+          console.log("Failed to load wave audio!");
+          console.log(err);
+        }
+      );
+    this.nativeAudio
+      .preloadComplex(
+        "chat_sound",
+        "assets/sound/ertfelda-correct.mp3",
+        1,
+        1,
+        0
+      )
+      .then(
+        () => {
+          console.log("Chat audio loaded.");
+        },
+        err => {
+          console.log("Failed to load chat audio!");
+          console.log(err);
+        }
+      );
 
     console.log("ionViewDidEnter finished");
   }
 
-
   initiateListen() {
     console.log("initiating listen");
     let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    console.log(
+      "nr of videotracks in localstream when creating peer object: ",
+      this.localStream.getVideoTracks().length,
+      this.localStream
+    );
+
+    ////////////////////////////////////TEMP FOT REMOVING AUDIO
+    // this.localStream.getAudioTracks()[0].enabled = false;
+
     this.peer = new Peer({
       initiator: false,
       stream: this.localStream,
@@ -158,35 +192,55 @@ export class RobotInterfacePage {
     });
     console.log("peer object is:");
     console.log(this.peer);
-    this.peer.on('signal', data => {
-      console.log("Robot got signal data locally. Passing it on to signaling server");
+    this.peer.on("signal", data => {
+      console.log(
+        "Robot got signal data locally. Passing it on to signaling server"
+      );
       this.socket.emit("signal", data);
     });
-    this.peer.on('stream', stream => {
-      console.log("I am Robot and I am listener. Received stream from initiating peer");
+    this.peer.on("stream", stream => {
+      console.log(
+        "I am Robot and I am listener. Received stream from initiating peer"
+      );
       // got remote video stream, now let's show it in a video tag
-      let video: HTMLVideoElement = document.querySelector("#robot-remote-video");
+      let video: HTMLVideoElement = document.querySelector(
+        "#robot-remote-video"
+      );
       video.srcObject = stream;
       // video.play();
     });
-    this.peer.on('connect', () => {
-      console.log('connection event!!!');
+    this.peer.on("connect", () => {
+      console.log("connection event!!!");
       this.peerLinkActive = true;
     });
-    this.peer.on('close', () => {
-      console.log('peer connection closed');
-      console.log('this.peer: ');
+    this.peer.on("close", () => {
+      console.log("peer connection closed");
+      console.log("this.peer: ");
       console.log(this.peer);
       if (this.keepPeerActive) {
-        console.log("trying to reinitiate listen. Wonder if peer object will be invalid/leaked when we just create a new one to replace the previous??");
+        console.log(
+          "trying to reinitiate listen. Wonder if peer object will be invalid/leaked when we just create a new one to replace the previous??"
+        );
         this.tearDownPeer();
         this.initiateListen();
       }
       this.peerLinkActive = false;
     });
-    this.peer.on('error', err => {
+    this.peer.on("error", err => {
       console.error("!! error " + err);
-    })
+    });
+    this.peer.on("track", (track, stream) => {
+      console.log("remote track added: ", track);
+      console.log("stream is: ", stream);
+      console.log(
+        "reattaching the stream to the videotag. Might help weird glitch bug?"
+      );
+
+      let video: HTMLVideoElement = document.querySelector(
+        "#robot-remote-video"
+      );
+      video.srcObject = stream;
+    });
 
     this.peer.on("data", msg => {
       //console.log("received callInfo  msg: " + JSON.stringify(msg));
@@ -206,7 +260,7 @@ export class RobotInterfacePage {
       }
       if (msgObj.hasOwnProperty("showDriverCamera")) {
         this.showDriver = msgObj.showDriverCamera;
-        console.log(this.showDriver);
+        // console.log(this.showDriver);
       }
       if (msgObj.hasOwnProperty("muteDriver")) {
         // TODO: Not implemented yet.
@@ -222,7 +276,7 @@ export class RobotInterfacePage {
       if (msgObj.hasOwnProperty("chat")) {
         this.chat = msgObj.chat;
         if (this.chat != "" && this.chat.isShown) {
-          this.nativeAudio.play('chat_sound');
+          this.nativeAudio.play("chat_sound");
         }
         console.log("found chat:" + this.chat.text);
       }
@@ -234,32 +288,43 @@ export class RobotInterfacePage {
         this.isWaving = msgObj.isWaving;
         console.log(this.isWaving);
         if (this.isWaving) {
-          this.nativeAudio.play('attention_sound');
+          this.nativeAudio.play("attention_sound");
         }
       }
     });
   }
 
   changeCamera() {
-    if (this.cameraOption == "environment") {
-      this.cameraOption = "constraint";
+    // this.peer.removeStream(this.localStream);
+    this.localStream.getTracks().forEach(trk => trk.stop());
+    if (this.cameraFacingMode == "environment") {
+      this.cameraFacingMode = "user";
     } else {
-      this.cameraOption = "environment";
+      this.cameraFacingMode = "environment";
     }
     let video: HTMLVideoElement = document.querySelector("#robot-local-video");
     video.pause();
-    this.retrieveCamera();
+    this.retrieveCamera().then(() => {
+      // this.peer.addStream(this.localStream);
+    });
   }
 
   retrieveCamera() {
     // get video/voice stream
     console.log("retrieving camera!");
     let promise = navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: this.cameraOption, frameRate: 15 }, audio: true })
+      .getUserMedia({
+        video: { facingMode: this.cameraFacingMode },
+        audio: true
+      })
       .then(stream => {
         console.log("Robot got local media as a stream");
         this.localStream = stream;
-        let video: HTMLVideoElement = document.querySelector("#robot-local-video");
+        this.localVideoTrack = stream.getVideoTracks()[0];
+        console.log(this.localStream);
+        let video: HTMLVideoElement = document.querySelector(
+          "#robot-local-video"
+        );
         video.srcObject = stream;
         video.volume = 0;
         // video.play();
@@ -274,14 +339,14 @@ export class RobotInterfacePage {
 
   checkNeededPermissions() {
     // let returnPromise = new Promise();
-    if (this.diagnostic.isCameraAuthorized(false) && this.diagnostic.isMicrophoneAuthorized()) {
+    if (
+      this.diagnostic.isCameraAuthorized(false) &&
+      this.diagnostic.isMicrophoneAuthorized()
+    ) {
       return Promise.resolve();
     }
     return Promise.reject("Camera and mic authorization promise rejected!");
   }
-
-
-
 
   toggleParking() {
     this.isParked = !this.isParked;
@@ -292,13 +357,14 @@ export class RobotInterfacePage {
     if (this.peer != null && this.peerLinkActive) {
       try {
         this.peer.send(JSON.stringify(sendObj));
-      }
-      catch (err) {
+      } catch (err) {
         console.log("Error while trying to send data:");
         console.log(err);
       }
     } else {
-      console.log("no peer or peerLinkActive. Won't send any RTC-datachannel stuff");
+      console.log(
+        "no peer or peerLinkActive. Won't send any RTC-datachannel stuff"
+      );
     }
   }
 
@@ -309,7 +375,6 @@ export class RobotInterfacePage {
   }
 
   tearDownPeer() {
-
     if (this.peer) {
       this.peer.destroy();
     }

@@ -22,13 +22,13 @@ import { BleService } from "../providers/bleservice/bleService";
 import { HttpModule } from "@angular/http";
 import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
 import { Camera } from "@ionic-native/camera";
-import { Diagnostic } from "@ionic-native/diagnostic"
+import { Diagnostic } from "@ionic-native/diagnostic";
 import { LocationAccuracy } from "@ionic-native/location-accuracy";
-import { Network } from "@ionic-native/network"
-import { NativeAudio } from '@ionic-native/native-audio';
-import { Device } from '@ionic-native/device'
-import { IonicStorageModule } from '@ionic/storage';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { Network } from "@ionic-native/network";
+import { NativeAudio } from "@ionic-native/native-audio";
+import { Device } from "@ionic-native/device";
+import { IonicStorageModule } from "@ionic/storage";
+import { ScreenOrientation } from "@ionic-native/screen-orientation";
 
 const socketConfig: SocketIoConfig = {
   url: process.env.SIGNALING_SERVER,
@@ -59,6 +59,8 @@ const socketConfig: SocketIoConfig = {
     HomePage,
     DriverInterfacePage,
     RobotInterfacePage,
+    EmojiPage,
+    SettingsPage
   ],
   providers: [
     AppVersion,
@@ -77,4 +79,4 @@ const socketConfig: SocketIoConfig = {
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule { }
+export class AppModule {}

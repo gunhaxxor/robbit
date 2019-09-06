@@ -2,24 +2,41 @@
   <div ion-fixed>
     <div id="top-container">
       <div id="chat-bubble-container" [class.hidden-chat]="!chat.isShown">
-        <div id="chat-bubble" [innerHTML]="chat.sendText" (click)="clearChat()"></div>
+        <div
+          id="chat-bubble"
+          [innerHTML]="chat.sendText"
+          (click)="clearChat()"
+        ></div>
         <div id="chat-bubble-point"></div>
       </div>
       <div id="corner-div">
-        <div id="driver-name"><span>{{robotName}}</span></div>
-        <video id="driver-local-video" autoplay [hidden]="!showCamera">
-        </video>
+        <div id="driver-name">
+          <span>{{ robotName }}</span>
+        </div>
+        <video id="driver-local-video" autoplay [hidden]="!showCamera"></video>
         <div id="emoji-container" [hidden]="showCamera">
-          <button (click)="presentEmojiPopover($event)" id="choose-emoji-button" [innerHTML]="currentEmoji">
-          </button>
-          <button ion-button id="emoji-edit-button" (click)="presentEmojiPopover($event)">
-          </button>
+          <button
+            (click)="presentEmojiPopover($event)"
+            id="choose-emoji-button"
+            [innerHTML]="currentEmoji"
+          ></button>
+          <button
+            ion-button
+            id="emoji-edit-button"
+            (click)="presentEmojiPopover($event)"
+          ></button>
         </div>
       </div>
     </div>
-    <ion-spinner id="progress-spinner" [hidden]="!videoLinkWaitingForAnswer"></ion-spinner>
-    <video [style.display]="peerLinkActive ?  'block': 'none'" id="driver-remote-video" autoplay>
-    </video>
+    <ion-spinner
+      id="progress-spinner"
+      [hidden]="!videoLinkWaitingForAnswer"
+    ></ion-spinner>
+    <video
+      [style.display]="peerLinkActive ? 'block' : 'none'"
+      id="driver-remote-video"
+      autoplay
+    ></video>
     <!-- <button (click)="initiateCall()" [disabled]="videoLinkWaitingForAnswer">
       <ion-icon name="call"></ion-icon>
     </button> -->
@@ -33,12 +50,22 @@
       <div id="drive-buttons">
         <div id="parked-icon" [hidden]="!isParked"></div>
         <div id="drive-buttons-perspective">
-          <button ion-button id="forward-button" class="drive-button" (mousedown)="forwardActive = true"
-            (mouseup)="forwardActive = false" [disabled]="isParked || !peerLinkActive">
-          </button>
-          <button ion-button id="reverse-button" class="drive-button" (mousedown)="reverseActive = true"
-            (mouseup)="reverseActive = false" [disabled]="isParked || !peerLinkActive">
-          </button>
+          <button
+            ion-button
+            id="forward-button"
+            class="drive-button"
+            (mousedown)="forwardActive = true"
+            (mouseup)="forwardActive = false"
+            [disabled]="isParked || !peerLinkActive"
+          ></button>
+          <button
+            ion-button
+            id="reverse-button"
+            class="drive-button"
+            (mousedown)="reverseActive = true"
+            (mouseup)="reverseActive = false"
+            [disabled]="isParked || !peerLinkActive"
+          ></button>
         </div>
       </div>
       <div id="bottom-bar-middle">
@@ -47,32 +74,64 @@
           <div id="curve-right"></div>
         </div>
         <div id="bottom-controls">
-          <button ion-button (click)="toggleWaving()" id="toggle-wave-button" class="control-button"
-            [class.toggle-off]="!isWaving" [disabled]="!peerLinkActive">
-          </button>
+          <button
+            ion-button
+            (click)="toggleWaving()"
+            id="toggle-wave-button"
+            class="control-button"
+            [class.toggle-off]="!isWaving"
+            [disabled]="!peerLinkActive"
+          ></button>
           <form (submit)="sendChat()" id="chat-form">
-            <ion-input id="chat-input" #chatInput placeholder="säg något.." clearInput [(ngModel)]="chat.text"
-              [ngModelOptions]="{standalone: true}" [class.is-writing]="chat.text!=''" [disabled]="!peerLinkActive"
-              [class.chat-input-disabled]="!peerLinkActive">
+            <ion-input
+              id="chat-input"
+              #chatInput
+              placeholder="säg något.."
+              [(ngModel)]="chat.text"
+              [ngModelOptions]="{ standalone: true }"
+              [class.is-writing]="chat.text != ''"
+              [disabled]="!peerLinkActive"
+              [class.chat-input-disabled]="!peerLinkActive"
+            >
             </ion-input>
-            <button ion-button id="chat-send-button" [disabled]="!peerLinkActive"></button>
+            <button
+              ion-button
+              id="chat-send-button"
+              [disabled]="!peerLinkActive"
+            ></button>
           </form>
-          <button ion-button id="settings-button" (click)="presentSettingsPopover($event)"
-            class="control-button control-button-right">
+          <button
+            ion-button
+            id="settings-button"
+            (click)="presentSettingsPopover($event)"
+            class="control-button control-button-right"
+          >
             <ion-icon name="settings"></ion-icon>
           </button>
-          <button ion-button (click)="toggleVideoTrack()" id="toggle-camera-button" class="control-button"
-            [class.toggle-off]="!showCamera">
-          </button>
-          <button ion-button (click)="toggleAudioTrack()" id="toggle-audio-button" class="control-button"
-            [class.toggle-off]="muteAudio">
-          </button>
-          <button ion-button (click)="hangUp()" id="end-call-button" class="control-button">
-          </button>
+          <button
+            ion-button
+            (click)="toggleVideoTrack()"
+            id="toggle-camera-button"
+            class="control-button"
+            [class.toggle-off]="!showCamera"
+          ></button>
+          <button
+            ion-button
+            (click)="toggleAudioTrack()"
+            id="toggle-audio-button"
+            class="control-button"
+            [class.toggle-off]="muteAudio"
+          ></button>
+          <button
+            ion-button
+            (click)="hangUp()"
+            id="end-call-button"
+            color="danger"
+            class="control-button"
+          ></button>
         </div>
       </div>
-      <div id="zone-joystick" [class.joystick-disabled]="!peerLinkActive">
-      </div>
+      <div id="zone-joystick" [class.joystick-disabled]="!peerLinkActive"></div>
     </div>
   </div>
 </ion-content>

@@ -3,29 +3,46 @@
     <div ionic full class="welcome-panel">
       <ng-container *ngIf="!storedName; else nameIsSet">
         <h1>Robbit</h1>
-        <p>Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är lätt att komma ihåg. Det är detta namn
-          eleven anger för att koppla upp sig till roboten.</p>
+        <p>
+          Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är
+          lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp
+          sig till roboten.
+        </p>
         <form (submit)="saveNameAndGoToRobotInterface()">
           <ion-item>
             <ion-label floating>Robotnamn</ion-label>
-            <ion-input type="text" name="robotname" id="robot-name-input" [(ngModel)]="robotName"></ion-input>
+            <ion-input
+              type="text"
+              name="robotname"
+              id="robot-name-input"
+              [(ngModel)]="robotName"
+            ></ion-input>
             <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
           </ion-item>
-          <p *ngIf="invalidRobotName">Åh Nej! Namnet är redan upptaget. Du får välja ett annat.</p>
-          <button ion-button [disabled]="!readyToEnterDriverInterface">Namnge
-            och
-            starta!</button>
+          <p *ngIf="invalidRobotName">
+            Åh Nej! Namnet är redan upptaget. Du får välja ett annat.
+          </p>
+          <button ion-button [disabled]="!readyToEnterRobotInterface">
+            Namnge och starta!
+          </button>
         </form>
       </ng-container>
       <ng-template #nameIsSet>
         <h1>Robbit</h1>
-        <p>Välkommen! Denna robot heter {{storedName}}</p>
-        <button ion-button [disabled]="!readyToEnterDriverInterface" (click)="checkNameAndGoToDriverInterface()">Starta
-          {{storedName}}</button>
+        <p>Välkommen! Denna robot heter {{ storedName }}</p>
+        <button
+          ion-button
+          [disabled]="!readyToEnterRobotInterface"
+          (click)="goToRobotInterface()"
+        >
+          Starta {{ storedName }}
+        </button>
       </ng-template>
-      <div class="version-nr">v{{appVersionString}}</div>
+      <div class="version-nr">v{{ appVersionString }}</div>
       <div class="hardware-info">
-        <p *ngIf="!internetAvailable">Hittar inget Internet! Behöver anslutning för att kunna koppla upp.</p>
+        <p *ngIf="!internetAvailable">
+          Hittar inget Internet! Behöver anslutning för att kunna koppla upp.
+        </p>
         <p *ngIf="!bluetoothEnabled">
           Du behöver slå på bluetooth!
           <button ion-button (click)="ble.enable()">Slå på</button>
@@ -36,13 +53,15 @@
         </p>
       </div>
       <p *ngIf="!wifiEnabled">
-        WIFI är avstängt! Vi rekommenderar att du undviker att köra Robbit över mobildata.
+        WIFI är avstängt! Vi rekommenderar att du undviker att köra Robbit över
+        mobildata.
         <button ion-button (click)="enableWifi()">Slå på WIFI</button>
       </p>
 
-      <!-- <button ion-button (click)="deleteAllPreviousNames()">ta bort namn!!!</button> -->
+      <!-- <button ion-button (click)="deleteAllPreviousNames()">ta bort namn!!!</button> 
+      <button ion-button (click)="clearOldNamesFromParse()">clearOldNames</button>
+      -->
     </div>
-
   </ng-container>
 
   <div ionic full class="welcome-panel" *ngIf="!plt.is('cordova')">
@@ -51,16 +70,33 @@
     <form (submit)="checkNameAndGoToDriverInterface()">
       <ion-item>
         <ion-label floating>Robot namn</ion-label>
-        <ion-input type="text" name="robotname" id="driver-name-input" [(ngModel)]="robotName"></ion-input>
+        <ion-input
+          type="text"
+          name="robotname"
+          id="driver-name-input"
+          [(ngModel)]="robotName"
+        ></ion-input>
       </ion-item>
-      <p *ngIf="invalidRobotName">Hittade ingen robot med det namnet. Säker på att du stavade rätt?</p>
-      <button ion-button [disabled]="!robotName || invalidRobotName === robotName">Ring upp {{this.robotName}}</button>
+      <p *ngIf="invalidRobotName">
+        Hittade ingen robot med det namnet. Säker på att du stavade rätt?
+      </p>
+      <button
+        ion-button
+        [disabled]="!robotName || invalidRobotName === robotName"
+      >
+        Ring upp {{ this.robotName }}
+      </button>
       <h3>Tidigare anslutna robotar:</h3>
       <ng-container *ngFor="let robot of recentConnectedRobots">
-        <button ion-button class="recent-robot-button" (click)="this.robotName = robot.name">{{robot.name}} <span
-            class="recent-robot-call-icon"></span></button>
+        <button
+          ion-button
+          class="recent-robot-button"
+          (click)="this.robotName = robot.name"
+        >
+          {{ robot.name }} <span class="recent-robot-call-icon"></span>
+        </button>
       </ng-container>
     </form>
-    <div class="version-nr">v{{appVersionString}}</div>
+    <div class="version-nr">v{{ appVersionString }}</div>
   </div>
 </ion-content>

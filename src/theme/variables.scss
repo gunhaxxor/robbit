@@ -5,15 +5,12 @@
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
 
-
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
 // http://ionicframework.com/docs/theming/rtl-support/
 $app-direction: ltr;
 
-
 @import "ionic.globals";
-
 
 // Shared Variables
 // --------------------------------------------------
@@ -21,9 +18,6 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
-
-
-
 
 // Named Color Variables
 // --------------------------------------------------
@@ -35,68 +29,60 @@ $app-direction: ltr;
 
 // current colors are based on https://www.colourlovers.com/palette/292482/Terra
 $colors: (
-  primary:    #22b3b3, /* #036564, */
-  secondary:  #CDB380,
-  tertiary:   #033649,
-  danger:     #ea1616, /* #f53d3d, */
-  approve:    #5bf43d,
-  light:      #E8DDCB,
-  dark:       #031634,
-  seethrough: rgb(18, 44, 52),/*#122C3499,*/
+  primary: #22b3b3,
+  /* #036564, */ secondary: #cdb380,
+  tertiary: #033649,
+  danger: #ea1616,
+  /* #f53d3d, */ approve: #5bf43d,
+  light: #e8ddcb,
+  dark: #031634,
+  seethrough: rgb(18, 44, 52),
+  /*#122C3499,*/
 );
 
-$primary : color($colors, primary);
-$secondary : color($colors, secondary);
-$tertiary : color($colors, tertiary);
-$danger : color($colors, danger);
-$approve : color($colors, approve);
-$light : color($colors, light);
-$dark : color($colors, dark);
-$seethrough : color($colors, seethrough);
-$seethrough-opacity : 0.6;
+$primary: color($colors, primary);
+$secondary: color($colors, secondary);
+$tertiary: color($colors, tertiary);
+$danger: color($colors, danger);
+$approve: color($colors, approve);
+$light: color($colors, light);
+$dark: color($colors, dark);
+$seethrough: color($colors, seethrough);
+$seethrough-opacity: 0.6;
 
-$primary-lighter : lighten($primary, 10);
-$primary-darker : darken($primary, 10);
+$primary-lighter: lighten($primary, 10);
+$primary-darker: darken($primary, 10);
 
-$secondary-lighter : lighten($secondary, 10);
-$secondary-darker : darken($secondary, 10);
+$secondary-lighter: lighten($secondary, 10);
+$secondary-darker: darken($secondary, 10);
 
-$tertiary-lighter : lighten($tertiary, 10);
-$tertiary-darker : darken($tertiary, 10);
+$tertiary-lighter: lighten($tertiary, 10);
+$tertiary-darker: darken($tertiary, 10);
 
-$danger-lighter : lighten($danger, 10);
-$danger-darker : darken($danger, 10);
+$danger-lighter: lighten($danger, 10);
+$danger-darker: darken($danger, 10);
 
-$approve-lighter : lighten($approve, 10);
-$approve-darker : darken($approve, 10);
+$approve-lighter: lighten($approve, 10);
+$approve-darker: darken($approve, 10);
 
-$light-lighter : lighten($light, 10);
-$light-darker : darken($light, 10);
+$light-lighter: lighten($light, 10);
+$light-darker: darken($light, 10);
 
-$dark-lighter : lighten($dark, 10);
-$dark-darker : darken($dark, 10);
-
+$dark-lighter: lighten($dark, 10);
+$dark-darker: darken($dark, 10);
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
-
-
-
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
-
-
-
+// $button-md-background-color-hover: lighten($button-md-background-color, 10);
 
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
-
-
-
 
 // App Theme
 // --------------------------------------------------
@@ -107,14 +93,12 @@ $dark-darker : darken($dark, 10);
 
 @import "ionic.theme.default";
 
-
 // Ionicons
 // --------------------------------------------------
 // The premium icon font for Ionic. For more info, please see:
 // http://ionicframework.com/docs/ionicons/
 
 @import "ionic.ionicons";
-
 
 // Fonts
 // --------------------------------------------------

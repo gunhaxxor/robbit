@@ -66,14 +66,11 @@ export class BleService {
 
   // When a device is discovered
   private devFound(device) {
-    console.log("found BLE device named: " + device.name);
+    // console.log("found BLE device named: " + device.name);
     if (device.name && device.name.includes("micro")) {
       this.devices.push(device);
       //Automatically connect to the first uBit in the list
-      if (
-        this.devices.length == 1 &&
-        !this.isConnectedToDevice
-      ) {
+      if (this.devices.length == 1 && !this.isConnectedToDevice) {
         this.ble.stopScan();
         this.connectToMicrobit(device);
         console.log("Hittat och ansluter till micro:bit");
@@ -108,7 +105,6 @@ export class BleService {
   }
 
   public send(msg) {
-    console.log("skickar till uBit: " + msg);
     // let buffer = new Uint8Array([msg]).buffer;
     let buffer = this.textEncoder.encode(msg).buffer;
     if (
@@ -119,6 +115,7 @@ export class BleService {
       // console.error("device, service or characteristic are not set!!");
       return;
     }
+    console.log("skickar till uBit: " + msg);
     this.ble.write(
       this.connectedDevice.id,
       this.uartService,
