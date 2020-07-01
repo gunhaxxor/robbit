@@ -36,7 +36,7 @@
     "@ionic/storage": "^2.2.0",
     "@types/parse": "^2.2.4",
     "cordova-android": "7.1.4",
-    "cordova-custom-config": "^5.0.3",
+    "cordova-custom-config": "^5.1.0",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-ble-central": "^1.2.2",
     "cordova-plugin-camera": "^4.0.3",
@@ -68,6 +68,7 @@
   "devDependencies": {
     "@ionic/app-scripts": "3.2.2",
     "@types/text-encoding": "0.0.35",
+    "node-sass": "^4.14.1",
     "typescript": "~2.6.2"
   },
   "description": "Gunnar är bäst!",
