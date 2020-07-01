@@ -31,7 +31,7 @@ import { IonicStorageModule } from "@ionic/storage";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
 
 const socketConfig: SocketIoConfig = {
-  url: process.env.SIGNALING_SERVER,
+  url: "https://social-robot-signaling-server.herokuapp.com/",
   options: {}
 };
 

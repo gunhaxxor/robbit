@@ -1,7 +1,7 @@
 <ion-content>
   <ng-container *ngIf="plt.is('cordova')">
     <div ionic full class="welcome-panel">
-      <ng-container *ngIf="!storedName; else nameIsSet">
+      <ng-container *ngIf="readyToCreateRobotName">
         <h1>Robbit</h1>
         <p>
           Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är
@@ -27,7 +27,7 @@
           </button>
         </form>
       </ng-container>
-      <ng-template #nameIsSet>
+      <ng-container *ngIf="storedName">
         <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{ storedName }}</p>
         <button
@@ -37,7 +37,16 @@
         >
           Starta {{ storedName }}
         </button>
-      </ng-template>
+        <br />
+        <br />
+        <button ion-button color="danger" (click)="clearRobotName()">
+          Nytt namn
+        </button>
+        <p *ngIf="clearNamePressedOnce">
+          Tryck en gång till för att ta bort nuvarande namn och få chansen att
+          välja ett nytt.
+        </p>
+      </ng-container>
       <div class="version-nr">v{{ appVersionString }}</div>
       <div class="hardware-info">
         <p *ngIf="!internetAvailable">
@@ -57,10 +66,6 @@
         mobildata.
         <button ion-button (click)="enableWifi()">Slå på WIFI</button>
       </p>
-
-      <!-- <button ion-button (click)="deleteAllPreviousNames()">ta bort namn!!!</button> 
-      <button ion-button (click)="clearOldNamesFromParse()">clearOldNames</button>
-      -->
     </div>
   </ng-container>
 
@@ -97,6 +102,5 @@
         </button>
       </ng-container>
     </form>
-    <div class="version-nr">v{{ appVersionString }}</div>
   </div>
 </ion-content>

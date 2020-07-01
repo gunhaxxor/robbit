@@ -1,6 +1,6 @@
 {
   "name": "social-robot-ionic",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "author": "Ionic Framework",
   "homepage": "http://ionicframework.com/",
   "private": true,
@@ -36,6 +36,7 @@
     "@ionic/storage": "^2.2.0",
     "@types/parse": "^2.2.4",
     "cordova-android": "7.1.4",
+    "cordova-browser": "5.0.4",
     "cordova-custom-config": "^5.1.0",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-ble-central": "^1.2.2",
@@ -96,7 +97,8 @@
       "cordova-plugin-app-version": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "browser"
     ]
   }
 }

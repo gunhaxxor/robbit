@@ -1,6 +1,5 @@
 body {
   background-color: $dark;
-  
 }
 
 page-home {
@@ -8,21 +7,21 @@ page-home {
     position: absolute;
     right: 50px;
   }
-  
-  .hardware-info p{
+
+  .hardware-info p {
     color: #ff0000;
   }
 
-  .content{
+  .content {
     // för allt
     background: $tertiary;
   }
 
   .item-input {
     border-radius: 1rem;
-    width: 50rem;
+    max-width: 50rem;
   }
-  
+
   .welcome-panel {
     margin: 0 auto;
     z-index: 12;
@@ -37,7 +36,7 @@ page-home {
     height: 5rem;
     border-radius: 1rem;
     //font-size: 3rem;
-    border: 3px solid $primary;
+    // border: 3px solid $primary;
     margin-top: 1rem;
   }
 
@@ -52,12 +51,12 @@ page-home {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('../assets/imgs/call.svg');
+    background-image: url("../assets/imgs/call.svg");
   }
 
   .version-nr {
     position: absolute;
-    right:2rem;
+    right: 2rem;
     top: 2rem;
     font-size: 1rem;
     color: $primary-darker;

@@ -14,10 +14,6 @@ import { BLE } from "@ionic-native/ble";
 
 import encoding from "text-encoding";
 
-// import * as firebase from 'firebase/app';
-// import 'firebase/database';
-// import 'firebase/auth';
-
 import Parse from "parse";
 import { createDeflateRaw } from "zlib";
 import { rejects } from "assert";
@@ -33,6 +29,7 @@ export class HomePage {
   recentConnectedRobots: any[] = [];
   robotName: string;
   storedName: string = undefined;
+  clearNamePressedOnce: boolean = false;
   invalidRobotName: string = undefined;
   objectKeys: any = Object.keys; ///Weird hack to call this function from template:-P
   hardwareCheckInterval: any = null;
@@ -50,6 +47,19 @@ export class HomePage {
       this.robotName &&
       this.bluetoothEnabled &&
       this.invalidRobotName !== this.robotName
+    );
+  }
+
+  get readyToCreateRobotName() {
+    return (
+      this.internetAvailable &&
+      this.locationEnabled &&
+      this.signedIn &&
+      !this.storedName &&
+      // !this.robotName &&
+      this.bluetoothEnabled
+      // &&
+      // this.invalidRobotName !== this.robotName
     );
   }
 
@@ -270,7 +280,7 @@ export class HomePage {
         Parse.User.logIn(credentials.userName, credentials.password).then(
           user => {
             console.log("logged in to parse server");
-            // user.set('lastLogin', new Date());
+            user.set("lastLogin", new Date());
             user.save(res => {});
             // return Promise.resolve();
           },
@@ -296,7 +306,9 @@ export class HomePage {
     const userName = await crypto.subtle
       .digest(
         { name: "SHA-256" },
-        new encoding.TextEncoder("utf-8").encode(this.device.uuid)
+        new encoding.TextEncoder("utf-8").encode(
+          this.device.uuid + this.device.serial
+        )
       )
       .then(hash => {
         // let asText = String.fromCharCode.apply(null, new Uint8Array(hash);
@@ -305,9 +317,12 @@ export class HomePage {
         );
         return asText;
       });
-    console.log("username: " + userName);
-    console.log("password: " + this.device.uuid);
-    return { userName: userName, password: this.device.uuid };
+    // console.log("username: " + userName);
+    // console.log("password: " + this.device.uuid);
+    return {
+      userName: userName,
+      password: this.device.uuid + this.device.serial
+    };
   }
 
   async signUpToParse() {
@@ -327,31 +342,6 @@ export class HomePage {
       })
       .catch(err => console.error(err));
   }
-
-  // signInToFirebase() {
-  //   let signInPromise: Promise<any> = firebase.auth().signInAnonymously()
-  //     .then((credentials) => {
-  //       console.log("anonymously logged into firebase");
-  //       // console.log(credentials);
-  //       this.signedIn = true;
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       // Handle Errors here.
-  //       // var errorCode = error.code;
-  //       // var errorMessage = error.message;
-  //       // ...
-  //     });
-  // }
-
-  // deleteAllPreviousNames() {
-  //   firebase.database().ref('robot-names').orderByValue().equalTo(this.device.uuid).once("value", (snapshot) => {
-  //     snapshot.forEach(element => {
-  //       console.log(element);
-  //       element.ref.remove();
-  //     });
-  //   });
-  // }
 
   ionViewDidLoad() {}
 
@@ -387,6 +377,30 @@ export class HomePage {
       console.log(dev);
       return dev.get("name");
     });
+  }
+
+  clearRobotName() {
+    if (!this.clearNamePressedOnce) {
+      this.clearNamePressedOnce = true;
+    } else {
+      this.fetchDeviceFromParse().then(dev => {
+        dev
+          .unset("name")
+          .save()
+          .then(() => {
+            console.log("removed robotname from parse");
+            this.robotName = null;
+            this.storedName = null;
+            this.clearNamePressedOnce = false;
+          })
+          .catch(e => {
+            console.error(
+              "tried to remove robotname from parse, but something went wrong."
+            );
+            console.error(e);
+          });
+      });
+    }
   }
 
   //This function has possible race condition to database, where we first check the name is available at all, and then assume this is still true when we later save it.

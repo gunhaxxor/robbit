@@ -417,6 +417,7 @@ export class DriverInterfacePage {
     }, 10000);
     this.videoLinkWaitingForAnswer = true;
     let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    console.log(peerConfig);
 
     //default to not show video!!!!!
     if (stream.getVideoTracks().length > 0) {
