@@ -15,9 +15,9 @@ import { BLE } from "@ionic-native/ble";
 import encoding from "text-encoding";
 
 import Parse from "parse";
-import { createDeflateRaw } from "zlib";
-import { rejects } from "assert";
-import { JitSummaryResolver } from "@angular/compiler";
+// import { createDeflateRaw } from "zlib";
+// import { rejects } from "assert";
+// import { JitSummaryResolver } from "@angular/compiler";
 // declare let cordova: any;
 
 @Component({
@@ -86,13 +86,14 @@ export class HomePage {
   }
 
   ionViewWillEnter() {
-    console.log("this.plt.is('cordova'):  " + this.plt.is("cordova"));
+    // console.log("this.plt.is('cordova'):  " + this.plt.is("cordova"));
     if (this.plt.is("cordova")) {
       this.clearOldNamesFromParse().then(
         () => this.connectRobotToParse(),
         () => this.connectRobotToParse()
       );
 
+      // TODO: Should we perhaps aaaalways use landscape??
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
       this.appVersion.getVersionNumber().then(
         versionNumber => {
@@ -234,10 +235,7 @@ export class HomePage {
         }
         this.storedName = name;
         this.robotName = name;
-
-        //We want to have a fresh updatedAt date to avoid having the name expire.
-        // dev.save().then(() => {}); // But... No This should be handled by the date of last login in the user object!
-      });
+      }).catch(err => console.error('no device found for this user'))
     });
   }
 
@@ -281,7 +279,7 @@ export class HomePage {
           user => {
             console.log("logged in to parse server");
             user.set("lastLogin", new Date());
-            user.save(res => {});
+            user.save(res => { });
             // return Promise.resolve();
           },
           err => {
@@ -343,7 +341,7 @@ export class HomePage {
       .catch(err => console.error(err));
   }
 
-  ionViewDidLoad() {}
+  ionViewDidLoad() { }
 
   isInvalidSessionTokenError(err) {
     return err.code === Parse.ErrorCode.INVALID_SESSION_TOKEN;
@@ -449,6 +447,7 @@ export class HomePage {
             let acl = new Parse.ACL();
             //Should reading the devices be completely open or restricted only to logged in users?
             //Do it public for now! Fuck security!!!
+            // TODO: look over security for the device class
             acl.setPublicWriteAccess(false);
             acl.setPublicReadAccess(true);
             acl.setWriteAccess(Parse.User.current(), true);

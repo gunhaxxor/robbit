@@ -29,6 +29,7 @@ export class RobotInterfacePage {
   isWaving: boolean = false;
   chat: any = { text: "" };
   robotName: string;
+  defaultMessageTimeout: any = 60;
   // connectionInterval: any;
 
   constructor(
@@ -42,7 +43,7 @@ export class RobotInterfacePage {
     private nativeAudio: NativeAudio,
     private zone: NgZone,
     private screenOrientation: ScreenOrientation
-  ) {}
+  ) { }
 
   // startWebRTC() {
   //   // console.log("Listening on calls!");
@@ -155,7 +156,7 @@ export class RobotInterfacePage {
     this.nativeAudio
       .preloadComplex(
         "chat_sound",
-        "assets/sound/ertfelda-correct.mp3",
+        "assets/sound/Explosion2.mp3",
         1,
         1,
         0
@@ -243,7 +244,7 @@ export class RobotInterfacePage {
     });
 
     this.peer.on("data", msg => {
-      //console.log("received callInfo  msg: " + JSON.stringify(msg));
+      console.log("received callInfo  msg: " + JSON.stringify(msg));
       let msgObj = JSON.parse(String(msg));
 
       if (msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
@@ -274,11 +275,24 @@ export class RobotInterfacePage {
         console.log("found emoji:" + msgObj.emoji);
       }
       if (msgObj.hasOwnProperty("chat")) {
-        this.chat = msgObj.chat;
-        if (this.chat != "" && this.chat.isShown) {
-          this.nativeAudio.play("chat_sound");
+        const incomingChat = msgObj.chat;
+
+        //handle clear request
+        if (incomingChat['clear']) {
+          this.chat.isShown = false;
+          return;
         }
-        console.log("found chat:" + this.chat.text);
+
+        console.log("found chat:" + incomingChat.text);
+
+        this.nativeAudio.play("chat_sound");
+
+        incomingChat['chatTimeout'] = setTimeout(() => {
+          incomingChat.isShown = false;
+        }, incomingChat.timeoutSeconds ? incomingChat.timeoutSeconds * 1000 : this.defaultMessageTimeout * 1000);
+
+        this.chat = incomingChat;
+
       }
       if (msgObj.hasOwnProperty("isParked")) {
         this.isParked = msgObj.isParked;

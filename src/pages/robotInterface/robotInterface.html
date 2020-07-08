@@ -12,12 +12,8 @@
       <p id="wait-message">Väntar på att någon ska ansluta</p>
     </div>
 
-    <video
-      id="robot-remote-video"
-      autoplay
-      [class.video-vertical-flip]="videoVerticalFlipped"
-      [hidden]="!peerLinkActive || !showDriver"
-    ></video>
+    <video id="robot-remote-video" autoplay [class.video-vertical-flip]="videoVerticalFlipped"
+      [hidden]="!peerLinkActive || !showDriver"></video>
     <div id="emoji-container">
       <div id="emoji" [hidden]="!peerLinkActive || showDriver">
         🙂
@@ -28,11 +24,7 @@
       <div id="waving" [hidden]="!peerLinkActive || !isWaving"></div>
     </div>
 
-    <div
-      id="chat-bubble-container"
-      [class.hidden-chat]="!chat.isShown"
-      [hidden]="!peerLinkActive"
-    >
+    <div id="chat-bubble-container" [class.hidden-chat]="!chat.isShown" [hidden]="!peerLinkActive">
       <div id="chat" [innerHTML]="chat.text"></div>
       <div id="chat-bubble-point"></div>
     </div>
@@ -41,21 +33,11 @@
       <!-- <button ion-button (click)="changeCamera()" class="control-button">
         C
       </button> -->
-      <button
-        ion-button
-        (click)="toggleParking()"
-        id="toggle-park-button"
-        class="control-button"
-        [class.toggle-off]="!isParked"
-      >
+      <button ion-button (click)="toggleParking()" id="toggle-park-button" class="control-button"
+        [class.toggle-off]="!isParked">
         P
       </button>
-      <button
-        ion-button
-        (click)="hangUp()"
-        id="end-call-button"
-        class="control-button"
-      ></button>
+      <button ion-button (click)="hangUp()" id="end-call-button" class="control-button"></button>
     </div>
   </div>
 </ion-content>

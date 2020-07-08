@@ -62,8 +62,9 @@ export class DriverInterfacePage {
   chatSoundEnabled: boolean = true;
 
   videoVerticalFlipped: boolean = false;
-  chat: any = { text: "", sendText: "", isShown: false, timeoutSeconds: 60 };
-  chatTimeout: any;
+  chat: any = { text: "", previousMessage: "", isShown: false, timeoutSeconds: null };
+  chatTimeout: any; //a reference to the most recent timeout function
+  defaultMessageTimeout: any = 60;  //seconds
   bot: any;
   voiceControlEnabled: boolean = false;
   voiceDriveTimeout: any;
@@ -85,7 +86,7 @@ export class DriverInterfacePage {
     private diagnostic: Diagnostic,
     public popoverEmojiCtrl: PopoverController,
     public popoverSettingsCtrl: PopoverController
-  ) {}
+  ) { }
 
   @HostListener("window:beforeunload", ["$event"])
   handler(event: Event) {
@@ -462,7 +463,7 @@ export class DriverInterfacePage {
 
       // this.removeVideoTrack(); // disable video as default
       this.sendEmoji(this.currentEmoji);
-      this.clearChat();
+      this.clearChatBubble();
     });
     this.peer.on("track", (track, stream) => {
       console.log("remote track added: ", track);
@@ -814,42 +815,54 @@ export class DriverInterfacePage {
     });
   }
 
-  clearChat() {
+  clearChatBubble() {
     this.chat.isShown = false;
+    // this.sendData({
+    //   chat: { text: this.chat.previousMessage, isShown: this.chat.isShown }
+    // });
+  }
+
+  sendClearChatBubble() {
+    this.clearChatBubble();
     this.sendData({
-      chat: { text: this.chat.sendText, isShown: this.chat.isShown }
+      chat: { clear: true }
     });
   }
 
   sendChat() {
+    if (this.chat.text === "") {
+      return;
+    }
     console.log("sending chat");
     console.log(this.chat.text);
     if (this.chatSoundEnabled) {
       this.chatSound.play();
     }
     this.chat.isShown = true;
-    this.sendData({
-      chat: { text: this.chat.text, isShown: this.chat.isShown }
-    });
-    this.chat.sendText = this.chat.text;
+    this.sendData({ chat: this.chat });
+    this.chat.previousMessage = this.chat.text;
     this.chat.text = "";
     // this is a rather ugly way of calling blur(onfocus) on the textfield
     // but we want to close the smartphone keyboard
+    // This is an issue with the driver app running on tablets
     // See https://github.com/ionic-team/ionic/issues/14130
-    this.chatInput["_native"].nativeElement.blur();
-    if (this.chat.sendText != "") {
-      if (this.chatTimeout) {
-        clearTimeout(this.chatTimeout);
-      }
-      this.chatTimeout = setTimeout(() => {
-        this.clearChat();
-      }, this.chat.timeoutSeconds * 1000);
-    } else {
-      this.clearChat();
+    // this.chatInput["_native"].nativeElement.blur();
+
+
+    //Always allow more typing int the input!
+    this.chatInput["_native"].nativeElement.focus();
+
+    // if (this.chat.previousMessage != "") {
+    if (this.chatTimeout) {
+      clearTimeout(this.chatTimeout);
     }
+    this.chatTimeout = setTimeout(() => {
+      this.clearChatBubble();
+    }, this.chat.timeoutSeconds ? this.chat.timeoutSeconds * 1000 : this.defaultMessageTimeout * 1000);
   }
 
   sendData(sendObj: object) {
+    // console.log('Sending data over datachannel (webrtc)');
     if (this.peer != null && this.peerLinkActive) {
       try {
         this.peer.send(JSON.stringify(sendObj));

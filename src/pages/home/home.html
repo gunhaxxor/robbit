@@ -11,12 +11,7 @@
         <form (submit)="saveNameAndGoToRobotInterface()">
           <ion-item>
             <ion-label floating>Robotnamn</ion-label>
-            <ion-input
-              type="text"
-              name="robotname"
-              id="robot-name-input"
-              [(ngModel)]="robotName"
-            ></ion-input>
+            <ion-input type="text" name="robotname" id="robot-name-input" [(ngModel)]="robotName"></ion-input>
             <ion-icon *ngIf="invalidRobotName" name="heart"></ion-icon>
           </ion-item>
           <p *ngIf="invalidRobotName">
@@ -30,11 +25,7 @@
       <ng-container *ngIf="storedName">
         <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{ storedName }}</p>
-        <button
-          ion-button
-          [disabled]="!readyToEnterRobotInterface"
-          (click)="goToRobotInterface()"
-        >
+        <button ion-button [disabled]="!readyToEnterRobotInterface" (click)="goToRobotInterface()">
           Starta {{ storedName }}
         </button>
         <br />
@@ -75,29 +66,17 @@
     <form (submit)="checkNameAndGoToDriverInterface()">
       <ion-item>
         <ion-label floating>Robot namn</ion-label>
-        <ion-input
-          type="text"
-          name="robotname"
-          id="driver-name-input"
-          [(ngModel)]="robotName"
-        ></ion-input>
+        <ion-input type="text" name="robotname" id="driver-name-input" [(ngModel)]="robotName"></ion-input>
       </ion-item>
       <p *ngIf="invalidRobotName">
         Hittade ingen robot med det namnet. Säker på att du stavade rätt?
       </p>
-      <button
-        ion-button
-        [disabled]="!robotName || invalidRobotName === robotName"
-      >
+      <button ion-button [disabled]="!robotName || invalidRobotName === robotName">
         Ring upp {{ this.robotName }}
       </button>
       <h3>Tidigare anslutna robotar:</h3>
       <ng-container *ngFor="let robot of recentConnectedRobots">
-        <button
-          ion-button
-          class="recent-robot-button"
-          (click)="this.robotName = robot.name"
-        >
+        <button ion-button class="recent-robot-button" (click)="this.robotName = robot.name">
           {{ robot.name }} <span class="recent-robot-call-icon"></span>
         </button>
       </ng-container>
