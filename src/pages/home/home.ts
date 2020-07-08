@@ -75,9 +75,6 @@ export class HomePage {
     private device: Device,
     private screenOrientation: ScreenOrientation
   ) {
-    console.log(`signaling server: ${process.env.SIGNALING_SERVER}`);
-    let config: Object = JSON.parse(process.env.FIREBASE_CONFIG);
-
     Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
     Parse.initialize(
       "chRsGURCGEV4h0Z96Je8NxALdUxT8JlsKGy9QgoO", // This is your Application ID

@@ -162,6 +162,10 @@ export class DriverInterfacePage {
       console.log("message from socket server: " + msg);
     });
 
+    this.socket.on("error", msg => {
+      console.error("error message from socket server: " + msg);
+    });
+
     let cameraRetrieved = this.retrieveCamera();
     // let cameraRetrieved = this.checkNeededPermissions().then(() => {
     //   return this.retrieveCamera();

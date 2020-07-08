@@ -31,9 +31,12 @@ import { IonicStorageModule } from "@ionic/storage";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
 
 const socketConfig: SocketIoConfig = {
-  url: "https://social-robot-signaling-server.herokuapp.com/",
+  url: process.env.SIGNALING_SERVER,
   options: {}
 };
+
+
+console.log(`signaling server within app module: ${process.env.SIGNALING_SERVER}`);
 
 @NgModule({
   declarations: [
@@ -79,4 +82,4 @@ const socketConfig: SocketIoConfig = {
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
+export class AppModule { }
