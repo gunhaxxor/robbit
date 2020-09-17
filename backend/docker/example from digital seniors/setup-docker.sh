@@ -24,7 +24,7 @@ echo 'Then add the GPG key for the official Docker repository to your system'
 exe curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 echo 'Add the Docker repository to APT sources'
-exe sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+exe add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 
 echo 'Next, update the package database with the Docker packages from the newly added repo'
 exe apt update -y
@@ -33,10 +33,10 @@ echo 'Make sure you are about to install from the Docker repo instead of the def
 exe apt-cache policy docker-ce
 
 echo 'Install docker'
-sudo apt install docker-ce
+exe apt install docker-ce
 
-echo 'Check that docker is now running'
-exe systemctl status docker
+# echo 'Check that docker is now running'
+# exe systemctl status docker
 
 
 echo 'adding current user to the docker user group'
@@ -48,8 +48,8 @@ echo 'Giving docker compose permission to execute'
 exe chmod +x /usr/local/bin/docker-compose
 
 echo 'creating a directory for mounting docker persistent volumes and give ownership to container user (UID 1001)'
-exe mkdir docker-persistence
-exe chown 1001 ./docker-persistence/
+exe mkdir /home/${docker_user}/docker-persistence
+exe chown 1001 /home/${docker_user}/docker-persistence/
 
 echo '-------------------------------'
 echo '    '
