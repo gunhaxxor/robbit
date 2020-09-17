@@ -30,13 +30,12 @@ import { Device } from "@ionic-native/device";
 import { IonicStorageModule } from "@ionic/storage";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
 
+// console.log(`signaling server within app module: ${process.env.SIGNALING_SERVER}`);
+
 const socketConfig: SocketIoConfig = {
   url: process.env.SIGNALING_SERVER,
   options: {}
 };
-
-
-console.log(`signaling server within app module: ${process.env.SIGNALING_SERVER}`);
 
 @NgModule({
   declarations: [
