@@ -9,7 +9,7 @@ services:
   mongodb:
     image: 'bitnami/mongodb:latest'
     volumes:
-      - './docker-persistence:/bitnami/mongodb'
+      - '~/docker-persistence:/bitnami/mongodb'
     # depends_on:
       # - fix-permissions
   parse:
@@ -22,7 +22,7 @@ services:
     ports:
       - '1337:1337'
     volumes:
-      - './docker-persistence:/bitnami'
+      - '~/docker-persistence:/bitnami'
     depends_on:
       - mongodb
   # fix-parse-dashboard-permissions:
@@ -46,6 +46,6 @@ services:
       - PARSE_DASHBOARD_USER
       - PARSE_DASHBOARD_PASSWORD
     volumes:
-      - './docker-persistence:/bitnami'
+      - '~/docker-persistence:/bitnami'
     depends_on:
       - parse
