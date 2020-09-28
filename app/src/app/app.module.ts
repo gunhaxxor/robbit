@@ -33,7 +33,7 @@ import { ScreenOrientation } from "@ionic-native/screen-orientation";
 // console.log(`signaling server within app module: ${process.env.SIGNALING_SERVER}`);
 
 const socketConfig: SocketIoConfig = {
-  url: process.env.SIGNALING_SERVER,
+  url: `${process.env.BACKEND_SERVER}:${process.env.SIGNALING_PORT}`,
   options: {}
 };
 

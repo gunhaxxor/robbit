@@ -75,11 +75,16 @@ export class HomePage {
     private device: Device,
     private screenOrientation: ScreenOrientation
   ) {
-    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
-    Parse.initialize(
-      "chRsGURCGEV4h0Z96Je8NxALdUxT8JlsKGy9QgoO", // This is your Application ID
-      "Px5si9ZvH72s5Jphxrc84aMcetSY5LhPgm2Swy8M" // This is your Javascript key
-    );
+    console.log(`serverurl: ${process.env.BACKEND_SERVER}`);
+    console.log(`parse app id: ${process.env.PARSE_APP_ID}`);
+
+    Parse.serverURL = 'http://' + process.env.BACKEND_SERVER + ':1337/parse';
+    // Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(process.env.PARSE_APP_ID);
+    // Parse.initialize(
+    //   "chRsGURCGEV4h0Z96Je8NxALdUxT8JlsKGy9QgoO", // This is your Application ID
+    //   "Px5si9ZvH72s5Jphxrc84aMcetSY5LhPgm2Swy8M" // This is your Javascript key
+    // );
   }
 
   ionViewWillEnter() {
@@ -215,6 +220,7 @@ export class HomePage {
         return Promise.resolve();
       })
       .catch(err => {
+        console.error('rejected:');
         console.error(err);
         return Promise.reject("failed to clear names");
       });
@@ -287,6 +293,9 @@ export class HomePage {
                 "login attempt failed. Trying to create new user instead"
               );
               return this.signUpToParse();
+            } else {
+              console.error('connection error to parse:');
+              console.error(err);
             }
           }
         );
