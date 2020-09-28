@@ -5,7 +5,47 @@ services:
     image: instrumentisto/coturn
     network_mode: "host"
     volumes:
-      - '~/docker-persistence:/etc/coturn/turnserver.conf'
+      - './turnserver.conf:/etc/coturn/turnserver.conf'
+    restart: on-failure:20
+  signaling:
+    build: ../signaling-server
+    ports:
+      - "3000:3000"
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    volumes:
+      - '~/docker-persistence:/bitnami/mongodb'
+  parse:
+    image: 'bitnami/parse:latest'
+    environment:
+      - PARSE_SERVER_MOUNT_GRAPHQL=false
+      #passing these variable through from shell environment
+      - PARSE_APP_ID 
+      - PARSE_MASTER_KEY
+    ports:
+      - '1337:1337'
+    volumes:
+      - '~/docker-persistence:/bitnami'
+    depends_on:
+      - mongodb
+  parse-dashboard:
+    image: 'bitnami/parse-dashboard:latest'
+    ports:
+      - '4040:4040'
+    environment:
+      - PARSE_USE_HOSTNAME=no
+      - PARSE_DASHBOARD_GRAPHQL_SERVER_URL=${PARSE_HOST}/graphql
+      # passing through from env
+      - PARSE_APP_ID
+      - PARSE_MASTER_KEY
+      - PARSE_HOST
+      - PARSE_DASHBOARD_APP_NAME
+      - PARSE_DASHBOARD_USER
+      - PARSE_DASHBOARD_PASSWORD
+    volumes:
+      - '~/docker-persistence:/bitnami'
+    depends_on:
+      - parse
 
 
 
