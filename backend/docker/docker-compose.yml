@@ -18,8 +18,10 @@ services:
   coturn:
     image: instrumentisto/coturn
     network_mode: "host"
-    volumes:
-      - './turnserver.conf:/etc/coturn/turnserver.conf'
+    command: ["-n", "--realm=${BACKEND_SERVER}", "--user=${TURN_USER}:${TURN_PASSWORD}", "--listening-port=${TURN_UDP_PORT}", "--tls-listening-port=${TURN_TLS_PORT}", "--verbose", "--log-file=stdout"]
+    # replaced the conf file so we set whole config with .env above instead of mounting the conf file
+    # volumes:
+    #   - './turnserver.conf:/etc/coturn/turnserver.conf'
     restart: on-failure:20
   signaling:
     build: ../signaling-server
