@@ -45,7 +45,7 @@
         <div id="bottom-controls">
           <button ion-button (click)="toggleWaving()" id="toggle-wave-button" class="control-button"
             [class.toggle-off]="!isWaving" [disabled]="!peerLinkActive"></button>
-          <form name="chat-form" (submit)="sendChat()" id="chat-form">
+          <form name="chat-form" (keyup.esc)="chatInput['_native'].nativeElement.blur()" (submit)="sendChat()" id="chat-form">
             <ion-input id="chat-input" #chatInput placeholder="säg något.." [(ngModel)]="chat.text"
               [ngModelOptions]="{ standalone: true }" [class.is-writing]="chat.text != ''" [disabled]="!peerLinkActive"
               [class.chat-input-disabled]="!peerLinkActive">

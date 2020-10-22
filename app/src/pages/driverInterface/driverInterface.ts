@@ -377,7 +377,7 @@ export class DriverInterfacePage {
         case "m":
           this.toggleAudioTrack();
           break;
-        case "w":
+        case "r":
           if (this.peerLinkActive) {
             this.toggleWaving();
           }
@@ -403,6 +403,10 @@ export class DriverInterfacePage {
         case "ArrowDown":
           this.servoAngleChange = 0;
           break;
+        // case "Escape":
+        //   console.log('Escape was pressed!!!!');
+        //   this.chatInput["_native"].nativeElement.blur();
+        //   break;
       }
     }
   }
@@ -858,7 +862,7 @@ export class DriverInterfacePage {
     // this.chatInput["_native"].nativeElement.blur();
 
 
-    //Always allow more typing int the input!
+    //Always allow more typing into the input!
     this.chatInput["_native"].nativeElement.focus();
 
     // if (this.chat.previousMessage != "") {

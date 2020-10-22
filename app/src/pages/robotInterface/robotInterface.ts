@@ -249,7 +249,7 @@ export class RobotInterfacePage {
     });
 
     this.peer.on("data", msg => {
-      console.log("received callInfo  msg: " + JSON.stringify(msg));
+      console.log("received callInfo  msg: " + msg);
       let msgObj = JSON.parse(String(msg));
 
       if (msgObj.hasOwnProperty("endcall") && msgObj.endcall) {
