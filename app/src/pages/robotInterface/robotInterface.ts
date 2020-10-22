@@ -176,7 +176,12 @@ export class RobotInterfacePage {
 
   initiateListen() {
     console.log("initiating listen");
-    let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    // let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    let peerConfig = {
+      "iceServers": [
+        { "urls": `stun:${process.env.BACKEND_SERVER}:${process.env.TURN_UDP_PORT}` },
+        { "urls": `turn:${process.env.BACKEND_SERVER}:${process.env.TURN_UDP_PORT}`, "username": process.env.TURN_USER, "credential": process.env.TURN_PASSWORD }]
+    }
     console.log(
       "nr of videotracks in localstream when creating peer object: ",
       this.localStream.getVideoTracks().length,

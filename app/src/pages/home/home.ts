@@ -78,7 +78,7 @@ export class HomePage {
     console.log(`serverurl: ${process.env.BACKEND_SERVER}`);
     console.log(`parse app id: ${process.env.PARSE_APP_ID}`);
 
-    Parse.serverURL = 'http://' + process.env.BACKEND_SERVER + ':1337/parse';
+    Parse.serverURL = process.env.BACKEND_SERVER_PROTOCOL + "://" + process.env.BACKEND_SERVER + "/parse";
     // Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
     Parse.initialize(process.env.PARSE_APP_ID);
     // Parse.initialize(

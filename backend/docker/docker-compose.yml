@@ -33,12 +33,16 @@ services:
     ports:
       - '4040:4040'
     environment:
-      - PARSE_USE_HOSTNAME=no
-      - PARSE_DASHBOARD_GRAPHQL_SERVER_URL=${PARSE_HOST}/graphql
+      - PARSE_USE_HOSTNAME=yes
+      - PARSE_DASHBOARD_GRAPHQL_SERVER_URL=${BACKEND_SERVER}/graphql
       # passing through from env
       - PARSE_APP_ID
       - PARSE_MASTER_KEY
-      - PARSE_HOST
+      - PARSE_PROTOCOL=${BACKEND_SERVER_PROTOCOL}
+      - PARSE_HOST=${BACKEND_SERVER}
+      # we use default port since we'll go through caddy's proxy on port 80 
+      # (parse is running on 1337 INSIDE the service swarm, but that port is not opened outside)
+      - PARSE_PORT_NUMBER=${BACKEND_DEFAULT_PORT_NUMBER}
       - PARSE_DASHBOARD_APP_NAME
       - PARSE_DASHBOARD_USER
       - PARSE_DASHBOARD_PASSWORD
