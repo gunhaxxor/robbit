@@ -12,6 +12,7 @@ exe() { echo "\$ $@" ; "$@" ; }
 
 echo 'Gunnar är bäst!'
 echo "We will now create the user. It will get the uid of 1001. Be sure that this uid is available. If not, ctrl+c now and fix before moving on."
+echo "You'll also need a public SSH key for the user. This is so you can log in remotely as the new user. Fix a public ssh-key before moving on with this script (ctrl+c to abort now)."
 echo "You can check if the user exists by calling 'id 1001'"
 echo "We want to use 1001 as uid because thats the user id we gonna run inside the docker containers :-D"
 echo "That will make it more fluent to handle permissions when sharing (type bind) volumes between the docker users and the host user"
