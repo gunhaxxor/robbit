@@ -1,6 +1,20 @@
 version: "3"
 
 services:
+  caddy:
+    build: ../caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # passing through from env
+      - BACKEND_SERVER_PROTOCOL
+      - BACKEND_SERVER
+    depends_on:
+      - "web"
+      - "signaling"
+    volumes:
+      - ~/docker-persistence/caddy:/data
   coturn:
     image: instrumentisto/coturn
     network_mode: "host"
@@ -9,8 +23,25 @@ services:
     restart: on-failure:20
   signaling:
     build: ../signaling-server
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
+    expose:
+      - "3000"
+  web:
+    environment:
+      # passing through from env
+      - PARSE_APP_ID
+      - BACKEND_SERVER_PROTOCOL
+      - BACKEND_SERVER
+      - TURN_UDP_PORT
+      - TURN_TLS_PORT
+      - TURN_USER
+      - TURN_PASSWORD
+    build: ../../app
+    # ports: 
+    #   - "8080:8080"
+    expose:
+      - "8080"
   mongodb:
     image: 'bitnami/mongodb:latest'
     volumes:
@@ -20,18 +51,22 @@ services:
     environment:
       - PARSE_SERVER_MOUNT_GRAPHQL=false
       #passing these variable through from shell environment
-      - PARSE_APP_ID 
+      - PARSE_APP_ID
       - PARSE_MASTER_KEY
-    ports:
-      - '1337:1337'
-    volumes:
-      - '~/docker-persistence:/bitnami'
+    # ports:
+    #   - '1337:1337'
+    expose:
+      - "1337"
+    # volumes:
+    #   - '~/docker-persistence:/bitnami'
     depends_on:
       - mongodb
   parse-dashboard:
     image: 'bitnami/parse-dashboard:latest'
     ports:
       - '4040:4040'
+    # expose:
+      # - "4040"
     environment:
       - PARSE_USE_HOSTNAME=yes
       - PARSE_DASHBOARD_GRAPHQL_SERVER_URL=${BACKEND_SERVER}/graphql
@@ -46,8 +81,8 @@ services:
       - PARSE_DASHBOARD_APP_NAME
       - PARSE_DASHBOARD_USER
       - PARSE_DASHBOARD_PASSWORD
-    volumes:
-      - '~/docker-persistence:/bitnami'
+    # volumes:
+    #   - '~/docker-persistence:/bitnami'
     depends_on:
       - parse
 

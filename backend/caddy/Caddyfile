@@ -1,0 +1,10 @@
+{env.BACKEND_SERVER} {
+  # file_server {
+  #   root ./www
+  # }
+  reverse_proxy /parse/* parse:1337
+  reverse_proxy /socket.io/* signaling:3000 
+  reverse_proxy web:8080
+  
+  log
+}

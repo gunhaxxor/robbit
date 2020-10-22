@@ -5,6 +5,7 @@
   "homepage": "http://ionicframework.com/",
   "private": true,
   "scripts": {
+    "start": "node server.js",
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
@@ -55,8 +56,10 @@
     "cordova-sqlite-storage": "^2.6.0",
     "cordova.plugins.diagnostic": "^4.0.10",
     "es6-promise-plugin": "4.2.2",
+    "express": "^4.17.1",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
+    "morgan": "^1.10.0",
     "ng-socket-io": "^0.2.4",
     "nipplejs": "^0.7.1",
     "parse": "^2.4.0",
