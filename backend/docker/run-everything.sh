@@ -9,12 +9,12 @@ then
     exit
 fi
 
-file="./turnserver.conf"
-if [ ! -f "$file" ]
-then
-    echo "the file turnserver.conf not found. Please provide one so we can setup COTURN correctly. Have a look at example.turnserver.conf for reference"
-    exit
-fi
+# file="./turnserver.conf"
+# if [ ! -f "$file" ]
+# then
+#     echo "the file turnserver.conf not found. Please provide one so we can setup COTURN correctly. Have a look at example.turnserver.conf for reference"
+#     exit
+# fi
 
 echo 'BE AWARE! Gunnar är bäst!'
 
