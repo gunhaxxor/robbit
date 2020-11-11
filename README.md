@@ -4,7 +4,14 @@ This project is about making an open source telepresence robot for students who 
 
 # App
 ## getting started
-run `npm install`
+Run `npm install`
+To run it on your android phone (connected by usb cable)
+Run `ionic cordova run android`
+
+Note: currently there is a bug that when building for production the socket connection does not work.
+
+To see if your phone is connected
+Run `adb devices`
 
 ## Required files
 
