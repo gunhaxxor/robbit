@@ -38,6 +38,10 @@ export class HomePage {
   wifiEnabled: boolean = true;
   internetAvailable: boolean = true;
   signedIn: boolean = false;
+  showServerSettings = true;
+  serverUrl = "drive.robbit.se";
+  serverName = "";
+  serverPassword = "";
 
   get readyToEnterRobotInterface() {
     return (
@@ -46,7 +50,10 @@ export class HomePage {
       this.signedIn &&
       this.robotName &&
       this.bluetoothEnabled &&
-      this.invalidRobotName !== this.robotName
+      this.invalidRobotName !== this.robotName &&
+      this.serverUrl != "" &&
+      this.serverName != "" &&
+      this.serverPassword != ""
     );
   }
 
@@ -57,9 +64,11 @@ export class HomePage {
       this.signedIn &&
       !this.storedName &&
       // !this.robotName &&
-      this.bluetoothEnabled
-      // &&
+      this.bluetoothEnabled &&
       // this.invalidRobotName !== this.robotName
+      this.serverUrl != "" &&
+      this.serverName != "" &&
+      this.serverPassword != ""
     );
   }
 
@@ -555,6 +564,10 @@ export class HomePage {
   //Maybe we should verify the name against parse server before continuing??
   goToRobotInterface() {
     this.navCtrl.push(RobotInterfacePage, { robotName: this.robotName });
+  }
+
+  toggleServerSettings() {
+    this.showServerSettings = !this.showServerSettings;
   }
 
   robotsByDate(a, b) {

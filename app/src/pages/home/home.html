@@ -1,8 +1,44 @@
 <ion-content>
   <ng-container *ngIf="plt.is('cordova')">
     <div ionic full class="welcome-panel">
+      <h1>Robbit</h1>
+      <button ion-button (click)="toggleServerSettings()">
+        <div>
+          <ion-icon name="cog"></ion-icon>
+          <label *ngIf="!showServerSettings">Visa server inställningar</label>
+          <label *ngIf="showServerSettings">Gömma server inställningar</label>
+        </div>
+      </button>
+      <ng-container *ngIf="showServerSettings">
+        <h3>Server</h3>
+        <p>
+          Fyll i server inställningar här. Kontakta din administratör om du behöver hjälp med det.
+        </p>
+        <form (submit)="saveServerSettings()">
+          <p>
+            <ion-item>
+              <ion-label floating>Server URL</ion-label>
+              <ion-input type="text" name="serverUrl" id="robot-name-input" [(ngModel)]="serverUrl">drive.robbit.se</ion-input>
+              <ion-icon *ngIf="invalidserverUrl" name="heart"></ion-icon>
+            </ion-item>
+          </p>
+          <p>
+            <ion-item>
+              <ion-label floating>Server namn</ion-label>
+              <ion-input type="text" name="serverName" id="robot-name-input" [(ngModel)]="serverName"></ion-input>
+              <ion-icon *ngIf="invalidserverName" name="heart"></ion-icon>
+            </ion-item>
+          </p>
+          <p>
+            <ion-item>
+              <ion-label floating>Server lösenord</ion-label>
+              <ion-input type="text" name="serverPassword" id="robot-name-input" [(ngModel)]="serverPassword"></ion-input>
+              <ion-icon *ngIf="invalidserverPassword" name="heart"></ion-icon>
+            </ion-item>
+          </p>
+        </form>
+      </ng-container>
       <ng-container *ngIf="readyToCreateRobotName">
-        <h1>Robbit</h1>
         <p>
           Välkommen! Vad ska denna robot heta? Hitta på ett unikt namn som är
           lätt att komma ihåg. Det är detta namn eleven anger för att koppla upp
@@ -23,7 +59,6 @@
         </form>
       </ng-container>
       <ng-container *ngIf="storedName">
-        <h1>Robbit</h1>
         <p>Välkommen! Denna robot heter {{ storedName }}</p>
         <button ion-button [disabled]="!readyToEnterRobotInterface" (click)="goToRobotInterface()">
           Starta {{ storedName }}
