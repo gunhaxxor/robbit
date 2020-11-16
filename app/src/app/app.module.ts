@@ -20,7 +20,8 @@ import { BLE } from "@ionic-native/ble";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../providers/bleservice/bleService";
 import { HttpModule } from "@angular/http";
-import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
+// import { SocketIoModule, SocketIoConfig } from "ng-socket-io";
+import { SocketIOService } from '../providers/socketioservice/socketioService';
 import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { LocationAccuracy } from "@ionic-native/location-accuracy";
@@ -30,18 +31,18 @@ import { Device } from "@ionic-native/device";
 import { IonicStorageModule } from "@ionic/storage";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
 
-let socketUrl = '';
-if (process.env.SIGNALING_PORT) {
-  socketUrl = `${process.env.BACKEND_SERVER_PROTOCOL}://${process.env.BACKEND_SERVER}:${process.env.SIGNALING_PORT}/`
-} else {
-  socketUrl = `${process.env.BACKEND_SERVER_PROTOCOL}://${process.env.BACKEND_SERVER}/`
-}
-const socketConfig: SocketIoConfig = {
-  url: socketUrl,
-  options: {}
-};
-console.log('socketConfig is: ');
-console.log(socketConfig);
+// let socketUrl = '';
+// if (process.env.SIGNALING_PORT) {
+//   socketUrl = `${process.env.BACKEND_SERVER_PROTOCOL}://${process.env.BACKEND_SERVER}:${process.env.SIGNALING_PORT}/`
+// } else {
+//   socketUrl = `${process.env.BACKEND_SERVER_PROTOCOL}://${process.env.BACKEND_SERVER}/`
+// }
+// const socketConfig: SocketIoConfig = {
+//   url: socketUrl,
+//   options: {}
+// };
+// console.log('socketConfig is: ');
+// console.log(socketConfig);
 
 
 @NgModule({
@@ -60,7 +61,7 @@ console.log(socketConfig);
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
-    SocketIoModule.forRoot(socketConfig),
+    // SocketIoModule.forRoot(socketConfig),
     IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
@@ -77,6 +78,7 @@ console.log(socketConfig);
     SplashScreen,
     BLE,
     BleService,
+    SocketIOService,
     LoadingController,
     Camera,
     Diagnostic,

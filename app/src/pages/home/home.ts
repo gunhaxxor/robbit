@@ -1,4 +1,4 @@
-import { Component, ApplicationRef } from "@angular/core";
+import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { Platform } from "ionic-angular/platform/platform";
 import { AppVersion } from "@ionic-native/app-version";
@@ -11,10 +11,12 @@ import { Network } from "@ionic-native/network";
 import { LocationAccuracy } from "@ionic-native/location-accuracy";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { BLE } from "@ionic-native/ble";
+import { SocketIOService } from '../../providers/socketioservice/socketioService'
 
 import encoding from "text-encoding";
 
 import Parse from "parse";
+import { Subject } from "rxjs";
 // import { createDeflateRaw } from "zlib";
 // import { rejects } from "assert";
 // import { JitSummaryResolver } from "@angular/compiler";
@@ -42,6 +44,16 @@ export class HomePage {
   serverUrl = "drive.robbit.se";
   serverName = "";
   serverPassword = "";
+  serverStatus = false;
+  serverSettingSubject = new Subject();
+
+  get serverSettings() {
+    return {
+      'serverUrl': this.serverUrl,
+      'serverName': this.serverName,
+      'serverPassword': this.serverPassword
+    }
+  }
 
   get readyToEnterRobotInterface() {
     return (
@@ -82,27 +94,34 @@ export class HomePage {
     private plt: Platform,
     private storage: Storage,
     private device: Device,
-    private screenOrientation: ScreenOrientation
+    private screenOrientation: ScreenOrientation,
+    private socketService: SocketIOService
   ) {
-    console.log(`serverurl: ${process.env.BACKEND_SERVER}`);
-    console.log(`parse app id: ${process.env.PARSE_APP_ID}`);
-
-    Parse.serverURL = process.env.BACKEND_SERVER_PROTOCOL + "://" + process.env.BACKEND_SERVER + "/parse";
-    // Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
-    Parse.initialize(process.env.PARSE_APP_ID);
-    // Parse.initialize(
-    //   "chRsGURCGEV4h0Z96Je8NxALdUxT8JlsKGy9QgoO", // This is your Application ID
-    //   "Px5si9ZvH72s5Jphxrc84aMcetSY5LhPgm2Swy8M" // This is your Javascript key
-    // );
+    this.serverSettingSubject
+      .debounceTime(3000)
+      .subscribe(val => {
+        console.log('init server connection');
+        this.initServerConnection(this.serverUrl);
+      });
   }
 
   ionViewWillEnter() {
     // console.log("this.plt.is('cordova'):  " + this.plt.is("cordova"));
     if (this.plt.is("cordova")) {
-      this.clearOldNamesFromParse().then(
-        () => this.connectRobotToParse(),
-        () => this.connectRobotToParse()
-      );
+      this.storage.ready().then(() => {
+        this.storage.get('server-settings').then((settings) => {
+          if (settings === null) {
+            console.log('key not found in storage: server-settings');
+          } else {
+            settings = JSON.parse(settings);
+            this.serverUrl = settings.serverUrl;
+            this.serverName = settings.serverName;
+            this.serverPassword = settings.serverPassword;
+
+            this.initServerConnection(this.serverUrl);
+          }
+        });
+      });
 
       // TODO: Should we perhaps aaaalways use landscape??
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
@@ -143,6 +162,9 @@ export class HomePage {
             console.log(err);
           });
       });
+
+      this.socketService.setupSocketConnection();
+      this.initializeParse();
     }
   }
 
@@ -238,9 +260,7 @@ export class HomePage {
   connectRobotToParse() {
     this.signInToParse().then(() => {
       this.signedIn = true;
-      // Parse.User.current().set
       this.fetchDeviceFromParse().then(dev => {
-        //Weird that we use two variables for the robotname. Should probably make something more logical, but fuck it for now!!
         let name = dev.get("name");
         if (!name) {
           return;
@@ -483,32 +503,6 @@ export class HomePage {
         })
         .catch(err => console.error(err));
     });
-
-    // firebase.database().ref('robot-names/' + this.robotName)
-    //   .transaction((currentData) => {
-    //     if (currentData === null) {
-    //       return { device: this.device.uuid, created: (new Date).toISOString() };
-    //     } else {
-    //       console.log('robot name already exists.');
-    //       return; // Abort the transaction.
-    //     }
-    //   })
-    //   .then(({ committed, snapshot }) => {
-    //     if (!committed) {
-    //       console.log('We aborted the transaction (because robot name already exists).');
-    //       this.invalidRobotName = this.robotName;
-    //       // this.appRef.tick();
-    //     } else {
-    //       console.log('robot name added to firebase!');
-    //       this.invalidRobotName = undefined;
-    //       this.storage.set('robotName', this.robotName).then(() => {
-    //         this.navCtrl.push(RobotInterfacePage, { robotName: this.robotName });
-    //       });
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log('Transaction failed abnormally!', err);
-    //   });
   }
 
   checkNameAndGoToDriverInterface() {
@@ -542,19 +536,58 @@ export class HomePage {
         console.log("No such robot found");
         this.invalidRobotName = this.robotName;
       });
+  }
 
-    // firebase.database().ref('robot-names/' + this.robotName).once('value').then((snapshot) => {
-    //   if (!snapshot.val()) {
-    //     console.log("No such robot found");
-    //     this.invalidRobotName = this.robotName;
-    //     return;
-    //   }
-    //   this.invalidRobotName = undefined;
-    //   this.recentConnectedRobots[this.robotName] = Date.now();
-    //   this.storage.set('recent-connected-robots', JSON.stringify(this.recentConnectedRobots)).then(() => {
-    //     this.navCtrl.push(DriverInterfacePage, { robotName: this.robotName });
-    //   });
-    // });
+  saveServerSettings() {
+    this.storage
+      .set(
+        "server-settings",
+        JSON.stringify(this.serverSettings)
+      )
+      .then(() => {
+        console.log('saved Server settings');
+        this.serverSettingSubject.next();
+      });
+
+
+  }
+
+  async initServerConnection(url) {
+    this.socketService.tearDown();
+    try {
+      await this.socketService.setupSocketConnection(url);
+
+      this.initializeParse();
+
+      try {
+        await this.clearOldNamesFromParse();
+      } catch (err) {
+        console.error(err);
+      }
+
+      await this.connectRobotToParse();
+
+      this.serverStatus = true;
+
+    } catch (err) {
+      this.serverStatus = false;
+      console.error(err);
+    }
+  }
+
+  initializeParse() {
+    console.log(`parse serverurl: ${process.env.BACKEND_SERVER}`);
+    console.log(`parse app id: ${process.env.PARSE_APP_ID}`);
+
+    const backendUrl = this.serverSettings.serverUrl ? this.serverSettings.serverUrl : process.env.BACKEND_SERVER;
+
+    Parse.serverURL = process.env.BACKEND_SERVER_PROTOCOL + "://" + backendUrl + "/parse";
+    // Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(process.env.PARSE_APP_ID);
+    // Parse.initialize(
+    //   "chRsGURCGEV4h0Z96Je8NxALdUxT8JlsKGy9QgoO", // This is your Application ID
+    //   "Px5si9ZvH72s5Jphxrc84aMcetSY5LhPgm2Swy8M" // This is your Javascript key
+    // );
   }
 
   goToDriverInterface() {

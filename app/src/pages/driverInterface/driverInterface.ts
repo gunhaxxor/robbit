@@ -10,7 +10,8 @@ import {
 import { EmojiPage } from "../emoji-page/emoji-page";
 import { SettingsPage } from "../settings-page/settings-page";
 // import { BleService } from "../../providers/bleservice/bleService";
-import { Socket } from "ng-socket-io";
+// import { Socket } from "ng-socket-io";
+import { SocketIOService } from '../../providers/socketioservice/socketioService';
 import * as Peer from "simple-peer";
 import nipplejs from "nipplejs";
 // import { Camera } from "@ionic-native/camera";
@@ -81,7 +82,8 @@ export class DriverInterfacePage {
     public loading: LoadingController,
     public navParams: NavParams,
     // public bleService: BleService,
-    private socket: Socket,
+    // private socket: Socket,
+    private socketIOService: SocketIOService,
     // private camera: Camera,
     private diagnostic: Diagnostic,
     public popoverEmojiCtrl: PopoverController,
@@ -101,18 +103,18 @@ export class DriverInterfacePage {
 
   ionViewWillLeave() {
     console.log("will leave driver interface page. Cleaning up som shit");
-    this.socket.emit("leave", this.robotName);
-    console.log(this.socket.ioSocket.listeners("robotControl"));
-    console.log(this.socket.ioSocket.listeners("signal"));
-    console.log(this.socket.ioSocket.listeners("room"));
+    this.socketIOService.socket.emit("leave", this.robotName);
+    console.log(this.socketIOService.socket.listeners("robotControl"));
+    console.log(this.socketIOService.socket.listeners("signal"));
+    console.log(this.socketIOService.socket.listeners("room"));
 
-    this.socket.removeAllListeners("robotControl");
-    this.socket.removeAllListeners("signal");
-    this.socket.removeAllListeners("room");
+    this.socketIOService.socket.off("robotControl");
+    this.socketIOService.socket.off("signal");
+    this.socketIOService.socket.off("room");
 
-    console.log(this.socket.ioSocket.listeners("robotControl"));
-    console.log(this.socket.ioSocket.listeners("signal"));
-    console.log(this.socket.ioSocket.listeners("room"));
+    console.log(this.socketIOService.socket.listeners("robotControl"));
+    console.log(this.socketIOService.socket.listeners("signal"));
+    console.log(this.socketIOService.socket.listeners("room"));
     clearInterval(this.robotControlIntervalId);
     if (this.peer) {
       this.peer.destroy();
@@ -125,27 +127,27 @@ export class DriverInterfacePage {
     this.localVideoTag = document.querySelector("#driver-local-video");
     this.remoteVideoTag = document.querySelector("#driver-remote-video");
 
-    if (this.socket.ioSocket.connected) {
+    if (this.socketIOService.socket.connected) {
       console.log("socket was already connected. Trying to join room");
-      this.socket.emit("join", this.robotName);
+      this.socketIOService.socket.emit("join", this.robotName);
     } else {
-      this.socket.on("connect", () => {
+      this.socketIOService.socket.on("connect", () => {
         console.log("socket connected event. Trying to join room");
-        this.socket.emit("join", this.robotName);
+        this.socketIOService.socket.emit("join", this.robotName);
       });
     }
 
     let roomJoined: Promise<{}> = new Promise((resolve, reject) => {
-      this.socket.on("room", msg => {
+      this.socketIOService.socket.on("room", msg => {
         console.log("room message from server:" + JSON.stringify(msg));
         if (msg.room == this.robotName && msg.joined) {
           console.log("attaching socket events");
-          this.socket.on("robotControl", msg => {
+          this.socketIOService.socket.on("robotControl", msg => {
             console.log("received socket msg: " + JSON.stringify(msg));
             // this.bleService.send(msg);
           });
 
-          this.socket.on("signal", data => {
+          this.socketIOService.socket.on("signal", data => {
             console.log("Driver received signal message from socket");
             console.log(data);
 
@@ -158,11 +160,11 @@ export class DriverInterfacePage {
       });
     });
 
-    this.socket.on("message", msg => {
+    this.socketIOService.socket.on("message", msg => {
       console.log("message from socket server: " + msg);
     });
 
-    this.socket.on("error", msg => {
+    this.socketIOService.socket.on("error", msg => {
       console.error("error message from socket server: " + msg);
     });
 
@@ -306,7 +308,7 @@ export class DriverInterfacePage {
         servoFloored +
         "\n";
       console.log("sending robot data to socket: " + msg);
-      this.socket.emit("robotControl", msg);
+      this.socketIOService.socket.emit("robotControl", msg);
     }, 300);
 
     if (this.voiceControlEnabled) {
@@ -454,7 +456,7 @@ export class DriverInterfacePage {
       console.log(
         "Driver got signal data locally. Passing it on to signaling server"
       );
-      this.socket.emit("signal", data);
+      this.socketIOService.socket.emit("signal", data);
     });
     this.peer.on("stream", stream => {
       console.log(
@@ -1060,7 +1062,7 @@ export class DriverInterfacePage {
       servoFloored +
       "\n";
     console.log("sending robot data to socket: " + msg);
-    this.socket.emit("robotControl", msg);
+    this.socketIOService.socket.emit("robotControl", msg);
   }
 
   angleChange(servoAngleChange) {
@@ -1082,7 +1084,7 @@ export class DriverInterfacePage {
       servoFloored +
       "\n";
     console.log("sending robot data to socket: " + msg);
-    this.socket.emit("robotControl", msg);
+    this.socketIOService.socket.emit("robotControl", msg);
   }
 
   getOutboundStream() {

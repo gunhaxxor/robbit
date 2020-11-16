@@ -2,12 +2,14 @@ import { Component, NgZone } from "@angular/core";
 import { NavController, NavParams, Platform } from "ionic-angular";
 import { LoadingController } from "ionic-angular";
 import { BleService } from "../../providers/bleservice/bleService";
-import { Socket } from "ng-socket-io";
+// import { Socket } from "ng-socket-io";
+import { SocketIOService, } from '../../providers/socketioservice/socketioService';
 import * as Peer from "simple-peer";
 // import { Camera } from "@ionic-native/camera";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { NativeAudio } from "@ionic-native/native-audio";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
+import { StatusBar } from "@ionic-native/status-bar";
 // import encoding from 'text-encoding';
 
 @Component({
@@ -38,11 +40,13 @@ export class RobotInterfacePage {
     public loading: LoadingController,
     public navParams: NavParams,
     public bleService: BleService,
-    public socket: Socket,
+    // public socket: Socket,
+    private socketIOService: SocketIOService,
     public diagnostic: Diagnostic,
     private nativeAudio: NativeAudio,
     private zone: NgZone,
-    private screenOrientation: ScreenOrientation
+    private screenOrientation: ScreenOrientation,
+    private statusBar: StatusBar,
   ) { }
 
   // startWebRTC() {
@@ -54,10 +58,10 @@ export class RobotInterfacePage {
   ionViewWillLeave() {
     console.log("will leave robot interface page. Cleaning up som shit");
     this.bleService.stop();
-    this.socket.emit("leave", this.robotName);
-    this.socket.removeAllListeners("robotControl");
-    this.socket.removeAllListeners("signal");
-    this.socket.removeAllListeners("room");
+    this.socketIOService.socket.emit("leave", this.robotName);
+    this.socketIOService.socket.off("robotControl");
+    this.socketIOService.socket.off("signal");
+    this.socketIOService.socket.off("room");
 
     this.keepPeerActive = false; //avoid retrying peer on close event
     this.tearDownPeer();
@@ -68,6 +72,8 @@ export class RobotInterfacePage {
   }
 
   ionViewWillEnter() {
+    console.log('Hiding the status bar');
+    this.statusBar.hide();
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
   }
 
@@ -75,27 +81,27 @@ export class RobotInterfacePage {
     this.bleService.start();
     this.robotName = this.navParams.get("robotName");
 
-    // this.socket.emit('join', this.robotName);
-    if (this.socket.ioSocket.connected) {
+    // this.socketIOService.socket.emit('join', this.robotName);
+    if (this.socketIOService.socket.connected) {
       console.log("socket was already connected. Trying to join room");
-      this.socket.emit("join", this.robotName);
+      this.socketIOService.socket.emit("join", this.robotName);
     } else {
-      this.socket.on("connect", () => {
+      this.socketIOService.socket.on("connect", () => {
         console.log("socket connected event. Trying to join room");
-        this.socket.emit("join", this.robotName);
+        this.socketIOService.socket.emit("join", this.robotName);
       });
     }
 
     let roomJoined: Promise<{}> = new Promise((resolve, reject) => {
-      this.socket.on("room", msg => {
+      this.socketIOService.socket.on("room", msg => {
         if (msg.room == this.robotName && msg.joined) {
           console.log("attaching socket events");
-          this.socket.on("robotControl", msg => {
+          this.socketIOService.socket.on("robotControl", msg => {
             //console.log("received socket msg: " + JSON.stringify(msg));
             this.bleService.send(msg);
           });
 
-          this.socket.on("signal", data => {
+          this.socketIOService.socket.on("signal", data => {
             console.log("Robot received signal message from socket");
             console.log(data);
 
@@ -202,7 +208,7 @@ export class RobotInterfacePage {
       console.log(
         "Robot got signal data locally. Passing it on to signaling server"
       );
-      this.socket.emit("signal", data);
+      this.socketIOService.socket.emit("signal", data);
     });
     this.peer.on("stream", stream => {
       console.log(

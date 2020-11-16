@@ -1,10 +1,9 @@
 import { AppVersion } from "@ionic-native/app-version";
 import { Component } from "@angular/core";
 import { Platform } from "ionic-angular";
-import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { BLE } from "@ionic-native/ble";
-import { BleService } from "../providers/bleservice/bleService";
+// import { BleService } from "../providers/bleservice/bleService";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { HomePage } from "../pages/home/home";
 
@@ -18,10 +17,9 @@ export class MyApp {
   constructor(
     platform: Platform,
     private appVersion: AppVersion,
-    statusBar: StatusBar,
     splashScreen: SplashScreen,
     public ble: BLE,
-    private bleService: BleService,
+    // private bleService: BleService,
     private diagnostic: Diagnostic
   ) {
     platform.ready().then(() => {
@@ -45,8 +43,6 @@ export class MyApp {
         // Here you can do any higher level native things you might need.
 
         // statusBar.styleDefault();
-        console.log('Hiding the status bar');
-        statusBar.hide();
         splashScreen.hide();
       }
     });
