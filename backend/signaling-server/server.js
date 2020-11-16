@@ -1,5 +1,15 @@
 const app = require("express")();
-const http = require("http").Server(app);
+const http = require("http").Server(app, {
+  handlePreflightRequest: function (req, res) {
+    var headers = {
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    };
+    res.writeHead(200, headers);
+    res.end();
+  }
+});
 const io = require("socket.io")(http);
 const util = require("util");
 const _ = require("lodash");
@@ -24,7 +34,7 @@ app.get("/", function (req, res) {
 
 //we call this function immediately.
 (() => {
-  console.log("promisifying io (socket.io instance) functions");
+  // console.log("promisifying io (socket.io instance) functions");
   // util.promisify(io.on);
 })();
 
