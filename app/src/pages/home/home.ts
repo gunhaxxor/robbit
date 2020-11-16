@@ -44,7 +44,7 @@ export class HomePage {
   serverUrl = "drive.robbit.se";
   serverName = "";
   serverPassword = "";
-  serverStatus = false;
+  serverStatus = -1;
   serverSettingSubject = new Subject();
 
   get serverSettings() {
@@ -63,9 +63,7 @@ export class HomePage {
       this.robotName &&
       this.bluetoothEnabled &&
       this.invalidRobotName !== this.robotName &&
-      this.serverUrl != "" &&
-      this.serverName != "" &&
-      this.serverPassword != ""
+      this.serverStatus == 1
     );
   }
 
@@ -78,9 +76,7 @@ export class HomePage {
       // !this.robotName &&
       this.bluetoothEnabled &&
       // this.invalidRobotName !== this.robotName
-      this.serverUrl != "" &&
-      this.serverName != "" &&
-      this.serverPassword != ""
+      this.serverStatus == 1
     );
   }
 
@@ -101,7 +97,7 @@ export class HomePage {
       .debounceTime(3000)
       .subscribe(val => {
         console.log('init server connection');
-        this.initServerConnection(this.serverUrl);
+        this.initRobotServerConnection(this.serverUrl);
       });
   }
 
@@ -118,7 +114,7 @@ export class HomePage {
             this.serverName = settings.serverName;
             this.serverPassword = settings.serverPassword;
 
-            this.initServerConnection(this.serverUrl);
+            this.initRobotServerConnection(this.serverUrl);
           }
         });
       });
@@ -162,8 +158,11 @@ export class HomePage {
             console.log(err);
           });
       });
-
-      this.socketService.setupSocketConnection();
+      try {
+        this.socketService.setupSocketConnection();
+      } catch (err) {
+        console.error(err);
+      }
       this.initializeParse();
     }
   }
@@ -257,18 +256,20 @@ export class HomePage {
       });
   }
 
-  connectRobotToParse() {
-    this.signInToParse().then(() => {
-      this.signedIn = true;
-      this.fetchDeviceFromParse().then(dev => {
-        let name = dev.get("name");
-        if (!name) {
-          return;
-        }
-        this.storedName = name;
-        this.robotName = name;
-      }).catch(err => console.error('no device found for this user'))
-    });
+  async connectRobotToParse() {
+    await this.signInToParse();
+    this.signedIn = true;
+
+    try {
+      const dev = await this.fetchDeviceFromParse();
+          let name = dev.get("name");
+      if (name) {
+            this.storedName = name;
+            this.robotName = name;
+      }
+    } catch (err) {
+      console.error('no device found for this user');
+    }
   }
 
   signInToParse() {
@@ -546,16 +547,22 @@ export class HomePage {
       )
       .then(() => {
         console.log('saved Server settings');
+        this.serverStatus = 0;
         this.serverSettingSubject.next();
       });
 
 
   }
 
-  async initServerConnection(url) {
+  async initRobotServerConnection(url) {
+    console.log('init server connection');
     this.socketService.tearDown();
     try {
-      await this.socketService.setupSocketConnection(url);
+      const query = {
+        servername: this.serverSettings.serverName,
+        serverpassword: this.serverSettings.serverPassword
+      };
+      await this.socketService.setupSocketConnection(url, query);
 
       this.initializeParse();
 
@@ -567,12 +574,14 @@ export class HomePage {
 
       await this.connectRobotToParse();
 
-      this.serverStatus = true;
+      this.serverStatus = 1;
 
     } catch (err) {
-      this.serverStatus = false;
+      this.serverStatus = -1;
       console.error(err);
     }
+
+    console.log('serverStatus is:', this.serverStatus);
   }
 
   initializeParse() {

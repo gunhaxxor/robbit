@@ -11,7 +11,9 @@
       </button>
 
       <ng-container *ngIf="showServerSettings">
-        <h3>Server - <span>{{ serverStatus?"ansluten": "ingen anslutning" }}</span></h3>
+        <h3>Server - <span *ngIf="serverStatus==1">ansluten</span><span *ngIf="serverStatus==-1">ingen anslutning</span>
+          <ion-spinner color="light" *ngIf="serverStatus==0"></ion-spinner>
+        </h3>
         <p>
           Fyll i serverinställningar här. Kontakta din administratör om du behöver hjälp med det.
         </p>

@@ -32,9 +32,21 @@ function buildSocketUrl(url?: string): string {
 export class SocketIOService {
   socket: SocketIOClient.Socket;
   constructor() { }
-  setupSocketConnection(url?: string) {
+  setupSocketConnection(url?: string, query?: object) {
     const socketUrl = buildSocketUrl(url);
-    this.socket = io(socketUrl);
+    const socketOptions = {
+      query: {}
+    };
+    if (query) {
+      socketOptions.query = query
+    }
+    else {
+      socketOptions.query = {
+        servername: process.env.TURN_USER,
+        serverpassword: process.env.TURN_PASSWORD
+      };
+    }
+    this.socket = io(socketUrl, socketOptions);
     console.log('socket:', this.socket);
 
     return new Promise((resolve, reject) => {
