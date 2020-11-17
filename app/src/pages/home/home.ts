@@ -96,7 +96,6 @@ export class HomePage {
     this.serverSettingSubject
       .debounceTime(3000)
       .subscribe(val => {
-        console.log('init server connection');
         this.initRobotServerConnection(this.serverUrl);
       });
   }
@@ -104,21 +103,6 @@ export class HomePage {
   ionViewWillEnter() {
     // console.log("this.plt.is('cordova'):  " + this.plt.is("cordova"));
     if (this.plt.is("cordova")) {
-      this.storage.ready().then(() => {
-        this.storage.get('server-settings').then((settings) => {
-          if (settings === null) {
-            console.log('key not found in storage: server-settings');
-          } else {
-            settings = JSON.parse(settings);
-            this.serverUrl = settings.serverUrl;
-            this.serverName = settings.serverName;
-            this.serverPassword = settings.serverPassword;
-
-            this.initRobotServerConnection(this.serverUrl);
-          }
-        });
-      });
-
       // TODO: Should we perhaps aaaalways use landscape??
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
       this.appVersion.getVersionNumber().then(
@@ -164,6 +148,28 @@ export class HomePage {
         console.error(err);
       }
       this.initializeParse();
+    }
+  }
+
+  ionViewDidEnter() {
+    if (this.plt.is("cordova")) {
+      this.storage.ready().then(() => {
+        this.storage.get('server-settings').then((settings) => {
+          if (settings === null) {
+            console.log('key not found in storage: server-settings');
+          } else {
+            console.log('found server-settings in storage: ', settings);
+            settings = JSON.parse(settings);
+            this.serverUrl = settings.serverUrl;
+            this.serverName = settings.serverName;
+            this.serverPassword = settings.serverPassword;
+
+            console.log('on entering page now initRobotServerConnection');
+            console.log('at this point serverSettings is:', this.serverSettings);
+            this.initRobotServerConnection(this.serverUrl);
+          }
+        });
+      });
     }
   }
 
@@ -539,24 +545,34 @@ export class HomePage {
       });
   }
 
-  saveServerSettings() {
-    this.storage
-      .set(
-        "server-settings",
-        JSON.stringify(this.serverSettings)
-      )
-      .then(() => {
-        console.log('saved Server settings');
-        this.serverStatus = 0;
-        this.serverSettingSubject.next();
-      });
-
-
+  //Oh god. Angular truuuly sucks.... Need to hack it this way to be sure the serverSettings getter is updated before we save to storage.
+  serverSettingChange() {
+    this.serverStatus = 0;
+    this.serverSettingSubject.next();
+    setTimeout(() => {
+      this.saveServerSettings();
+    }, 10);
   }
+
+  saveServerSettings() {
+    console.log('gonna save serverSettings to storage: ', this.serverSettings);
+    this.storage.ready().then(() => {
+      this.storage
+        .set(
+          "server-settings",
+          JSON.stringify(this.serverSettings)
+        )
+        .then(() => {
+          console.log('saved Server settings to storage');
+        });
+    });
+  }
+
 
   async initRobotServerConnection(url) {
     console.log('init server connection');
-    this.socketService.tearDown();
+    this.serverStatus = 0;
+    await this.socketService.tearDown();
     try {
       const query = {
         servername: this.serverSettings.serverName,
@@ -564,6 +580,7 @@ export class HomePage {
       };
       await this.socketService.setupSocketConnection(url, query);
 
+      console.log('returned from setupSocketConnection');
       this.initializeParse();
 
       try {
@@ -588,7 +605,7 @@ export class HomePage {
     console.log(`parse serverurl: ${process.env.BACKEND_SERVER}`);
     console.log(`parse app id: ${process.env.PARSE_APP_ID}`);
 
-    const backendUrl = this.serverSettings.serverUrl ? this.serverSettings.serverUrl : process.env.BACKEND_SERVER;
+    const backendUrl = this.serverUrl ? this.serverUrl : process.env.BACKEND_SERVER;
 
     Parse.serverURL = process.env.BACKEND_SERVER_PROTOCOL + "://" + backendUrl + "/parse";
     // Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL

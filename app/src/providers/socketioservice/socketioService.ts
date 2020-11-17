@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { resolveDefinition } from '@angular/core/src/view/util';
 import * as io from 'socket.io-client';
 
 
@@ -21,18 +22,19 @@ function buildSocketUrl(url?: string): string {
   // return 'http://213.21.96.155:3000'
   // return 'localhost:3000';
 }
-// const socketConfig: SocketIoConfig = {
-//   url: socketUrl,
-//   options: {}
-// };
-// console.log('socketConfig is: ');
-// console.log(socketConfig);
+
+
+// Triggering an error in the console:
+// You have to use something like setTimeout(function() { notThere(); }, 0);
+
+let timeout;
 
 @Injectable()
 export class SocketIOService {
   socket: SocketIOClient.Socket;
   constructor() { }
   setupSocketConnection(url?: string, query?: object) {
+    console.log('inputs: url=', url, 'query=', query);
     const socketUrl = buildSocketUrl(url);
     const socketOptions = {
       query: {}
@@ -46,32 +48,60 @@ export class SocketIOService {
         serverpassword: process.env.TURN_PASSWORD
       };
     }
-    this.socket = io(socketUrl, socketOptions);
-    console.log('socket:', this.socket);
-
     return new Promise((resolve, reject) => {
-      this.socket.on('connect', () => {
-        console.log('socket connected');
-        resolve();
-      });
+      console.log('entered promise');
+      try {
+        console.log('gonna build the socket. Calling io(socketUrl, socketOptions)');
+        this.socket = io(socketUrl, socketOptions);
+        console.log('socket:', this.socket);
 
-      this.socket.on('disconnect', () => {
-        console.log('socket disconnected');
-        reject();
-      });
-      this.socket.on('error', (err) => {
-        console.error('socket error!');
+        //Browser security will not allow us to catch name resolv error. So we call reject after certain amount of time
+        timeout = setTimeout(() => {
+          console.log('REJECTING from timeout');
+          reject();
+        }, 10000);
+
+        this.socket.on('connect', () => {
+          console.log('socket connected');
+          clearTimeout(timeout);
+          resolve();
+        });
+  
+        this.socket.on('disconnect', (reason) => {
+          console.log('socket disconnected');
+          console.log(reason);
+          reject();
+        });
+        this.socket.on('error', (err) => {
+          console.error('socket error!');
+          console.error(err);
+          reject();
+        });
+      } catch (err) {
+        console.log('catch in promise of setupSocketConnection');
         console.error(err);
         reject();
-      });
+      }
     });
-
   }
 
   tearDown() {
+    console.log('socketService tearDown called');
+    clearTimeout(timeout);
     if (this.socket) {
-      this.socket.close();
-      this.socket = null;
+      this.socket.removeAllListeners();
+      return new Promise((resolve, reject) => {
+        this.socket.on('disconnect', (reason) => {
+          console.log('awaited disconnect triggered');
+          console.log(reason);
+        })
+        resolve();
+        this.socket.close();
+        delete this.socket;
+        this.socket = null;
+
+      });
     }
+    return Promise.resolve();
   }
 }

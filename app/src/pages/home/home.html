@@ -11,18 +11,19 @@
       </button>
 
       <ng-container *ngIf="showServerSettings">
-        <h3>Server - <span *ngIf="serverStatus==1">ansluten</span><span *ngIf="serverStatus==-1">ingen anslutning</span>
+        <h3>Server - <span class="approve" *ngIf="serverStatus==1">ansluten</span><span class="danger"
+            *ngIf="serverStatus==-1">ingen anslutning</span>
           <ion-spinner color="light" *ngIf="serverStatus==0"></ion-spinner>
         </h3>
         <p>
           Fyll i serverinställningar här. Kontakta din administratör om du behöver hjälp med det.
         </p>
-        <form (submit)="saveServerSettings()">
+        <form>
           <p>
             <ion-item>
               <ion-label floating>Server-URL</ion-label>
               <ion-input type="text" name="serverUrl" inputmode="url" autocapitalize="none" id="robot-name-input"
-                (ngModelChange)="saveServerSettings()" [(ngModel)]="serverUrl">
+                (ngModelChange)="serverSettingChange()" [(ngModel)]="serverUrl">
                 drive.robbit.se</ion-input>
               <ion-icon *ngIf="invalidserverUrl" name="heart"></ion-icon>
             </ion-item>
@@ -31,7 +32,7 @@
             <ion-item>
               <ion-label floating>Server-namn</ion-label>
               <ion-input type="text" name="serverName" autocapitalize="none" id="robot-name-input"
-                (ngModelChange)="saveServerSettings()" [(ngModel)]="serverName">
+                (ngModelChange)="serverSettingChange()" [(ngModel)]="serverName">
               </ion-input>
               <ion-icon *ngIf="invalidserverName" name="heart"></ion-icon>
             </ion-item>
@@ -40,7 +41,7 @@
             <ion-item>
               <ion-label floating>Server-lösenord</ion-label>
               <ion-input type="text" name="serverPassword" autocapitalize="none" id="robot-name-input"
-                (ngModelChange)="saveServerSettings()" [(ngModel)]="serverPassword"></ion-input>
+                (ngModelChange)="serverSettingChange()" [(ngModel)]="serverPassword"></ion-input>
               <ion-icon *ngIf="invalidserverPassword" name="heart"></ion-icon>
             </ion-item>
           </p>
@@ -109,7 +110,8 @@
     <form (submit)="checkNameAndGoToDriverInterface()">
       <ion-item>
         <ion-label floating>Robot namn</ion-label>
-        <ion-input type="text" name="robotname" id="driver-name-input" [(ngModel)]="robotName"></ion-input>
+        <ion-input type="text" autocapitalize="none" name="robotname" id="driver-name-input" [(ngModel)]="robotName">
+        </ion-input>
       </ion-item>
       <p *ngIf="invalidRobotName">
         Hittade ingen robot med det namnet. Säker på att du stavade rätt?

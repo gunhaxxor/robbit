@@ -1,6 +1,6 @@
 {
   "name": "social-robot-ionic",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "author": "Ionic Framework",
   "homepage": "http://ionicframework.com/",
   "private": true,
@@ -36,13 +36,12 @@
     "@ionic-native/status-bar": "^4.20.0",
     "@ionic/storage": "^2.2.0",
     "@types/parse": "^2.2.4",
-    "cordova-android": "^7.0.0",
-    "cordova-android-support-gradle-release": "^3.0.1",
+    "cordova-android": "^9.0.0",
     "cordova-browser": "5.0.4",
     "cordova-custom-config": "^5.1.0",
+    "cordova-plugin-androidx-adapter": "^1.1.3",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-ble-central": "^1.3.1",
-    "cordova-plugin-camera": "^4.1.0",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
@@ -54,8 +53,8 @@
     "cordova-plugin-splashscreen": "^5.0.4",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-whitelist": "^1.3.4",
-    "cordova-sqlite-storage": "^2.6.0",
-    "cordova.plugins.diagnostic": "^4.0.12",
+    "cordova-sqlite-storage": "^5.1.0",
+    "cordova.plugins.diagnostic": "^6.0.2",
     "es6-promise-plugin": "^4.2.2",
     "express": "^4.17.1",
     "ionic-angular": "3.9.2",
@@ -65,23 +64,22 @@
     "parse": "^2.4.0",
     "rxjs": "5.5.11",
     "simple-peer": "^9.2.0",
+    "socket.io-client": "^2.3.0",
     "sw-toolbox": "3.6.0",
     "text-encoding": "^0.6.4",
-    "socket.io-client": "^2.3.0",
     "zone.js": "0.8.26"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.2.2",
     "@types/socket.io-client": "^1.4.34",
     "@types/text-encoding": "0.0.35",
-    "node-sass": "^4.14.1",
-    "typescript": "^4.0.5"
+    "typescript": "^2.8.4",
+    "node-sass": "^4.14.1"
   },
   "description": "Gunnar är bäst!",
   "cordova": {
     "plugins": {
       "cordova-plugin-ble-central": {},
-      "cordova-plugin-whitelist": {},
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {
@@ -89,28 +87,23 @@
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-camera": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      },
-      "cordova.plugins.diagnostic": {
-        "ANDROID_SUPPORT_VERSION": "28.+"
-      },
       "cordova-custom-config": {},
       "cordova-plugin-nativeaudio": {},
-      "cordova-sqlite-storage": {},
       "cordova-plugin-screen-orientation": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-request-location-accuracy": {
         "PLAY_SERVICES_LOCATION_VERSION": "16.+"
       },
       "cordova-plugin-app-version": {},
-      "cordova-android-support-gradle-release": {
-        "ANDROID_SUPPORT_VERSION": "27.+"
-      }
+      "cordova-plugin-androidx-adapter": {},
+      "cordova.plugins.diagnostic": {
+        "ANDROIDX_VERSION": "1.+"
+      },
+      "cordova-plugin-whitelist": {},
+      "cordova-sqlite-storage": {}
     },
     "platforms": [
-      "browser",
-      "android"
+      "browser"
     ]
   }
 }
