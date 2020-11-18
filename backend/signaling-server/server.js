@@ -10,6 +10,16 @@ if (process.env.PORT) {
   PORT = process.env.PORT;
 }
 
+// middleware
+io.use((socket, next) => {
+  let name = socket.handshake.query.servername;
+  let pwd = socket.handshake.query.serverpassword;
+  if (name == process.env.TURN_USER && pwd == process.env.TURN_PASSWORD) {
+    return next();
+  }
+  return next(new Error('authentication error'));
+});
+
 var users = [];
 
 console.log("Startar social robot signaling server!");

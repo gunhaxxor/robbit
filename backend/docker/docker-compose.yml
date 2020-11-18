@@ -25,6 +25,9 @@ services:
     restart: on-failure:20
   signaling:
     build: ../signaling-server
+    environment:
+      - TURN_USER
+      - TURN_PASSWORD
     # ports:
     #   - "3000:3000"
     expose:
