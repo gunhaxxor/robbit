@@ -47,10 +47,15 @@ services:
     #   - "8080:8080"
     expose:
       - "8080"
+  # mongodb:
+  #   image: 'bitnami/mongodb:latest'
+  #   volumes:
+  #     - '~/docker-persistence:/bitnami/mongodb'
   mongodb:
-    image: 'bitnami/mongodb:latest'
+    image: 'mongo'
+    restart: always
     volumes:
-      - '~/docker-persistence:/bitnami/mongodb'
+      - '~/docker-persistence:/data/db'
   parse:
     image: 'bitnami/parse:latest'
     environment:
