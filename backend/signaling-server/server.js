@@ -73,7 +73,7 @@ io.on("connection", function (socket) {
 
 
     console.log('existing rooms: ', io.sockets.adapter.rooms);
-    //TODO: create some logic to prevent more than two clients in a room
+    // prevent more than two clients in a room
     if (io.sockets.adapter.rooms[room] && Object.keys(io.sockets.adapter.rooms[room].sockets).length > 1) {
       console.log(`socket ${socket.id} couldn't join room ${room} since it was full`);
       socket.emit('errorMessage', 'that room seems to be full');
