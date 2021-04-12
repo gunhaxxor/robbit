@@ -4,6 +4,9 @@
 			"path": "app"
 		},
 		{
+			"path": "app-v2"
+		},
+		{
 			"path": "backend"
 		}
 	],
