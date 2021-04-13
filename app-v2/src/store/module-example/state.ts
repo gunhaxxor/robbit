@@ -4,7 +4,7 @@ export interface ExampleStateInterface {
 
 function state (): ExampleStateInterface {
   return {
-    prop: false
+    prop: false,
   };
 }
 

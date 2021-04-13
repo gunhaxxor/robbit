@@ -64,8 +64,8 @@ export default defineComponent({
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value;
-      }
+      },
     };
-  }
+  },
 });
 </script>

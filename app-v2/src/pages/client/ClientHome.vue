@@ -6,45 +6,63 @@
     <h4>
       Vilken robbit vill du ansluta till?
     </h4>
-    <q-input v-model="robbitName" rounded outlined />
+    <q-form @submit="onFormSubmit">
+      <q-input v-model="robbitName" rounded outlined />
+      <q-btn :label="'Ring upp ' + robbitName" type="submit" />
+    </q-form>
+    <q-list>
+      <q-item v-for="robot in recentConnectedRobots" :key="robot.name">
+        {{ robot.name }}
+      </q-item>
+    </q-list>
   </q-page>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  ref
+  ref,
 } from 'vue';
+
+import { useQuasar } from 'quasar';
+
+interface RecentRobot {
+  name: string;
+  date: Date;
+}
 
 export default defineComponent({
   name: 'ClientHome',
   components: {},
   setup () {
+    const $q = useQuasar();
+    console.log($q.platform);
     const robbitName = ref<string>('');
+    const recentConnectedRobots = ref<Array<RecentRobot>>([]);
 
-    window.localStorage.getItem('recent-connected-robots');
+    const storageResponse = window.localStorage.getItem('recent-connected-robots');
+    if (storageResponse) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const parsedRobots: Array<RecentRobot> = JSON.parse(storageResponse);
+      console.log('got robot list from storage:');
+      console.log(storageResponse);
+      parsedRobots.sort((a: RecentRobot, b: RecentRobot) => {
+        return a.date < b.date ? 1 : -1;
+      });
 
-    // .then(robots => {
-    //   if (robots === null) {
-    //     console.log("key not found in storage: recent-connected-robots");
-    //   } else {
-    //     let parsedRobots = JSON.parse(robots);
-    //     console.log(`got robot list from storage:`);
-    //     console.log(robots);
-    //     parsedRobots.sort((a, b) => {
-    //       return a.date < b.date ? 1 : -1;
-    //     });
-    //     this.recentConnectedRobots = parsedRobots;
-    //   }
-    // })
-    // .catch(err => {
-    //   console.log(err);
-    // });
+      recentConnectedRobots.value = parsedRobots;
+    }
+
+    function onFormSubmit () {
+      console.log('form submitted');
+    }
 
     return {
-      robbitName
+      robbitName,
+      recentConnectedRobots,
+      onFormSubmit,
     };
-  }
+  },
 });
 </script>
 

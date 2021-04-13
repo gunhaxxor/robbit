@@ -103,6 +103,8 @@ module.exports = {
       }
     }],
 
+    "comma-dangle": ['warn', 'always-multiline'],
+
     
     "vue/component-name-in-template-casing": ["error", "PascalCase"],
 
@@ -110,6 +112,16 @@ module.exports = {
     quotes: ['warn', 'single', { avoidEscape: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    
+    // warning instead of error
+    "@typescript-eslint/ban-types": [
+      "warn",
+      {
+        "extendDefaults": true,
+      }
+    ],
+
+    "@typescript-eslint/no-unsafe-assignment": "warn",
 
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
