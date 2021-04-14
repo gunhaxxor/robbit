@@ -15,10 +15,10 @@ Run `adb devices`
 
 ## Required files
 
-Following files are required in the root of the project, but are not included in this repository. Instead there are .example files that show how they should be structured.
+Following files in the app folder is handling the environment settings. They are not included in this repository. Instead there are .example files that show how they should be structured. Be aware that these files are overridden when running docker-compose in the backend. The ```docker-entrypoint.sh``` in the app folder will in that case inject it's own ```.env.dev```.
 
-* .env.prod
 * .env.dev
+* .env.prod
 
 # Backend
 
