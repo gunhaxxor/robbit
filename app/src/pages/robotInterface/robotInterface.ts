@@ -6,6 +6,8 @@ import { BleService } from "../../providers/bleservice/bleService";
 import { SocketIOService, } from '../../providers/socketioservice/socketioService';
 import * as Peer from "simple-peer";
 // import { Camera } from "@ionic-native/camera";
+
+import { Storage } from "@ionic/storage";
 import { Diagnostic } from "@ionic-native/diagnostic";
 import { NativeAudio } from "@ionic-native/native-audio";
 import { ScreenOrientation } from "@ionic-native/screen-orientation";
@@ -40,6 +42,7 @@ export class RobotInterfacePage {
     public loading: LoadingController,
     public navParams: NavParams,
     public bleService: BleService,
+    private storage: Storage,
     // public socket: Socket,
     private socketIOService: SocketIOService,
     public diagnostic: Diagnostic,
@@ -183,11 +186,28 @@ export class RobotInterfacePage {
   initiateListen() {
     console.log("initiating listen");
     // let peerConfig = JSON.parse(process.env.PEER_CONFIG);
+    let turnUser = process.env.TURN_USER;
+    let turnPassword = process.env.TURN_PASSWORD;
+    let backendServer = process.env.BACKEND_SERVER;
+    
+    this.storage.get('server-settings').then((settings) => {
+      if (settings === null) {
+        console.log('key not found in storage: server-settings');
+      } else {
+        console.log('found server-settings in storage: ', settings);
+        settings = JSON.parse(settings);
+        backendServer = settings.serverUrl;
+        turnUser = settings.serverName;
+        turnPassword = settings.serverPassword;
+      }
+    });
+
     let peerConfig = {
       "iceServers": [
-        { "urls": `stun:${process.env.BACKEND_SERVER}:${process.env.TURN_UDP_PORT}` },
-        { "urls": `turn:${process.env.BACKEND_SERVER}:${process.env.TURN_UDP_PORT}`, "username": process.env.TURN_USER, "credential": process.env.TURN_PASSWORD }]
+        { "urls": `stun:${backendServer}:${process.env.TURN_UDP_PORT}` },
+        { "urls": `turn:${backendServer}:${process.env.TURN_UDP_PORT}`, "username": turnUser, "credential": turnPassword }]
     }
+    console.log('using the following iceServers config', peerConfig);
     console.log(
       "nr of videotracks in localstream when creating peer object: ",
       this.localStream.getVideoTracks().length,
