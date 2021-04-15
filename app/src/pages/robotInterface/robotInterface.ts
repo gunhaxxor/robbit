@@ -183,14 +183,14 @@ export class RobotInterfacePage {
     console.log("ionViewDidEnter finished");
   }
 
-  initiateListen() {
+  async initiateListen() {
     console.log("initiating listen");
     // let peerConfig = JSON.parse(process.env.PEER_CONFIG);
     let turnUser = process.env.TURN_USER;
     let turnPassword = process.env.TURN_PASSWORD;
     let backendServer = process.env.BACKEND_SERVER;
     
-    this.storage.get('server-settings').then((settings) => {
+    let settingsPromise = this.storage.get('server-settings').then((settings) => {
       if (settings === null) {
         console.log('key not found in storage: server-settings');
       } else {
@@ -199,8 +199,12 @@ export class RobotInterfacePage {
         backendServer = settings.serverUrl;
         turnUser = settings.serverName;
         turnPassword = settings.serverPassword;
+
+
       }
     });
+
+    await settingsPromise;
 
     let peerConfig = {
       "iceServers": [
