@@ -423,9 +423,10 @@ export class DriverInterfacePage {
     //   clearInterval(this.initiateCallTimeout);
     // }
     this.initiateCallTimeout = setTimeout(() => {
+      console.log('connection was never established. Resetting with new Peer object!');
       this.tearDownPeer();
       this.initiateCall(stream);
-    }, 10000);
+    }, 20000);
     this.videoLinkWaitingForAnswer = true;
     // let peerConfig = JSON.parse(process.env.PEER_CONFIG);
     let peerConfig = {

@@ -6,6 +6,7 @@ echo "These env vars will be copied to .env.dev to be used when building ionic a
 printenv
 printenv > .env.dev
 
+# build dev version (defaults to dev, prod version fails for misterious reasons)
 npm run build browser
 
 node server.js
