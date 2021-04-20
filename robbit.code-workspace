@@ -1,13 +1,10 @@
 {
 	"folders": [
-		// {
-		// 	"path": "app"
-		// },
 		{
 			"path": "app-v2"
 		},
 		{
-			"path": "backend"
+			"path": "backend-v2"
 		}
 	],
 	"settings": {
