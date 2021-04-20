@@ -1,0 +1,12 @@
+{
+  "name": "mediasoup",
+  "version": "1.0.0",
+  "description": "mediasoup sfu server for robbit project",
+  "main": "index.js",
+  "author": "Gunnar Oledal",
+  "license": "MIT",
+  "dependencies": {
+    "mediasoup": "3",
+    "socket.io-client": "^4.0.1"
+  }
+}
