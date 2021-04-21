@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 import { StateInterface } from '../store';
 import clientRoutes from './clientRoutes';
-import robotRoutes from './robotRoutes';
+// import robotRoutes from './robotRoutes';
 
 /*
  * If not building with SSR mode, you can
@@ -30,15 +30,17 @@ export default route<StateInterface>(function (/* { store, ssrContext } */) {
 
   console.log(Platform.is);
 
-  let routes = clientRoutes;
-  try {
-    const isDesktop: boolean = Platform.is.desktop;
-    if (!isDesktop) {
-      routes = robotRoutes;
-    }
-  } catch (err) {
-    console.error(err);
-  }
+  const routes = clientRoutes;
+
+  // TODO: find out why platform can't be used at this stage in the app initialization
+  // try {
+  //   const isDesktop: boolean = Platform.is.desktop;
+  //   if (!isDesktop) {
+  //     routes = robotRoutes;
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  // }
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
