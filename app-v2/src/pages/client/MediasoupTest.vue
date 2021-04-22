@@ -16,10 +16,12 @@
       <q-btn color="primary" label="video" type="submit" />
     </q-form>
     <video v-if="true || localStream" ref="videoelement" />
+    <q-btn color="primary" label="emit to socket" @click="emitRandomNumber" />
   </q-page>
 </template>
 
 <script lang="ts">
+import { socket, connectTo } from 'ts/socket';
 import {
   defineComponent,
   ref,
@@ -29,7 +31,7 @@ export default defineComponent({
   name: 'MediasoupTest',
   components: {},
   setup () {
-    const selectedDeviceId = ref<MediaDeviceInfo>();
+    const selectedDeviceId = ref<string>();
     const devices = ref<Array<MediaDeviceInfo>>([]);
     const localStream = ref<MediaStream>();
     const videoelement = ref<HTMLVideoElement | null>(null);
@@ -56,12 +58,19 @@ export default defineComponent({
       }
     }
 
+    connectTo('localhost:3000');
+
+    function emitRandomNumber () {
+      socket.emit('number', Math.random() * 1000);
+    }
+
     return {
       devices,
       selectedDeviceId,
       requestMedia,
       localStream,
       videoelement,
+      emitRandomNumber,
     };
   },
 });
