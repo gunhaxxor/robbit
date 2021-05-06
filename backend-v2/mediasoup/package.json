@@ -6,7 +6,7 @@
   "author": "Gunnar Oledal",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "env DEVELOPMENT=true nodemon index.js"
   },
   "dependencies": {
     "mediasoup": "3",

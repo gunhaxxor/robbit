@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 import { StateInterface } from '../store';
 import clientRoutes from './clientRoutes';
-// import robotRoutes from './robotRoutes';
+import robotRoutes from './robotRoutes';
 
 /*
  * If not building with SSR mode, you can
@@ -20,6 +20,14 @@ import clientRoutes from './clientRoutes';
 
 import { Platform } from 'quasar';
 
+let isDesktop = true;
+try {
+  isDesktop = (Platform.is.desktop) as boolean;
+  console.log('isDesktop:', isDesktop);
+} catch (err) {
+  console.error(err);
+}
+
 export default route<StateInterface>(function (/* { store, ssrContext } */) {
   const createHistory =
     process.env.SERVER
@@ -30,11 +38,14 @@ export default route<StateInterface>(function (/* { store, ssrContext } */) {
 
   console.log(Platform.is);
 
-  const routes = clientRoutes;
+  let routes = clientRoutes;
+  if (!isDesktop) {
+    routes = robotRoutes;
+  }
 
   // TODO: find out why platform can't be used at this stage in the app initialization
   // try {
-  //   const isDesktop: boolean = Platform.is.desktop;
+  //   const isDesktop: boolean = (Platform.is.desktop) as boolean;
   //   if (!isDesktop) {
   //     routes = robotRoutes;
   //   }
