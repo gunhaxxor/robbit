@@ -6,13 +6,19 @@
   "author": "Gunnar Oledal",
   "license": "MIT",
   "scripts": {
-    "start": "env DEVELOPMENT=true nodemon index.js"
+    "start": "env DEVELOPMENT=true nodemon index.js",
+    "dev": "env DEVELOPMENT=true tsc-watch --onSuccess 'node ./dist/server.js'"
   },
   "dependencies": {
     "mediasoup": "3",
     "socket.io": "^4.0.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.25.0",
+    "nodemon": "^2.0.7",
+    "tsc-watch": "^4.2.9",
+    "typescript": "^4.2.4"
   }
 }

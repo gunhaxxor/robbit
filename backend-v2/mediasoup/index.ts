@@ -1,15 +1,21 @@
 process.env.DEBUG = "mediasoup*";
-const mediasoup =  require('mediasoup');
-const { Consumer } = require('mediasoup/lib/Consumer');
-const { Router } = require('mediasoup/lib/Router');
-const { WebRtcTransport } = require('mediasoup/lib/WebRtcTransport');
-const { Socket, Server } = require('socket.io');
+// const mediasoup =  require('mediasoup');
+import mediasoup from 'mediasoup';
+import { types as mediasoupTypes } from 'mediasoup';
+// const { Consumer } = require('mediasoup/lib/Consumer');
+// const { Router } = require('mediasoup/lib/Router');
+// const { WebRtcTransport } = require('mediasoup/lib/WebRtcTransport');
+// const { Socket, Server } = require('socket.io');
+import { Server } from 'socket.io';
 
-const mediasoupConfig = require('./mediasoupConfig');
+// const mediasoupConfig = require('./mediasoupConfig');
+import mediasoupConfig from './mediasoupConfig'
 
-const httpServer = require('http').createServer();
+// const httpServer = require('http').createServer();
+import http from 'http';
+const httpServer = http.createServer();
 
-let config = {
+const config = {
   httpIp: "0.0.0.0",
   httpPort: 3000,
   mediasoup: mediasoupConfig,
@@ -18,18 +24,25 @@ let config = {
 if(process.env.DEVELOPMENT){
   console.log('RUNNING SIGNALING SERVER IN DEVELOPMENT MODE');
   console.log('settting cors for localhost:8080');
-  config.socketio['cors'] = {
-    origin: "http://localhost:8080",
-    methods: ["GET", "POST"],
-  }
+  Object.assign(config.socketio, {
+    cors: {
+      origin: "http://localhost:8080",
+      methods: ["GET", "POST"],
+    }
+  });
+  console.log('application config after setting cors:', config);
+  // config.socketio['cors'] = {
+  //   origin: "http://localhost:8080",
+  //   methods: ["GET", "POST"],
+  // }
 }
 
 /** @type {Router} */
-let singleRouter;
+let singleRouter: mediasoupTypes.Router;
 /** @type {WebRtcTransport} */
-let receivingTransport;
+let receivingTransport: mediasoupTypes.WebRtcTransport;
 /** @type {WebRtcTransport} */
-let sendingTransport;
+let sendingTransport: mediasoupTypes.WebRtcTransport;
 (async () => {
   try{
 
@@ -46,7 +59,8 @@ let sendingTransport;
     });
 
     console.log('created worker with PID:', singleWorker.pid);
-    singleRouter = await singleWorker.createRouter({mediaCodecs} = config.mediasoup.router);
+    const {mediaCodecs}: mediasoupTypes.RouterOptions = config.mediasoup.router
+    singleRouter = await singleWorker.createRouter({mediaCodecs});
     receivingTransport = await singleRouter.createWebRtcTransport(config.mediasoup.webRtcTransport);
 
     sendingTransport = await singleRouter.createWebRtcTransport(config.mediasoup.webRtcTransport);
@@ -73,7 +87,7 @@ io.on('connection', /**@param {Socket} socket*/ (socket ) => {
 
   socket.on('getRtpCapabilities', (cb) => {
     console.log('getRtpCapabilities requested');
-    let caps = singleRouter.rtpCapabilities
+    const caps = singleRouter.rtpCapabilities
     console.log('caps are: ', caps);
     cb(caps);
     return;
@@ -120,14 +134,14 @@ io.on('connection', /**@param {Socket} socket*/ (socket ) => {
     }
   });
 
-  let producer;
+  let producer: mediasoupTypes.Producer;
   socket.on('transportProduce', async (data, cb) => {
     console.log('transportConsume requested with data:', data);
     try {
-      let { kind, rtpParameters } = data;
+      const { kind, rtpParameters } = data;
   
       if (!receivingTransport) {
-        err(`transport-produce: server-side no transport exists`);
+        console.error(`transport-produce: server-side no transport exists`);
         cb({ error: `transport-produce: server-side no transport exists`});
         return;
       }
@@ -140,20 +154,21 @@ io.on('connection', /**@param {Socket} socket*/ (socket ) => {
   
       // if our associated transport closes, close ourself, too
       producer.on('transportclose', () => {
-        log('producer\'s transport closed', producer.id);
+        console.log('producer\'s transport closed', producer.id);
         producer.close();
       });
   
       cb({data: { producerId: producer.id } });
     } catch (e) {
+      console.error(e);
     }
   })
 
   /** @type { Consumer } */
-  let consumer;
+  let consumer: mediasoupTypes.Consumer;
   socket.on('transportConsume', async (data, cb) => {
     console.log('transportConsume requested with data:', data);
-    let { rtpCapabilities } = data;
+    const { rtpCapabilities } = data;
 
     // Should check if receiver can consume the used codecs with the router.canConsume function
     // But for now, we trust it'll wotk.... hehe...
