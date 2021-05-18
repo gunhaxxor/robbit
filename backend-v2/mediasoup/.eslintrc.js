@@ -52,7 +52,7 @@ module.exports = {
   },
 
   // add your custom rules here
-  // rules: {
+  rules: {
   //   // allow async-await
   //   'generator-star-spacing': 'off',
   //   // allow paren-less arrow functions
@@ -62,9 +62,9 @@ module.exports = {
   //   'multiline-ternary': 'off',
 
     
-  //   quotes: [2, "single", { avoidEscape: true }],
-  //   semi: [1, "always"],
-  //   indent: [1, 2],
+    indent: ["error", 2],
+    quotes: [2, "single", { avoidEscape: true }],
+    semi: [1, "always"],
   //   "no-unreachable": 1,
 
   //   'import/first': 'off',
@@ -78,7 +78,7 @@ module.exports = {
   //   'prefer-promise-reject-errors': 'off',
 
 
-  //   "comma-dangle": ['warn', 'always-multiline'],
+    "comma-dangle": ['warn', 'always-multiline'],
 
   //   // TypeScript
   //   quotes: ['warn', 'single', { avoidEscape: true }],
@@ -97,5 +97,5 @@ module.exports = {
 
   //   // allow debugger during development only
   //   'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-  // }
+  }
 }
