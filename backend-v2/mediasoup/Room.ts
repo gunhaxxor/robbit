@@ -6,22 +6,27 @@ import Peer from './Peer';
 
 export default class Room {
     id: string;
-    router!: Router;
+    router: Router;
     peers: Map<string, Peer>;
     io: Server;
 
-    constructor(roomId: string, worker: Worker, io: Server) {
-      this.id = roomId;
+    static async createRoom(roomId: string, worker: Worker, io: Server): Promise<Room> {
       const mediaCodecs = mediasoupConfig.router.mediaCodecs;
-      worker.createRouter({
+      const router = await worker.createRouter({
         mediaCodecs,
-      }).then((router: Router) => {
-        this.router = router;
-      }).catch((err) => {
-        console.error('failed to create router for room!!');
-        console.error(err);
       });
+      return new Room(roomId, router, io);
+      // .then((router: Router) => {
+      //   this.router = router;
+      // }).catch((err) => {
+      //   console.error('failed to create router for room!!');
+      //   console.error(err);
+      // });
+    }
 
+    constructor(roomId: string, router: Router, io: Server) {
+      this.router = router;
+      this.id = roomId;
       this.peers = new Map();
       this.io = io;
     }
@@ -174,6 +179,4 @@ export default class Room {
         peers: JSON.stringify(this.peers),
       };
     }
-
-
 }
