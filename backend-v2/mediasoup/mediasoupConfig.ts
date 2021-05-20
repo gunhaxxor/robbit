@@ -83,4 +83,5 @@ export default {
   webRtcTransport,
   
   maxIncomingBitrate: 1500000,
+  numWorkers: 1,
 };
