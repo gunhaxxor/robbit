@@ -33,13 +33,9 @@ if(process.env.DEVELOPMENT){
     },
   });
   console.log('application config after setting cors:', config);
-  // config.socketio['cors'] = {
-  //   origin: "http://localhost:8080",
-  //   methods: ["GET", "POST"],
-  // }
 }
 
-let workers: mediasoupTypes.Worker[];
+const workers: mediasoupTypes.Worker[] = [];
 async function createWorkers(): Promise<void> {
   const {
     numWorkers,
@@ -57,6 +53,8 @@ async function createWorkers(): Promise<void> {
       console.error('mediasoup worker died, exiting in 2 seconds... [pid:%d]', worker.pid);
       setTimeout(() => process.exit(1), 2000);
     });
+
+    
     workers.push(worker);
 
     // log worker resource usage
@@ -88,40 +86,42 @@ const io = new Server(httpServer, config.socketio);
 const allRooms: Map<string, Room> = new Map();
 const allPeers: Map<string, Peer> = new Map();
 io.on('connection', socket => {
-  const peer = new Peer(socket.id, 'TestName');
+  const peer = new Peer(socket);
   allPeers.set(socket.id, peer);
 
-  socket.on('createRoom', (data, cb) => {
+  socket.on('setName', (data, cb) => {
+    peer.name = data.name;
+    cb();
+  });
+
+  socket.on('createRoom', (data, cb: (response: SocketAck) => void) => {
     try{
       Room.createRoom(data.room, getMediasoupWorker(), io);
-      socket.join(data.room);
+      // socket.join(data.room);
     }catch(err){
-      const answer: socketAck = {
+      cb({
         status: 'error',
         errorMessage: 'failed to create room',
-      };
-      cb(answer);
+      });
     }
   });
 
-  socket.on('joinRoom', (data, cb: (response: socketAck) => void) => {
+  socket.on('joinRoom', (data, cb: (response: SocketAck) => void) => {
     
     const room = allRooms.get(data.room);
     if(room){
       room.addPeer(peer);
-      socket.join(data.room);
+      // socket.join(data.room);
       cb({status: 'success', message: `you successfully joined room ${data.room}`});
       return;
     }
-    cb({status: 'error', message: `Failed to join room. No such room found: ${data.room}`});
+    cb({status: 'error', errorMessage: `Failed to join room. No such room found: ${data.room}`});
   });
 
 });
 
 // /** @type {Router} */
 // let singleRouter: mediasoupTypes.Router;
-// /** @type {WebRtcTransport} */
-// let receivingTransport: mediasoupTypes.WebRtcTransport;
 // /** @type {WebRtcTransport} */
 // let sendingTransport: mediasoupTypes.WebRtcTransport;
 // (async () => {

@@ -72,55 +72,55 @@ export default defineComponent({
       console.log('recevied capabilities from server:', caps);
 
       await loadDevice(caps);
-      const sendTransportOptions: mediasoupTypes.TransportOptions = (await socket.request('getSendTransportOptions')) as mediasoupTypes.TransportOptions;
-      console.log('sendTransportOptions', sendTransportOptions);
-      createSendTransport(sendTransportOptions);
-      console.log('transport connectionState:', sendTransport.connectionState);
+      // const sendTransportOptions: mediasoupTypes.TransportOptions = (await socket.request('getSendTransportOptions')) as mediasoupTypes.TransportOptions;
+      // console.log('sendTransportOptions', sendTransportOptions);
+      // createSendTransport(sendTransportOptions);
+      // console.log('transport connectionState:', sendTransport.connectionState);
 
-      const receiveTransportOptions: mediasoupTypes.TransportOptions = (await socket.request('getReceiveTransportOptions')) as mediasoupTypes.TransportOptions;
-      console.log('receiveTransportOptions', receiveTransportOptions);
-      createReceiveTransport(receiveTransportOptions);
-      console.log('transport connectionState:', sendTransport.connectionState);
+      // const receiveTransportOptions: mediasoupTypes.TransportOptions = (await socket.request('getReceiveTransportOptions')) as mediasoupTypes.TransportOptions;
+      // console.log('receiveTransportOptions', receiveTransportOptions);
+      // createReceiveTransport(receiveTransportOptions);
+      // console.log('transport connectionState:', sendTransport.connectionState);
 
       const videoTrack = localStream.value?.getVideoTracks()[0];
       if (videoTrack !== undefined) {
-        const encodings =
-        [
-          { maxBitrate: 96000, scaleResolutionDownBy: 4 },
-          { maxBitrate: 3000000, scaleResolutionDownBy: 1 },
-        ];
+        // const encodings =
+        // [
+        //   { maxBitrate: 96000, scaleResolutionDownBy: 4 },
+        //   { maxBitrate: 3000000, scaleResolutionDownBy: 1 },
+        // ];
 
-        try {
-          await sendTransport.produce({
-            track: videoTrack,
-            encodings: encodings,
-            codecOptions: {
-              videoGoogleStartBitrate: 1000,
-            },
-            appData: {
-              isCool: true,
-            },
-          });
+        // try {
+        //   await sendTransport.produce({
+        //     track: videoTrack,
+        //     encodings: encodings,
+        //     codecOptions: {
+        //       videoGoogleStartBitrate: 1000,
+        //     },
+        //     appData: {
+        //       isCool: true,
+        //     },
+        //   });
 
-          const response: ConsumerOptions = (await socket.request('transportConsume', { rtpCapabilities: device.rtpCapabilities })) as ConsumerOptions;
+        //   const response: ConsumerOptions = (await socket.request('transportConsume', { rtpCapabilities: device.rtpCapabilities })) as ConsumerOptions;
 
-          const consumer = await receiveTransport.consume(response);
+        //   const consumer = await receiveTransport.consume(response);
 
-          // Might need to check if connected here!
+        //   // Might need to check if connected here!
 
-          await socket.request('resumeConsumer');
-          consumer.resume();
+        //   await socket.request('resumeConsumer');
+        //   consumer.resume();
 
-          if (receivingVideo.value) {
-            console.log('receiving video tag:', receivingVideo.value);
-            receivingVideo.value.srcObject = new MediaStream([consumer.track.clone()]);
-          } else {
-            console.error('no receiving vide ref!!!');
-          }
-          // consumer.track
-        } catch (err: unknown) {
-          console.error({ err });
-        }
+        //   if (receivingVideo.value) {
+        //     console.log('receiving video tag:', receivingVideo.value);
+        //     receivingVideo.value.srcObject = new MediaStream([consumer.track.clone()]);
+        //   } else {
+        //     console.error('no receiving vide ref!!!');
+        //   }
+        //   // consumer.track
+        // } catch (err: unknown) {
+        //   console.error({ err });
+        // }
       }
 
       // }

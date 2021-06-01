@@ -57,6 +57,7 @@ module.exports = {
   ],
 
   globals: {
+    SocketAck: 'readonly',
     ga: 'readonly', // Google Analytics
     cordova: 'readonly',
     __statics: 'readonly',

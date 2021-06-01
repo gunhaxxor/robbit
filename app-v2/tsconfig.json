@@ -1,5 +1,6 @@
 {
   "extends": "@quasar/app/tsconfig-preset",
+  "include": [".", "../backend-v2/shared"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

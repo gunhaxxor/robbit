@@ -1,15 +1,18 @@
 import { Consumer, DtlsParameters, MediaKind, Producer, RtpCapabilities, RtpParameters, WebRtcTransport } from 'mediasoup/lib/types';
+import { Socket } from 'socket.io';
 
 export default class Peer {
   socketId: string;
+  socket: Socket;
   name: string;
   transports: Map<string, WebRtcTransport>;
   consumers: Map<string, Consumer>;
   producers: Map<string, Producer>;
 
 
-  constructor(socketId: string, name: string) {
-    this.socketId = socketId;
+  constructor(socket: Socket, name = '') {
+    this.socket = socket;
+    this.socketId = socket.id;
     this.name = name;
     this.transports = new Map();
     this.consumers = new Map();

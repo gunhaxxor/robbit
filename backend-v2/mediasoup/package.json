@@ -6,7 +6,6 @@
   "author": "Gunnar Oledal",
   "license": "MIT",
   "scripts": {
-    "start": "env DEVELOPMENT=true nodemon index.js",
     "dev": "env DEVELOPMENT=true tsc-watch --onSuccess 'node ./dist/index.js'"
   },
   "dependencies": {

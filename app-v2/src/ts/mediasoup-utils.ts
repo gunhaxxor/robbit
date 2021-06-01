@@ -1,6 +1,6 @@
 import * as mediasoupClient from 'mediasoup-client';
 import { types as mediasoupTypes } from 'mediasoup-client';
-import { socket, SocketResponse } from 'ts/socket';
+import { socket } from 'ts/socket';
 
 // eslint-disable-next-line no-unused-vars
 
@@ -46,14 +46,15 @@ export function createSendTransport (transportOptions : mediasoupTypes.Transport
     // Signal local DTLS parameters to the server side transport.
 
     try {
-      const response: SocketResponse = await socket.request(
+      const response: SocketAck = await socket.request(
         'transportConnect',
         {
           transportId: sendTransport.id,
           dtlsParameters,
           direction: 'sending',
-        }) as SocketResponse;
-      if (response.error) {
+        });
+
+      if (response.status === 'error') {
         throw Error('fuck you');
       }
 
@@ -78,23 +79,23 @@ export function createSendTransport (transportOptions : mediasoupTypes.Transport
     // up a server-side producer object, and get back a
     // producer.id. call callback() on success or errback() on
     // failure.
-    const response : SocketResponse = await socket.request('transportProduce', {
+    const response : SocketAck = await socket.request('transportProduce', {
       kind,
       rtpParameters,
-    }) as SocketResponse;
+    });
 
-    const { error, data } = response;
-    if (error) {
-      console.error('error setting up server-side producer', error);
+    // const { status, data } = response;
+    if (response.status === 'error') {
+      console.error('error setting up server-side producer', response.errorMessage);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      errback(error);
+      errback(response.errorMessage);
       return;
     }
     console.log('produce request successful. Response:', response);
-    if (data instanceof Object) {
-      console.log('producer created on server-side. Response:', data);
+    if (response.data instanceof Object) {
+      console.log('producer created on server-side. Response:', response.data);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, node/no-callback-literal
-      callback({ id: data.producerId });
+      callback({ id: response.data.producerId });
     }
   });
 
@@ -116,14 +117,14 @@ export function createReceiveTransport (transportOptions : mediasoupTypes.Transp
     // Signal local DTLS parameters to the server side transport.
 
     try {
-      const response: SocketResponse = await socket.request(
+      const response: SocketAck = await socket.request(
         'transportConnect',
         {
           transportId: receiveTransport.id,
           dtlsParameters,
           direction: 'receive',
-        }) as SocketResponse;
-      if (response.error) {
+        });
+      if (response.status === 'error') {
         throw Error('fuck you');
       }
 

@@ -15,7 +15,9 @@ export default class Room {
       const router = await worker.createRouter({
         mediaCodecs,
       });
-      return new Room(roomId, router, io);
+      const createdRoom = new Room(roomId, router, io);
+      
+      return createdRoom;
       // .then((router: Router) => {
       //   this.router = router;
       // }).catch((err) => {
@@ -33,6 +35,7 @@ export default class Room {
 
     addPeer(peer: Peer): void {
       this.peers.set(peer.socketId, peer);
+      peer.socket.join(this.id);
     }
 
     getProducerListForPeer(socketId: string): Array<Record<string, string>> {
