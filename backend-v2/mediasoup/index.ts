@@ -6,7 +6,7 @@ import { types as mediasoupTypes } from 'mediasoup';
 // const { Router } = require('mediasoup/lib/Router');
 // const { WebRtcTransport } = require('mediasoup/lib/WebRtcTransport');
 // const { Socket, Server } = require('socket.io');
-import { Server } from 'socket.io';
+import { Server, SocketExt } from 'socket.io';
 
 // const mediasoupConfig = require('./mediasoupConfig');
 import mediasoupConfig from './mediasoupConfig';
@@ -85,18 +85,41 @@ const io = new Server(httpServer, config.socketio);
 
 const allRooms: Map<string, Room> = new Map();
 const allPeers: Map<string, Peer> = new Map();
-io.on('connection', socket => {
+
+// TODO: move socket event handlers into Peer class!!!
+io.on('connection', (newSocket) => {
+  const socket: SocketExt = newSocket;
   const peer = new Peer(socket);
   allPeers.set(socket.id, peer);
 
-  socket.on('setName', (data, cb) => {
-    peer.name = data.name;
-    cb();
+  socket.on('disconnect', (reason) => {
+    console.log(`socket ${socket.id} disconnected. Reason: ${reason}`);
+    //TODO: Remove peer from potential rooms
+  });
+  socket.on('disconnecting', (reason) => {
+    console.log(`socket ${socket.id} disconnecting. Reason ${reason}`);
   });
 
-  socket.on('createRoom', (data, cb: (response: SocketAck) => void) => {
+  socket.on('setName', (data, cb: (response: SocketAck) => void) => {
+    peer.name = data.name;
+    cb({status: 'success', message: 'Successfully set name for peer'});
+  });
+
+  socket.on('setRtpCapabilities', (data, cb: AcknowledgeCallback) => {
+    peer.setRtpCapabilities(data);
+    cb({status: 'success', message: 'Successfully set peer rtpCapabilities on server side'});
+  }
+  );
+
+  socket.on('createRoom', async (roomName, cb: (response: SocketAck) => void) => {
     try{
-      Room.createRoom(data.room, getMediasoupWorker(), io);
+      if(allRooms.has(roomName)){
+        cb({status: 'error', errorMessage: 'room name already in use'});
+        return;
+      }
+      const createdRoom = await Room.createRoom(roomName, getMediasoupWorker(), io);
+      allRooms.set(roomName, createdRoom);
+      cb({status: 'success', message: `you successfully created room: ${roomName}`});
       // socket.join(data.room);
     }catch(err){
       cb({
@@ -106,187 +129,92 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('joinRoom', (data, cb: (response: SocketAck) => void) => {
+  socket.on('joinRoom', async (roomName , cb: (response: SocketAck) => void) => {
     
-    const room = allRooms.get(data.room);
+    console.log(`received request to join room: ${roomName}`);
+    const room = allRooms.get(roomName);
+    console.log(`found room: ${room}`);
     if(room){
-      room.addPeer(peer);
-      // socket.join(data.room);
-      cb({status: 'success', message: `you successfully joined room ${data.room}`});
+    //   room.addPeer(peer);
+    //   cb({status: 'success', message: `you successfully joined room ${roomName}`});
+    //   return;
+      try {
+        await peer.joinRoom(room);
+        cb({status: 'success', message: 'Successfully joined room'});
+      } catch( err){
+        cb({status: 'error', errorMessage: 'Failed to join the room'});
+        return;
+      }
+    }
+    
+    cb({status: 'error', errorMessage: `Failed to join room. No such room found: ${roomName}`});
+  });
+
+  socket.on('getRouterRtpCapabilities', (cb: (response : SocketAck) => void ) =>{
+    if(peer.room){
+      const capabilities = peer.room.getRtpCapabilities();
+      cb({status: 'success', data: capabilities});
       return;
     }
-    cb({status: 'error', errorMessage: `Failed to join room. No such room found: ${data.room}`});
+    cb({status: 'error', errorMessage: 'You need to be in a room to get RtpCapabilities. The capabilities are linked to the router and thus each room has its own set of rtp capabilities'});
+  });
+
+  socket.on('createReceiveTransport', async (cb: AcknowledgeCallback) => {
+    try{
+      const transportOptions = await peer.createWebRtcTransport(true);
+      cb({status: 'success', message: 'transports created', data: transportOptions});
+    } catch( err){
+      cb({status: 'error', errorMessage: 'Failed to create transports'});
+    }
+
+  });
+
+  socket.on('createSendTransport', async (cb: AcknowledgeCallback) => {
+    try{
+      const transportOptions = await peer.createWebRtcTransport(false);
+      cb({status: 'success', message: 'transports created', data: transportOptions});
+    } catch( err){
+      cb({status: 'error', errorMessage: 'Failed to create transports'});
+    }
+  });
+
+  socket.on('connectTransport', async (data, cb: AcknowledgeCallback) => {
+    try {
+      const { id, dtlsParameters } = data;
+      await peer.connectTransport(id, dtlsParameters);
+      cb({status: 'success', message: 'Succefully connected transport'});
+    } catch(err){
+      // TODO. make sure if it works to send an error object in the data field
+      cb({status: 'error', errorMessage: 'Failed to connect transport', data: err});
+    }
+  });
+
+  socket.on('createProducer', async ( data, cb: AcknowledgeCallback)  => {
+    try {
+
+      const producer = await peer.createProducer(data.rtpParameters, data.kind);
+      console.log(`producer created: ${producer}`);
+      cb({status: 'success', message: 'producer created', data: {id: producer.id}});
+    } catch( err) {
+      cb({status: 'error', errorMessage: 'Failed to create producer'});
+    }
+  });
+
+  socket.on('createConsumer', async (data, cb: AcknowledgeCallback) => {
+    try {
+      const consumerOptions = await peer.createConsumer(data.producerId);
+      // const ackResponse = { 
+      //   id: consumer.id,
+      //   producerId: consumer.producerId , 
+      //   kind: consumer.kind, 
+      //   rtpParameters: consumer.rtpParameters,
+      // };
+      cb({status: 'success', message: 'Consumer created', data: consumerOptions});
+    } catch (err) {
+      cb({status: 'error', errorMessage: err});
+    }
   });
 
 });
 
-// /** @type {Router} */
-// let singleRouter: mediasoupTypes.Router;
-// /** @type {WebRtcTransport} */
-// let sendingTransport: mediasoupTypes.WebRtcTransport;
-// (async () => {
-//   try{
-
-//     const singleWorker = await mediasoup.createWorker({
-//       logLevel: config.mediasoup.worker.logLevel,
-//       logTags: config.mediasoup.worker.logTags,
-//       rtcMinPort: config.mediasoup.worker.rtcMinPort,
-//       rtcMaxPort: config.mediasoup.worker.rtcMaxPort,
-//     });
-
-//     singleWorker.on('died', () => {
-//       console.error('mediasoup worker died (this should never happen)');
-//       process.exit(1);
-//     });
-
-//     console.log('created worker with PID:', singleWorker.pid);
-//     const {mediaCodecs}: mediasoupTypes.RouterOptions = config.mediasoup.router;
-//     singleRouter = await singleWorker.createRouter({mediaCodecs});
-//     receivingTransport = await singleRouter.createWebRtcTransport(config.mediasoup.webRtcTransport);
-
-//     sendingTransport = await singleRouter.createWebRtcTransport(config.mediasoup.webRtcTransport);
-//     // console.log(await singleTransport.dump());
-//   } catch(err) {
-//     console.error({err});
-//   }
-  
-// })();
-
-// const io = new Server(httpServer, config.socketio);
-
-// // require('./logging-observers');
-
-// // const capabilities = mediasoup.getSupportedRtpCapabilities();
-// // console.log(capabilities);
-
-
-
-// io.on('connection', /**@param {Socket} socket*/ (socket ) => {
-//   console.log('client connected: ', socket.id);
-//   socket.on('disconnect', (reason) => console.log(`client disconnected: ${socket.id}. Reason: ${reason}`));
-//   socket.onAny((eventName, data) => console.log(`event received from socket ${socket.id}. type: ${eventName}, data: ${data}`));
-
-//   socket.on('getRtpCapabilities', (cb) => {
-//     console.log('getRtpCapabilities requested');
-//     const caps = singleRouter.rtpCapabilities;
-//     console.log('caps are: ', caps);
-//     cb(caps);
-//     return;
-//   });
-
-//   socket.on('getSendTransportOptions', cb => {
-//     console.log('getSendTransportOptions request received');
-//     // console.log('transportOptions:', transportOptions);
-//     const { id, iceParameters, iceCandidates, dtlsParameters } = receivingTransport;
-//     const transportOptions = { id, iceParameters, iceCandidates, dtlsParameters };
-//     console.log('transport options are:', transportOptions);
-//     cb(transportOptions);
-//     return;
-
-//   });
-
-//   socket.on('getReceiveTransportOptions', cb => {
-//     console.log('getReceiveTransportOptions request received');
-//     // console.log('transportOptions:', transportOptions);
-//     const { id, iceParameters, iceCandidates, dtlsParameters } = sendingTransport;
-//     const transportOptions = { id, iceParameters, iceCandidates, dtlsParameters };
-//     console.log('transport options are:', transportOptions);
-//     cb(transportOptions);
-//     return;
-
-//   });
-
-//   socket.on('transportConnect', async (data, cb) => {
-//     console.log('transport-connect requested with data:', data);
-//     const  dtlsParameters  = data.dtlsParameters;
-//     const clientDirection = data.direction;
-//     console.log('calling connect with dtlsParameters:', dtlsParameters);
-//     try {
-//       if(clientDirection === 'sending'){
-//         await receivingTransport.connect({ dtlsParameters });
-//       }else {
-//         await sendingTransport.connect({ dtlsParameters });
-//       }
-//       console.log('connect called without error');
-//       cb({data: 'yaay'});
-//     } catch (err) {
-//       console.error(err);
-//       cb({error: 'no bueno'});
-//     }
-//   });
-
-//   let producer: mediasoupTypes.Producer;
-//   socket.on('transportProduce', async (data, cb) => {
-//     console.log('transportConsume requested with data:', data);
-//     try {
-//       const { kind, rtpParameters } = data;
-  
-//       if (!receivingTransport) {
-//         console.error('transport-produce: server-side no transport exists');
-//         cb({ error: 'transport-produce: server-side no transport exists'});
-//         return;
-//       }
-  
-//       producer = await receivingTransport.produce({
-//         kind,
-//         rtpParameters,
-//         paused: false,
-//       });
-  
-//       // if our associated transport closes, close ourself, too
-//       producer.on('transportclose', () => {
-//         console.log('producer\'s transport closed', producer.id);
-//         producer.close();
-//       });
-  
-//       cb({data: { producerId: producer.id } });
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   });
-
-//   /** @type { Consumer } */
-//   let consumer: mediasoupTypes.Consumer;
-//   socket.on('transportConsume', async (data, cb) => {
-//     console.log('transportConsume requested with data:', data);
-//     const { rtpCapabilities } = data;
-
-//     // Should check if receiver can consume the used codecs with the router.canConsume function
-//     // But for now, we trust it'll wotk.... hehe...
-
-//     try{
-//       consumer = await sendingTransport.consume({
-//         producerId: producer.id,
-//         rtpCapabilities,
-//         paused: true, 
-//       });
-
-      
-
-//       cb({
-//         // producerId: producer.id,
-//         producerId: consumer.producerId,
-//         id: consumer.id,
-//         kind: consumer.kind,
-//         rtpParameters: consumer.rtpParameters,
-//         type: consumer.type,
-//         producerPaused: consumer.producerPaused,
-//       });
-//     }catch(err){
-//       console.error(err);
-//     }
-//   });
-
-//   socket.on('resumeConsumer', async (cb) => {
-//     console.log('resumeConsumer requested');
-//     try{
-//       consumer.resume();
-//       cb();
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   });
-// });
-
-
-httpServer.listen(3030);
+httpServer.listen(config.httpPort);

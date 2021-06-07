@@ -1,6 +1,7 @@
+// import { SocketAck } from 'app/../backend-v2/shared/socketTypes';
 import * as mediasoupClient from 'mediasoup-client';
 import { types as mediasoupTypes } from 'mediasoup-client';
-import { socket } from 'ts/socket';
+// import { socket } from 'ts/socket';
 
 // eslint-disable-next-line no-unused-vars
 
@@ -45,58 +46,62 @@ export function createSendTransport (transportOptions : mediasoupTypes.Transport
     console.log('transport connect event. Sending connect request to server');
     // Signal local DTLS parameters to the server side transport.
 
-    try {
-      const response: SocketAck = await socket.request(
-        'transportConnect',
-        {
-          transportId: sendTransport.id,
-          dtlsParameters,
-          direction: 'sending',
-        });
+    return Promise.resolve(); // TEMP COMPILE FIX
 
-      if (response.status === 'error') {
-        throw Error('fuck you');
-      }
+    // try {
+    //   const response: SocketAck = await socket.request(
+    //     'transportConnect',
+    //     {
+    //       transportId: sendTransport.id,
+    //       dtlsParameters,
+    //       direction: 'sending',
+    //     });
 
-      console.log('connect request successful. Response:', response);
+    //   if (response.status === 'error') {
+    //     throw Error('fuck you');
+    //   }
 
-      // Tell the transport that parameters were transmitted.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      callback();
-    } catch (error) {
-      // Tell the transport that something was wrong.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      errback(error);
-    }
+    //   console.log('connect request successful. Response:', response);
+
+    //   // Tell the transport that parameters were transmitted.
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //   callback();
+    // } catch (error) {
+    //   // Tell the transport that something was wrong.
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //   errback(error);
+    // }
   });
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   sendTransport.on('produce', async (input: Record<string, unknown>, callback, errback) => {
     console.log('transport produce event with input:', input);
-    const { kind, rtpParameters } = input;
+    // const { kind, rtpParameters } = input;
+
+    return Promise.resolve(); // TEMP ERROR FIX
 
     // tell the server what it needs to know from us in order to set
     // up a server-side producer object, and get back a
     // producer.id. call callback() on success or errback() on
     // failure.
-    const response : SocketAck = await socket.request('transportProduce', {
-      kind,
-      rtpParameters,
-    });
+    // const response : SocketAck = await socket.request('transportProduce', {
+    //   kind,
+    //   rtpParameters,
+    // });
 
-    // const { status, data } = response;
-    if (response.status === 'error') {
-      console.error('error setting up server-side producer', response.errorMessage);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      errback(response.errorMessage);
-      return;
-    }
-    console.log('produce request successful. Response:', response);
-    if (response.data instanceof Object) {
-      console.log('producer created on server-side. Response:', response.data);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, node/no-callback-literal
-      callback({ id: response.data.producerId });
-    }
+    // // const { status, data } = response;
+    // if (response.status === 'error') {
+    //   console.error('error setting up server-side producer', response.errorMessage);
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //   errback(response.errorMessage);
+    //   return;
+    // }
+    // console.log('produce request successful. Response:', response);
+    // if (response.data instanceof Object) {
+    //   console.log('producer created on server-side. Response:', response.data);
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, node/no-callback-literal
+    //   callback({ id: response.data.producerId });
+    // }
   });
 
   sendTransport.on('connectionstatechange', (state: unknown) => {
@@ -116,28 +121,30 @@ export function createReceiveTransport (transportOptions : mediasoupTypes.Transp
     console.log('transport connect event. Sending connect request to server');
     // Signal local DTLS parameters to the server side transport.
 
-    try {
-      const response: SocketAck = await socket.request(
-        'transportConnect',
-        {
-          transportId: receiveTransport.id,
-          dtlsParameters,
-          direction: 'receive',
-        });
-      if (response.status === 'error') {
-        throw Error('fuck you');
-      }
+    return Promise.resolve(); // TEMP ERROR FIX
 
-      console.log('connect request successful. Response:', response);
+    // try {
+    //   const response: SocketAck = await socket.request(
+    //     'transportConnect',
+    //     {
+    //       transportId: receiveTransport.id,
+    //       dtlsParameters,
+    //       direction: 'receive',
+    //     });
+    //   if (response.status === 'error') {
+    //     throw Error('fuck you');
+    //   }
 
-      // Tell the transport that parameters were transmitted.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      callback();
-    } catch (error) {
-      // Tell the transport that something was wrong.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      errback(error);
-    }
+    //   console.log('connect request successful. Response:', response);
+
+    //   // Tell the transport that parameters were transmitted.
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //   callback();
+    // } catch (error) {
+    //   // Tell the transport that something was wrong.
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //   errback(error);
+    // }
   });
 
   receiveTransport.on('connectionstatechange', (state: unknown) => {

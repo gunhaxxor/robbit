@@ -2,11 +2,11 @@ import { io, Socket } from 'socket.io-client';
 // import SocketAck from '../../../backend-v2/mediasoup/customTypes.d.ts';
 // export { SocketAck };
 
-declare module 'socket.io-client' {
-  interface Socket {
-    request(ev: string | symbol, ...args: unknown[]): Promise<SocketAck>;
-  }
-}
+// declare module 'socket.io-client' {
+//   interface Socket {
+//     request(ev: string | symbol, ...args: unknown[]): Promise<SocketAck>;
+//   }
+// }
 
 // export interface SocketResponse {
 //   data?: Record<string, unknown> | string | undefined;

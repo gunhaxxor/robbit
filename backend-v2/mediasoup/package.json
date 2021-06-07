@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "mediasoup": "3",
+    "mediasoup-client": "^3.6.30",
     "socket.io": "^4.0.1"
   },
   "devDependencies": {

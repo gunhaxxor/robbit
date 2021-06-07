@@ -1,4 +1,5 @@
 import { types as mediasoupTypes } from 'mediasoup';
+// import { WorkerLogTag } from 'mediasoup/lib/Worker';
 
 const logLevel: mediasoupTypes.WorkerLogLevel = 'debug';
 const logTags: mediasoupTypes.WorkerLogTag[] = [
@@ -68,7 +69,21 @@ const webRtcTransport: mediasoupTypes.WebRtcTransportOptions = {
   initialAvailableOutgoingBitrate: 100000000,
 };
 
-export default {
+export interface MediasoupConfig {
+  // worker: Record<string, unknown>;
+  worker: {
+    rtcMinPort: number;
+    rtcMaxPort: number;
+    logLevel: mediasoupTypes.WorkerLogLevel;
+    logTags: mediasoupTypes.WorkerLogTag[];
+  },
+  router: mediasoupTypes.RouterOptions;
+  webRtcTransport: mediasoupTypes.WebRtcTransportOptions;
+  maxIncomingBitrate: number;
+  numWorkers: number;
+}
+
+const mediasoupConfig: MediasoupConfig = {
   worker: {
     rtcMinPort: 40000,
     rtcMaxPort: 49999,
@@ -85,3 +100,5 @@ export default {
   maxIncomingBitrate: 1500000,
   numWorkers: 1,
 };
+
+export default mediasoupConfig;

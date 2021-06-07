@@ -55,9 +55,19 @@ module.exports = {
     'vue',
 
   ],
-
+  "overrides": [
+        {
+            "files": ["*.ts"],
+            "rules": {
+                "no-undef": "off"
+            }
+        }
+    ],
+    
   globals: {
-    SocketAck: 'readonly',
+    // SocketExt: ''
+    // SocketServerEvent: 'readonly',
+    // SocketAck: 'readonly',
     ga: 'readonly', // Google Analytics
     cordova: 'readonly',
     __statics: 'readonly',
