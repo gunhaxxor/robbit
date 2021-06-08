@@ -38,8 +38,12 @@ export default defineComponent({
     const selectedDeviceId = ref<string>('');
     const devices = ref<Array<MediaDeviceInfo>>([]);
     const localStream = ref<MediaStream>();
-    const videoelement = ref<HTMLVideoElement | null>(null);
-    const receivingVideo = ref<HTMLVideoElement | null>(null);
+    const videoelement = ref<HTMLVideoElement>();
+    const receivingVideo = ref<HTMLVideoElement>();
+
+    // if (receivingVideo.value) { // <---- I don't want to be forced to write this every time I use the ref.
+    //   receivingVideo.value.srcObject = new MediaStream();
+    // }
 
     const peer: PeerClient = new PeerClient('localhost:3000');
 
