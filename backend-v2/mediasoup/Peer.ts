@@ -180,6 +180,7 @@ export default class Peer {
     return producer;
   }
 
+  //TODO: Actually have infrastructure to reference which producer (stream) to create consumer for
   async createConsumer(requestedProducerId: string): Promise<mediasoupClientTypes.ConsumerOptions> {
     const key: string = this.producers.keys().next().value;
     // const producerId = this.producers.get(key).id;

@@ -1,11 +1,11 @@
-import { route } from 'quasar/wrappers';
+// import { route } from 'quasar/wrappers';
 import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { StateInterface } from '../store';
+// import { StateInterface } from '../store';
 import clientRoutes from './clientRoutes';
 import robotRoutes from './robotRoutes';
 
@@ -28,7 +28,8 @@ try {
   console.error(err);
 }
 
-export default route<StateInterface>(function (/* { store, ssrContext } */) {
+// export default route<StateInterface>
+export default function (/* { store, ssrContext } */) {
   const createHistory =
     process.env.SERVER
       ? createMemoryHistory
@@ -66,4 +67,4 @@ export default route<StateInterface>(function (/* { store, ssrContext } */) {
   });
 
   return Router;
-});
+}

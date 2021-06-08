@@ -88,12 +88,12 @@ export default class PeerClient {
   //   this.socket = socket;
   // }
 
-  async setName (name: string) {
+  setName = async (name: string) => {
     // return this.triggerSocketEvent('setName', name);
     return this.socket.request('setName', name);
   }
 
-  async joinRoom (roomName: string) {
+  joinRoom = async (roomName: string) => {
     // return this.triggerSocketEvent('joinRoom', roomName);
     return this.socket.request('joinRoom', roomName);
   }
