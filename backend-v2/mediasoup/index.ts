@@ -96,20 +96,24 @@ io.on('connection', (newSocket) => {
     console.log(`socket ${socket.id} disconnected. Reason: ${reason}`);
     //TODO: Remove peer from potential rooms
   });
+
   socket.on('disconnecting', (reason) => {
     console.log(`socket ${socket.id} disconnecting. Reason ${reason}`);
   });
 
   socket.on('setName', (data, cb: (response: SocketAck) => void) => {
     peer.name = data.name;
+    // TODO: less than nice to handle broadcast from outside the peer class
+    if(peer.room){
+      peer.room.broadcastRoomState();
+    }
     cb({status: 'success', message: 'Successfully set name for peer'});
   });
 
   socket.on('setRtpCapabilities', (data, cb: AcknowledgeCallback) => {
     peer.setRtpCapabilities(data);
     cb({status: 'success', message: 'Successfully set peer rtpCapabilities on server side'});
-  }
-  );
+  });
 
   socket.on('createRoom', async (roomName, cb: (response: SocketAck) => void) => {
     try{
@@ -164,7 +168,7 @@ io.on('connection', (newSocket) => {
       const transportOptions = await peer.createWebRtcTransport(true);
       cb({status: 'success', message: 'transports created', data: transportOptions});
     } catch( err){
-      cb({status: 'error', errorMessage: 'Failed to create transports'});
+      cb({status: 'error', errorMessage: err});
     }
 
   });
@@ -174,7 +178,7 @@ io.on('connection', (newSocket) => {
       const transportOptions = await peer.createWebRtcTransport(false);
       cb({status: 'success', message: 'transports created', data: transportOptions});
     } catch( err){
-      cb({status: 'error', errorMessage: 'Failed to create transports'});
+      cb({status: 'error', errorMessage: err});
     }
   });
 
@@ -196,7 +200,7 @@ io.on('connection', (newSocket) => {
       console.log(`producer created: ${producer}`);
       cb({status: 'success', message: 'producer created', data: {id: producer.id}});
     } catch( err) {
-      cb({status: 'error', errorMessage: 'Failed to create producer'});
+      cb({status: 'error', errorMessage: err});
     }
   });
 

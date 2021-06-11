@@ -17,10 +17,12 @@ export default class PeerClient {
   receiveTransport?: mediasoupTypes.Transport;
   producers: Map<string, mediasoupTypes.Producer>;
   consumers: Map<string, mediasoupTypes.Consumer>;
+  onRoomState?: (data: RoomState) => void;
 
-  constructor (url?: string) {
+  constructor (url?: string, onRoomState?: (data: RoomState) => void) {
     this.producers = new Map<string, mediasoupTypes.Producer>();
     this.consumers = new Map<string, mediasoupTypes.Consumer>();
+    this.onRoomState = onRoomState;
 
     if (url) {
       this.url = url;
@@ -36,6 +38,13 @@ export default class PeerClient {
 
     this.socket.on('disconnect', (reason) => {
       console.error(`peer socket disconnected: ${reason}`);
+    });
+
+    this.socket.on('roomState', (data: RoomState) => {
+      console.log('roomState updated:', data);
+      if (this.onRoomState) {
+        this.onRoomState(data);
+      }
     });
 
     // Wanted to add it to the "Socket class" prototype but that doesn't seem to work. I think it might be the case that the io-function doesn't return a Socket class instance
@@ -89,8 +98,9 @@ export default class PeerClient {
   // }
 
   setName = async (name: string) => {
+    console.log('setting name', name);
     // return this.triggerSocketEvent('setName', name);
-    return this.socket.request('setName', name);
+    return this.socket.request('setName', { name });
   }
 
   joinRoom = async (roomName: string) => {
@@ -213,16 +223,17 @@ export default class PeerClient {
     return producer.id;
   }
 
-  async consume (producerId: string): Promise<mediasoupTypes.Consumer> {
+  async consume (producerId: string): Promise<MediaStreamTrack> {
     if (!this.receiveTransport) {
       return Promise.reject('No receiveTransport present. Needed to be able to consume');
     }
-    const response = await this.socket.request('createConsumer', producerId);
+    const response = await this.socket.request('createConsumer', { producerId });
     if (response.status === 'error') {
       console.error(response.errorMessage);
       return Promise.reject('Failed to create remote consumer');
     }
     const consumerOptions = response.data as mediasoupTypes.ConsumerOptions;
-    return this.receiveTransport.consume(consumerOptions);
+    const consumer = await this.receiveTransport.consume(consumerOptions);
+    return consumer.track;
   }
 }

@@ -28,6 +28,19 @@
 // }
 
 type socketData = Record<string, unknown> | string;
+type RoomState = {
+  [peerId: string]: {
+    peerId: string;
+    name: string;
+    producersData: {
+      [producerId: string]: {
+        producerId: string
+        kind: string;
+        paused: boolean;
+      }
+    }
+  }
+}
 
 interface socketSuccess {
   status: 'success';
@@ -51,7 +64,7 @@ type SocketRoomServerEvent = 'getRouterRtpCapabilities';
 type SocketServerEventBuiltIn = 'disconnect' | 'disconnecting';
 type SocketServerEvent = SocketServerEventBuiltIn | SocketPeerServerEvent  | SocketRoomServerEvent;
 
-type SocketPeerClientEvent = 'roomClosed';
+type SocketPeerClientEvent = 'roomState' | 'roomClosed';
 
 type SocketClientEventBuiltIn = 'connect' | 'disconnect' | 'connect_error';
 type SocketClientEvent = SocketClientEventBuiltIn | SocketPeerClientEvent;

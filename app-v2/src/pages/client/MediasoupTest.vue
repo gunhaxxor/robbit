@@ -1,19 +1,31 @@
 <template>
   <q-page padding>
     <h3>
-      Mediasoup test {{ testValue }}
+      Mediasoup test
     </h3>
-    <q-form @submit="requestMedia(selectedDeviceId)">
+    <q-form>
       <!-- <q-select v-model="selectedDeviceId" :options="devices" outlined /> -->
       <select v-model="selectedDeviceId">
         <option v-for="device in devices" :key="device.deviceId" :value="device.deviceId">
           {{ device.label }}
         </option>
       </select>
-      <q-btn color="primary" label="video" type="submit" />
+      <q-btn color="primary" label="request device" @click="getLocalStream(selectedDeviceId)" />
+      <q-btn color="accent" label="send video" @click="sendVideo" />
+      <q-input v-model="userName" outlined dense label="username" />
+      <q-btn color="primary" label="set username" @click="setName(userName)" />
+      <q-input v-model="roomName" label="room name" outlined dense />
+      <q-btn color="primary" type="submit" label="create room" @click="createRoom(roomName)" />
+      <q-btn color="primary" label="join room" @click="joinRoom(roomName)" />
+      <template v-for="peer in roomState" :key="peer.peerId">
+        <q-btn v-for="producer in peer.producersData" :key="producer.producerId" :label="producer.producerId" @click="getRemoteTrack(producer.producerId)" />
+      </template>
     </q-form>
+    <video ref="localVideo" autoplay />
     <video ref="receivingVideo" autoplay />
-    <video v-if="true || localStream" ref="videoelement" />
+    <pre>
+      {{ roomState }}
+    </pre>
     <!-- <q-btn color="primary" label="do it!!" @click="initializeMediasoup" /> -->
   </q-page>
 </template>
@@ -24,12 +36,12 @@
 import {
   defineComponent,
   ref,
-  computed,
+  // computed,
 } from 'vue';
 
 // import PeerClient from 'ts/PeerClient';
 
-import { useTestStore } from 'src/store/useTestStore';
+// import { useTestStore } from 'src/store/useTestStore';
 import usePeerClient from 'ts/usePeerClient';
 
 // import { types as mediasoupTypes } from 'mediasoup-client';
@@ -39,14 +51,39 @@ export default defineComponent({
   name: 'MediasoupTest',
   components: {},
   setup () {
-    const { requestMedia, setName, createRoom } = usePeerClient();
-    const testStore = useTestStore();
+    const { roomState, requestMedia, startProducing, consume, setName, createRoom, joinRoom } = usePeerClient();
+    // const testStore = useTestStore();
     const selectedDeviceId = ref<string>('');
-    const devices = ref<Array<MediaDeviceInfo>>([]);
+    // const devices = ref<Array<MediaDeviceInfo>>([]);
+    // const roomName = ref<string>('');
+    // const userName = ref<string>('');
     const localStream = ref<MediaStream>();
-    const videoelement = ref<HTMLVideoElement>();
+    const localVideo = ref<HTMLVideoElement>();
     const receivingVideo = ref<HTMLVideoElement>();
 
+    async function getRemoteTrack (producerId: string) {
+      const track = await consume(producerId);
+      if (receivingVideo.value) {
+        const stream = new MediaStream([track]);
+        receivingVideo.value.srcObject = stream;
+      }
+    }
+
+    async function getLocalStream (deviceId: string) {
+      const stream = await requestMedia(deviceId);
+      localStream.value = stream;
+      if (localVideo.value) {
+        localVideo.value.srcObject = stream;
+      }
+    }
+    async function sendVideo () {
+      if (!localStream.value) {
+        console.error('no localstream present');
+        return;
+      }
+      const producerId = await startProducing(localStream.value);
+      console.log('started producing!. producerId: ', producerId);
+    }
     // const peer: PeerClient = new PeerClient('localhost:3000');
 
     // async function requestMedia (deviceId: string) {
@@ -98,27 +135,52 @@ export default defineComponent({
     //   //
     // })();
 
-    void (async () => {
-      const mediaDevices = await navigator.mediaDevices.enumerateDevices();
-      console.log(mediaDevices);
-      devices.value = mediaDevices.filter(dev => dev.kind === 'videoinput');
-      console.log(devices.value);
-    })();
+    // void (async () => {
+    //   const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    //   console.log(mediaDevices);
+    //   devices.value = mediaDevices.filter(dev => dev.kind === 'videoinput');
+    //   console.log(devices.value);
+    // })();
 
-    return {
-      devices,
+    const data = {
+      roomState,
       selectedDeviceId,
-      // requestMedia,
-      localStream,
-      videoelement,
+      localVideo,
       receivingVideo,
-      testValue: computed(() => testStore.testValue),
-      // initializeMediasoup,
+      getLocalStream,
+      getRemoteTrack,
+      requestMedia,
+      sendVideo,
+      startProducing,
+      consume,
+      setName,
+      joinRoom,
+      createRoom,
     };
+
+    return data;
   },
-  data () {
-    return {
-    };
+  data: () => ({
+    userName: '',
+    roomName: '',
+    devices: [] as Array<MediaDeviceInfo>,
+  }),
+  async mounted () {
+    const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    console.log(mediaDevices);
+    this.devices = mediaDevices.filter(dev => dev.kind === 'videoinput');
+    console.log(this.devices);
+  },
+  methods: {
+    // async requestDevice (deviceId: string) {
+    //   // console.log('requesting local stream');
+    //   const localStream = await this.requestMedia(deviceId);
+    //   const videoElement = this.$refs.localVideo as HTMLVideoElement;
+    //   videoElement.srcObject = localStream;
+    // },
+    // sendVideo(){
+    //   this.startProducing(this.lo)
+    // }
   },
 });
 </script>

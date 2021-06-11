@@ -33,59 +33,73 @@ export default class Room {
       this.io = io;
     }
 
+    broadcastRoomState (): void {
+      // const peersInfo: Record<string, unknown> = {};
+      const peersInfo: RoomState = {};
+      this.peers.forEach((peer: Peer) => {
+        const peerId = peer.id;
+        const name = peer.name;
+        
+        peersInfo[peerId] = {name, peerId, producersData: {} };
+        // const producersData: Record<string, Record<string, string | boolean>> = {};
+        const producers = peer.producers;
+        producers.forEach((producer) => {
+          const producerId = producer.id;
+          const kind = producer.kind;
+          const paused = producer.paused;
+          peersInfo[peerId].producersData[producerId] = {producerId, kind, paused};
+        });
+
+      });
+      this.io.to(this.id).emit('roomState', peersInfo);
+    }
+
     addPeer(peer: Peer): void {
       this.peers.set(peer.socket.id, peer);
+      peer.socket.join(this.id);
+      this.broadcastRoomState();
       // peer.setRoom(this);
-      // peer.socket.join(this.id);
     }
 
     async removePeer(peer: Peer): Promise<void>{
-      const id = peer.socket.id;
+      const id = peer.id;
 
       const wasRemoved = this.peers.delete(id);
       if(!wasRemoved){
         return Promise.reject('Couldn\'t remove the peer. No such peer existed in the room');
       }
+      peer.socket.leave(this.id);
+      this.broadcastRoomState();
 
       return;
-      // return this.removePeerBySocketId(id);
-      // const removePeer = this.peers.get(id);
-      // if(removePeer){
-      //   // removePeer.close(); // TODO: Should we really close the Peer just because it leaves a room???
-      //   // removePeer.socket.leave(this.id);
-        
-      //   this.peers.delete(socketId);
-      // }
     }
 
     async removePeerBySocketId(socketId: string): Promise<void> {
       const peer = this.peers.get(socketId);
       if(peer){
-
-        peer.close(); // TODO: Should we really close the peer just because it leaves a room???
-        peer.socket.leave(this.id);
-        
-        this.peers.delete(socketId);
+        this.removePeer(peer);
+        return;
       }
+      return Promise.reject('No peer with that id found in room');
     }
 
-    getProducerListForPeer(socketId: string): Array<Record<string, string>> {
-      const producerList: Array<Record<string, string>> = [];
-      const peer = this.peers.get(socketId);
-      if(peer){
-        peer.producers.forEach(producer => {
-          producerList.push({
-            producer_id: producer.id,
-          });
-        });
-      }else{
-        console.error(`no peer with id ${socketId} found when trying to get producers`);
-      }
-      if(producerList.length == 0){
-        console.error('no producers found!');
-      }
-      return producerList;
-    }
+    // getProducerListForPeer(socketId: string): Array<Record<string, string>> {
+    //   const producerList: Array<Record<string, string>> = [];
+    //   const peer = this.peers.get(socketId);
+    //   if(peer){
+    //     peer.producers.forEach(producer => {
+    //       producerList.push({
+    //         producer_id: producer.id,
+    //       });
+    //     });
+    //   }else{
+    //     console.error(`no peer with id ${socketId} found when trying to get producers`);
+    //   }
+    //   if(producerList.length == 0){
+    //     console.error('no producers found!');
+    //   }
+    //   return producerList;
+    // }
 
     getRtpCapabilities(): RtpCapabilities {
       return this.router.rtpCapabilities;
@@ -148,17 +162,17 @@ export default class Room {
 
     }
 
-    async produce(socketId: string, producerTransportId: string, rtpParameters: RtpParameters, kind: MediaKind): Promise<string> {
-      const producer = await this.peers.get(socketId)?.createProducer(rtpParameters, kind);
-      if(producer){   
-        // this.broadCast(socketId, 'newProducers', [{
-        //   producerId: producer.id,
-        //   producerSocketId: socketId,
-        // }]);
-        return producer.id;
-      }
-      throw 'failed when trying to create producer';
-    }
+    // async produce(socketId: string, producerTransportId: string, rtpParameters: RtpParameters, kind: MediaKind): Promise<string> {
+    //   const producer = await this.peers.get(socketId)?.createProducer(rtpParameters, kind);
+    //   if(producer){   
+    //     // this.broadCast(socketId, 'newProducers', [{
+    //     //   producerId: producer.id,
+    //     //   producerSocketId: socketId,
+    //     // }]);
+    //     return producer.id;
+    //   }
+    //   throw 'failed when trying to create producer';
+    // }
 
     // async consume(socketId: string, consumerTransportId: string, producerId: string,  rtpCapabilities: RtpCapabilities): Promise<any> {
     //   // handle nulls

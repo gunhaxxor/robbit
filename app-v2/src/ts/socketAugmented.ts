@@ -17,6 +17,7 @@ declare module 'socket.io-client' {
   interface SocketExt extends Omit<Socket, 'on'> {
     request(ev: SocketEvent, ...args: unknown[]): Promise<SocketAck>;
     on(ev: SocketClientEvent, listener: (...args: unknown[]) => void): Socket;
+    on(ev: 'roomState', listener: (data: RoomState) => void): Socket;
     on(ev: 'disconnect', listener: (reason: Socket.DisconnectReason) => void): Socket;
   }
 }

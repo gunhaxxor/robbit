@@ -6,6 +6,7 @@ import Room from './Room';
 export default class Peer {
   // socketId: string;
   socket: SocketExt;
+  id: string;
   name: string;
   // transports: Map<string, WebRtcTransport>;
   rtpCapabilities?: mediasoupClientTypes.RtpCapabilities;
@@ -18,7 +19,8 @@ export default class Peer {
 
   constructor(socket: SocketExt, name = '') {
     this.socket = socket;
-    // this.socketId = socket.id;
+    // TODO: Actually decouple peer id from socket connection so we can recover same peer if connection is lost or browser reloaded
+    this.id = socket.id;
     this.name = name;
     // this.transports = new Map();
     this.consumers = new Map();
@@ -32,9 +34,7 @@ export default class Peer {
   async joinRoom(room: Room): Promise<void>{
     if(room){
       room.addPeer(this);
-      // this.setRoom(room);
       this.room = room;
-      this.socket.join(room.id);
       return;
     }
     return Promise.reject('failed to join room');
@@ -42,20 +42,9 @@ export default class Peer {
   async leaveRoom(room: Room): Promise<void> {
     if(room) {
       room.removePeer(this);
-      // this.setRoom(undefined);
       this.room = undefined;
-      this.socket.leave(room.id);
     }
   }
-
-  // setRoom(room: Room): void{
-  //   this.room = room;
-  // }
-
-  // addTransport(transport: WebRtcTransport): void {
-  //   this.transports.set(transport.id, transport);
-  // }
-
 
   async createWebRtcTransport(receiver: boolean): Promise<mediasoupClientTypes.TransportOptions> {
     // const {
@@ -68,12 +57,8 @@ export default class Peer {
     const transport = await this.room.createWebRtcTransport();
     if(receiver){
       this.receiveTransport = transport;
-      // this.receiveTransport = await this.room.createWebRtcTransport();
-      // return this.receiveTransport;
     } else {
       this.sendTransport = transport;
-      // this.sendTransport = await this.room.createWebRtcTransport();
-      // return this.sendTransport;
     }
 
     const iceCandidates = transport.iceCandidates as mediasoupClientTypes.IceCandidate[];
@@ -127,15 +112,10 @@ export default class Peer {
 
     let chosenTransport;
     if(this.receiveTransport?.id === transportId){
-      // await this.receiveTransport.connect({dtlsParameters});
-      // return;
       chosenTransport = this.receiveTransport;
     } else if(this.sendTransport?.id === transportId){
-      // await this.sendTransport.connect({dtlsParameters});
-      // return;
       chosenTransport = this.sendTransport;
     } else{
-      // console.error('no transport with that id found');
       return Promise.reject('no transport with that id found!');
     }
 
@@ -145,46 +125,53 @@ export default class Peer {
       console.error('Failed to connect the transport!');
       return Promise.reject(err);
     }
-    // if (!this.transports.has(transportId)) {
-    //   console.error(`no transport with id ${transportId} found`);
-    //   return;
-    // }
-    // await this.transports.get(transportId)?.connect({
-    //   dtlsParameters: dtlsParameters,
-    // });
   }
 
   //A producer on server side represents a client producing media and sending it to the server.
   async createProducer(rtpParameters: RtpParameters, kind: MediaKind): Promise<Producer> {
-    // const producer = await this.transports.get(producerTransportId)?.produce({
-    //   kind,
-    //   rtpParameters,
-    // });
     if(!this.sendTransport){
       return Promise.reject('a transport is required to create a producer!');
     }
-    const producer = await this.sendTransport.produce({kind, rtpParameters });
+    try {
+      const producer = await this.sendTransport.produce({kind, rtpParameters });
+      
+      this.producers.set(producer.id, producer);
+      
+      producer.on('transportclose', () => {
+        console.log(`---producer transport close--- name: ${this.name} producer.id: ${producer.id}`);
+        producer.close();
+        this.producers.delete(producer.id);
+        if(this.room){
+          this.room.broadcastRoomState();
+        }
+      });
+      
+      try{
 
-    if(!producer){
-      return Promise.reject('failed to create producer');
+        if(this.room){
+          this.room.broadcastRoomState();
+        }
+      }catch( err){
+        console.error(err);
+      }
+      
+      return producer;
+    }catch( err ) {
+      console.error(err);
+      return Promise.reject(err);
     }
-
-    this.producers.set(producer.id, producer);
-
-    producer.on('transportclose', () => {
-      console.log(`---producer transport close--- name: ${this.name} producer.id: ${producer.id}`);
-      producer.close();
-      this.producers.delete(producer.id);
-    });
-
-    return producer;
   }
 
   //TODO: Actually have infrastructure to reference which producer (stream) to create consumer for
   async createConsumer(requestedProducerId: string): Promise<mediasoupClientTypes.ConsumerOptions> {
-    const key: string = this.producers.keys().next().value;
+    // const key: string = this.producers.keys().next().value;
     // const producerId = this.producers.get(key).id;
-    const producerId = key;
+    // const producerId = key;
+    console.log('received request to consume producer:', requestedProducerId);
+    if(!requestedProducerId){
+      return Promise.reject('received undefined producerId. What the faack?!');
+    }
+    const producerId = requestedProducerId;
     // const consumer = await this.transports.get(consumerTransportId)?.consume({
     //   producerId: producerId,
     //   rtpCapabilities,
