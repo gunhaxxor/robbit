@@ -18,13 +18,32 @@
       <q-btn color="primary" type="submit" label="create room" @click="createRoom(roomName)" />
       <q-btn color="primary" label="join room" @click="joinRoom(roomName)" />
       <template v-for="peer in roomState" :key="peer.peerId">
-        <q-btn v-for="producer in peer.producersData" :key="producer.producerId" :label="producer.producerId" @click="getRemoteTrack(producer.producerId)" />
+        <q-btn
+          v-for="producer in peer.producersData"
+          :key="producer.producerId"
+          :label="producer.producerId"
+          @click="getRemoteTrack(producer.producerId)"
+        />
       </template>
     </q-form>
     <video ref="localVideo" autoplay />
-    <video ref="receivingVideo" autoplay />
+    <!-- <video ref="receivingVideo" autoplay /> -->
+    <template v-for="peer in filteredRoomState" :key="peer.peerId">
+      <video
+        v-for="producer in peer.producersData"
+        :key="producer.producerId"
+        :ref="el => remoteVideoElements[producer.producerId] = el"
+        autoplay
+        class="remote-video"
+      />
+    </template>
+    <p>peerId: {{ peerId }}</p>
+
     <pre>
       {{ roomState }}
+    </pre>
+    <pre>
+      {{ filteredRoomState }}
     </pre>
     <!-- <q-btn color="primary" label="do it!!" @click="initializeMediasoup" /> -->
   </q-page>
@@ -36,22 +55,33 @@
 import {
   defineComponent,
   ref,
-  // computed,
+  reactive,
+  computed,
 } from 'vue';
 
-// import PeerClient from 'ts/PeerClient';
-
-// import { useTestStore } from 'src/store/useTestStore';
 import usePeerClient from 'ts/usePeerClient';
-
-// import { types as mediasoupTypes } from 'mediasoup-client';
-// import { ConsumerOptions } from 'mediasoup-client/lib/Consumer';
 
 export default defineComponent({
   name: 'MediasoupTest',
   components: {},
   setup () {
-    const { roomState, requestMedia, startProducing, consume, setName, createRoom, joinRoom } = usePeerClient();
+    const { peerId, roomState, requestMedia, startProducing, consume, setName, createRoom, joinRoom } = usePeerClient();
+
+    const filteredRoomState = computed(() => {
+      const roomStateCopy = Object.assign({}, roomState.value);
+
+      if (roomStateCopy[peerId.value]) {
+        delete roomStateCopy[peerId.value];
+      }
+      return roomStateCopy;
+
+      // const filteredArray = Object.entries(roomState.value).filter(([id, _]) => {
+      //   return id !== peerId.value;
+      // });
+      // const filteredObject = Object.fromEntries(filteredArray);
+      // return 'hello';
+    });
+
     // const testStore = useTestStore();
     const selectedDeviceId = ref<string>('');
     // const devices = ref<Array<MediaDeviceInfo>>([]);
@@ -60,12 +90,19 @@ export default defineComponent({
     const localStream = ref<MediaStream>();
     const localVideo = ref<HTMLVideoElement>();
     const receivingVideo = ref<HTMLVideoElement>();
+    const remoteVideoElements = reactive<Record<string, HTMLVideoElement>>({});
 
     async function getRemoteTrack (producerId: string) {
       const track = await consume(producerId);
-      if (receivingVideo.value) {
+      // if (receivingVideo.value) {
+      //   const stream = new MediaStream([track]);
+      //   receivingVideo.value.srcObject = stream;
+      // }
+      console.log('received remote track', track);
+      if (remoteVideoElements[producerId]) {
+        console.log('attaching track to video element');
         const stream = new MediaStream([track]);
-        receivingVideo.value.srcObject = stream;
+        remoteVideoElements[producerId].srcObject = stream;
       }
     }
 
@@ -143,10 +180,13 @@ export default defineComponent({
     // })();
 
     const data = {
+      peerId,
       roomState,
+      filteredRoomState,
       selectedDeviceId,
       localVideo,
       receivingVideo,
+      remoteVideoElements,
       getLocalStream,
       getRemoteTrack,
       requestMedia,
@@ -186,4 +226,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.remote-video {
+  background-color: aqua;
+}
 </style>

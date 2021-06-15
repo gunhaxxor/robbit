@@ -4,9 +4,14 @@ const peer = new PeerClient('localhost:3000');
 export default function usePeerClient () {
   let localStream: MediaStream;
   const roomState = ref<RoomState>({});
+  const peerId = ref<string>(peer.id);
+  console.log('peerId:', peer.id);
 
   peer.onRoomState = (receivedRoomState) => {
     roomState.value = receivedRoomState;
+
+    // ugly hack to keep peer id updated
+    peerId.value = peer.id;
   };
 
   async function requestMedia (deviceId: string): Promise<MediaStream> {
@@ -87,6 +92,8 @@ export default function usePeerClient () {
   })();
   return {
     peer,
+    // peerId: peer.id,
+    peerId,
     roomState,
     requestMedia,
     startProducing,

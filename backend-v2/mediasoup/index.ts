@@ -95,6 +95,7 @@ io.on('connection', (newSocket) => {
   socket.on('disconnect', (reason) => {
     console.log(`socket ${socket.id} disconnected. Reason: ${reason}`);
     //TODO: Remove peer from potential rooms
+    peer.leaveRoom();
   });
 
   socket.on('disconnecting', (reason) => {

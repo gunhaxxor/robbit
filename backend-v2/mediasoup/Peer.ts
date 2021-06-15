@@ -39,11 +39,12 @@ export default class Peer {
     }
     return Promise.reject('failed to join room');
   }
-  async leaveRoom(room: Room): Promise<void> {
-    if(room) {
-      room.removePeer(this);
-      this.room = undefined;
+  async leaveRoom(): Promise<void> {
+    if(!this.room) {
+      return Promise.reject('peer is not in a room. Thus can\'t leave');
     }
+    this.room.removePeer(this);
+    this.room = undefined;
   }
 
   async createWebRtcTransport(receiver: boolean): Promise<mediasoupClientTypes.TransportOptions> {
@@ -190,6 +191,8 @@ export default class Peer {
     if(!this.receiveTransport){
       return Promise.reject('A transport is required to create a consumer');
     }
+    // TODO: The docs recommend not creating consumer in unpaused state. Address this!!!
+    // https://mediasoup.org/documentation/v3/mediasoup/api/#transport-consume
     const consumer = await this.receiveTransport.consume({
       producerId,
       rtpCapabilities: this.rtpCapabilities,

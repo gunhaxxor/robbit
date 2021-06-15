@@ -11,6 +11,7 @@ import { RtpCapabilities } from 'mediasoup-client/lib/RtpParameters';
 
 export default class PeerClient {
   socket: SocketExt;
+  id = '';
   url?: string;
   mediasoupDevice!: mediasoupTypes.Device;
   sendTransport?: mediasoupTypes.Transport;
@@ -34,6 +35,9 @@ export default class PeerClient {
     }
     this.socket.on('connect', () => {
       console.log('peer socket connected: ', this.socket.id);
+      // TODO: decouple peer id from socket id.
+      console.log('setting peer id to same as socket id: ', this.socket.id);
+      this.id = this.socket.id;
     });
 
     this.socket.on('disconnect', (reason) => {
