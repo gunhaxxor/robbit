@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "backend-v2"
+		},
+		{
+			"path": "types"
 		}
 	],
 	"settings": {
