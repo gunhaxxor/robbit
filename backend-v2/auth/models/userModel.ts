@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 interface User {
   username: string,
   password: string,
+  refreshTokenId: string,
 }
 
 interface UserDocument extends User, mongoose.Document {
@@ -23,14 +24,19 @@ const schemaFields: Record<keyof User, unknown>
      type: String,
      required: true,
    },
+   refreshTokenId: {
+     type: String,
+   },
  };
 
 const UserSchema = new Schema<User>(schemaFields);
 
-UserSchema.pre<User>('save', async function(next) {
+UserSchema.pre<UserDocument>('save', async function(next) {
   // const user = this;
-  const hash = await bcrypt.hash(this.password, 10);
-  this.password = hash;
+  if(this.isNew){
+    const hash = await bcrypt.hash(this.password, 10);
+    this.password = hash;
+  }
   next();
 });
 
