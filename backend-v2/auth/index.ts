@@ -16,9 +16,35 @@ app.use(passport.initialize());
 const JWT_SECRET = 'Gunnarääääääärbääääääst';
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'bajskorv';
+const JWT_ISSUER = 'gunhaxxor the master haxxor';
+const JWT_AUDIENCE = 'all the people';
 
 let currentAdminTokenId: string;
 
+const jwtStrategyOptions: StrategyOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  issuer: JWT_ISSUER,
+  audience: JWT_AUDIENCE,
+  secretOrKey: JWT_SECRET,
+};
+
+function createJwt(userObj: Record<string, unknown>, expiresIn: number | undefined = undefined, jwtId?: string) {
+  // const tokenId = crypto.randomUUID(); 
+  // currentAdminTokenId = tokenId;
+  const jwtObj: jwt.SignOptions = { issuer: JWT_ISSUER, audience: JWT_AUDIENCE };
+  if(expiresIn){
+    jwtObj['expiresIn'] = expiresIn;
+  }
+
+  if(jwtId){
+    jwtObj['jwtid'] = jwtId;
+  }
+
+  const token = jwt.sign(userObj, JWT_SECRET, jwtObj);
+  return token;
+}
+
+// ADMIN PART
 const adminRouter = express.Router();
 app.use('/admin', adminRouter);
 
@@ -31,9 +57,11 @@ adminRouter.post('/login',
   (req, res) => {
     // console.log('request body: ', req.body);
     // console.log('whole request object:', req);
-    const user = { ...req.user, admin: true };
+    const user = { ...req.user, role: 'admin' };
     console.log('user on req obj:', req.user);
-    const token = createAdminJWT({user}, 7200); 
+    const tokenId = crypto.randomUUID(); 
+    currentAdminTokenId = tokenId;
+    const token = createJwt({user}, 7200, currentAdminTokenId); 
     res.send(token);
   }
 );
@@ -50,13 +78,6 @@ adminRouter.post('/createUser',
   }
 );
 
-function createAdminJWT(userObj: Record<string, unknown>, expiresIn = 180) {
-  const tokenId = crypto.randomUUID(); 
-  currentAdminTokenId = tokenId;
-  const token = jwt.sign(userObj, JWT_SECRET, { expiresIn, issuer: 'gunhaxxor the master haxxor', jwtid: tokenId});
-  return token;
-}
-
 adminRouter.get('/jwt-check',
   passport.authenticate('adminJwt', { session: false }),
   (req, res) => {
@@ -64,23 +85,121 @@ adminRouter.get('/jwt-check',
   }
 );
 
+passport.use('adminJwt', new JwtStrategy(jwtStrategyOptions, function(jwtPayload, done){
+  console.log('jwtPayload:', jwtPayload);
+  if(jwtPayload.jti !== currentAdminTokenId){
+    return done(null, false);
+  }
 
-function createJWT(userObj: Record<string, unknown>, expiresIn = 180) {
-  const token = jwt.sign(userObj, JWT_SECRET, { expiresIn, issuer: 'gunhaxxor the master haxxor'});
-  return token;
-}
+  return done(null, jwtPayload);  
+}));
+
+passport.use('validateAdmin', new LocalStrategy(
+  {
+    usernameField: 'username',
+    passwordField: 'password',
+  },
+  async function(username, password, done){
+    console.log('verify triggered with credentials: ', username, password);
+    try {
+      if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD ){
+        // const user = await UserModel.create({username, password});
+        return done(null, {username});
+      }
+      return done(null, false, {message: 'fuck you' });
+    } catch (err) {
+      done(err);
+    }
+  })
+);
+
+// USER STUFF
+
+// function createUserJWT(userObj: Record<string, unknown>, expiresIn = 180) {
+//   const token = jwt.sign(userObj, JWT_SECRET, { expiresIn, issuer: JWT_ISSUER, audience: JWT_AUDIENCE});
+//   return token;
+// }
+
+app.post('/login',
+  // passport.authenticate('userJwt', { session: false }),
+  passport.authenticate('validateUser', { session: false }),
+  async (req, res) => {
+    console.log('user validated:', req.user);
+    
+    const tokenId = crypto.randomUUID(); 
+    
+    const user = await UserModel.findOne(req.user);
+    if(!user){
+      return res.status(500).send();
+    }
+    user.refreshTokenId = tokenId;
+    await user.save();
+    // await UserModel.findOneAndUpdate(req.user, {refreshTokenId: tokenId});
+    const refreshToken = createJwt({type: 'refreshToken'}, 0, tokenId);
+
+    const userObj = {...req.user, role: 'user'};
+    const accessToken = createJwt({user: userObj, type: 'accessToken'}, 3600);
+    res.send({refreshToken , accessToken });
+    
+  }
+);
+
+passport.use('validateUser', new LocalStrategy(
+  async function(username, password, done) {
+    try {
+      const user = await UserModel.findOne({username});
+
+      if(!user){
+        return done(null, false, {message: 'Fuck you!'}); // TODO: Make sure we never give client info whether it was user or password that was incorrect.
+      }
+      const validate = await user.isValidPassword(password);
+      if(!validate) {
+        return done(null, false, {message: 'Fuck you!'});
+      }
+      return done(null, { username }, {message: 'Great success!!!!!!!'});
+    } catch(err) {
+      return done(err);
+    }
+  })
+);
 
 app.get('/hello', (req, res) => {
   res.send('world');
 });
 
 app.get('/jwt-check', 
-  passport.authenticate('jwt', { session: false }),
+  passport.authenticate('userJwt', { session: false }),
   (req, res) => {
     console.log('jwt check passed');
     console.log('user on req obj:', req.user);
     res.send('success');
-  });
+  }
+);
+
+app.get('/token',
+  passport.authenticate('userJwt', { session: false }),
+  async (req, res) => {
+    console.log('received jwt token', req.user);
+    const payload = req.user as Record<string, unknown>;
+    const jwtId = payload.jti as string;
+    if(jwtId){
+      const user = await UserModel.findOne({refreshTokenId: jwtId});
+      if(!user){
+        res.status(500).send();
+        return;
+      }
+      // const username = (jwtPayload.user as Record<string, unknown>).username;
+      const userObj = {username: user.username, role: 'user'};
+      const accessToken = createJwt({user: userObj, type: 'accessToken'}, 3600);
+      res.send(accessToken);
+    }
+  }
+);
+
+passport.use('userJwt', new JwtStrategy(jwtStrategyOptions, function(jwtPayload, done){
+  console.log('jwtPayload:', jwtPayload);
+  return done(null, jwtPayload);  
+}));
 
 mongoose.Promise = global.Promise;
 try {
@@ -104,62 +223,8 @@ db.once('open', function() {
   // testUser.save();
 });
 
+  
 
-
-const jwtOpts: StrategyOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: JWT_SECRET,
-};
-passport.use('adminJwt', new JwtStrategy(jwtOpts, function(jwtPayload, done){
-  console.log('jwtPayload:', jwtPayload);
-  if(jwtPayload.jti !== currentAdminTokenId){
-    return done(null, false);
-  }
-
-  return done(null, jwtPayload);  
-}));
-
-passport.use(new JwtStrategy(jwtOpts, function(jwtPayload, done){
-  console.log('jwtPayload:', jwtPayload);
-  return done(null, jwtPayload);  
-}));
-
-passport.use('validateAdmin', new LocalStrategy({
-  usernameField: 'username',
-  passwordField: 'password',
-},
-async function(username, password, done){
-  console.log('verify triggered with credentials: ', username, password);
-  try {
-    if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD ){
-      // const user = await UserModel.create({username, password});
-      return done(null, {username, password});
-    }
-    return done(null, false, {message: 'fuck you' });
-  } catch (err) {
-    done(err);
-  }
-}
-));
-
-passport.use('validateUser', new LocalStrategy({
-},
-async function(username, password, done) {
-  try {
-    const user = await UserModel.findOne({username});
-
-    if(!user){
-      return done(null, false, {message: 'Fuck you!'}); // TODO: Make sure we never give client info whether it was user or password that was incorrect.
-    }
-    const validate = await user.isValidPassword(password);
-    if(!validate) {
-      return done(null, false, {message: 'Fuck you!'});
-    }
-    return done(null, user, {message: 'Great success!!!!!!!'});
-  } catch(err) {
-    return done(err);
-  }
-}));
 
 const port = 3003;
 app.listen(port, () => {
