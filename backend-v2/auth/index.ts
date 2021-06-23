@@ -144,6 +144,33 @@ app.post('/login',
   }
 );
 
+app.get('/logout',
+  passport.authenticate('userJwt', { session: false }),
+  async (req, res) => {
+    const payload = req.user as Record<string, unknown>;
+    const jwtId = getJwtIdFromPayload(payload);
+    if(jwtId){
+      const user = await UserModel.findOne({refreshTokenId: jwtId});
+      if(!user){
+        res.status(404).send();
+        return;
+      }
+      user.refreshTokenId = '';
+      await user.save();
+      res.send('logout out');
+    }
+  }
+);
+
+function getJwtIdFromPayload(payload: Record<string, unknown>): string | undefined {
+  const type = payload.type as string;
+  if(type === 'refreshToken'){
+    const jwtId = payload.jti as string;
+    return jwtId;
+  }
+  return undefined;
+}
+
 passport.use('validateUser', new LocalStrategy(
   async function(username, password, done) {
     try {
@@ -172,7 +199,7 @@ app.get('/jwt-check',
   (req, res) => {
     console.log('jwt check passed');
     console.log('user on req obj:', req.user);
-    res.send('success');
+    res.send(req.user);
   }
 );
 
@@ -181,11 +208,12 @@ app.get('/token',
   async (req, res) => {
     console.log('received jwt token', req.user);
     const payload = req.user as Record<string, unknown>;
-    const jwtId = payload.jti as string;
+    // const jwtId = payload.jti as string;
+    const jwtId = getJwtIdFromPayload(payload);
     if(jwtId){
       const user = await UserModel.findOne({refreshTokenId: jwtId});
       if(!user){
-        res.status(500).send();
+        res.status(401).send('Unauthorized');
         return;
       }
       // const username = (jwtPayload.user as Record<string, unknown>).username;
