@@ -1,8 +1,8 @@
 import passport from 'passport';
 import express from 'express';
 import { json as parseJsonBody } from 'body-parser';
-import {Strategy as LocalStrategy } from 'passport-local';
-import {Strategy as JwtStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as JwtStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import UserModel from './models/userModel';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
@@ -28,10 +28,11 @@ const jwtStrategyOptions: StrategyOptions = {
   secretOrKey: JWT_SECRET,
 };
 
+// TODO:  Use ES256 with generated keypair for bezzer security
 function createJwt(userObj: Record<string, unknown>, expiresIn: number | undefined = undefined, jwtId?: string) {
   // const tokenId = crypto.randomUUID(); 
   // currentAdminTokenId = tokenId;
-  const jwtObj: jwt.SignOptions = { issuer: JWT_ISSUER, audience: JWT_AUDIENCE };
+  const jwtObj: jwt.SignOptions = { issuer: JWT_ISSUER, audience: JWT_AUDIENCE};
   if(expiresIn){
     jwtObj['expiresIn'] = expiresIn;
   }
@@ -72,9 +73,13 @@ adminRouter.post('/createUser',
     const data: Record<string, unknown> = req.body;
     const username = data.username;
     const password = data.password;
-    const user = await UserModel.create({username, password});
-    console.log('created user:', user);
-    res.send('user created');
+    try {
+      const user = await UserModel.create({username, password});
+      console.log('created user:', user);
+      res.send('user created');
+    } catch(e) {
+      res.send(e);
+    }
   }
 );
 
@@ -190,9 +195,6 @@ passport.use('validateUser', new LocalStrategy(
   })
 );
 
-app.get('/hello', (req, res) => {
-  res.send('world');
-});
 
 app.get('/jwt-check', 
   passport.authenticate('userJwt', { session: false }),
@@ -253,6 +255,13 @@ db.once('open', function() {
 
   
 
+app.get('/health', (req, res) => {
+  let providedName = 'unknown person';
+  if(req.body.name){
+    providedName = req.body.name;
+  }
+  res.send(`hello ${providedName}`);
+});
 
 const port = 3003;
 app.listen(port, () => {
