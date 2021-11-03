@@ -1,6 +1,21 @@
 version: "3.5"
 
 services:
+  caddy:
+    image: caddy:2.4.5
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+
+  auth:
+    build: ./auth
+    expose:
+      - "3003"
+  mediaserver:
+    build: ./mediasoup
+    
   mongo:
     image: 'mongo'
     restart: always
@@ -10,8 +25,8 @@ services:
       MONGO_INITDB_DATABASE: test
     volumes:
       - ./mongo-data:/data/db
-    # ports: 
-    #   - 27017:27017
+    ports: 
+      - 27017:27017
   mongo-admin:
     image: mongo-express
     depends_on: 

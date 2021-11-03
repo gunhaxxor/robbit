@@ -1,0 +1,7 @@
+version: "3.5"
+
+services:
+  auth:
+    entrypoint: ./entrypoint.dev.sh
+    volumes:
+      - ./auth:/usr/app/auth
