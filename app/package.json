@@ -63,7 +63,7 @@
     "nipplejs": "^0.7.1",
     "parse": "^2.4.0",
     "rxjs": "5.5.11",
-    "simple-peer": "^9.2.0",
+    "simple-peer": "9.9.3",
     "socket.io-client": "^2.3.0",
     "sw-toolbox": "3.6.0",
     "text-encoding": "^0.6.4",
