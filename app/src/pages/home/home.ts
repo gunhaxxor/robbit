@@ -41,7 +41,7 @@ export class HomePage {
   internetAvailable: boolean = true;
   signedIn: boolean = false;
   showServerSettings = true;
-  serverUrl = "drive.robbit.se";
+  serverUrl = process.env.BACKEND_SERVER;
   serverName = "";
   serverPassword = "";
   serverStatus = -1;
