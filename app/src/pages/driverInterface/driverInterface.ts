@@ -356,30 +356,37 @@ export class DriverInterfacePage {
           }
           break;
         case "a":
+        case "A":
           if (!this.isParked) {
             this.forwardActive = true;
           }
           break;
         case "z":
+        case "Z":
           if (!this.isParked) {
             this.reverseActive = true;
           }
           break;
         case "i":
+        case "I":
           this.presentSettingsPopover(undefined);
           break;
         case "e":
+        case "E":
           if (!this.showCamera) {
             this.presentEmojiPopover(undefined);
           }
           break;
         case "k":
+        case "K":
           this.toggleVideoTrack();
           break;
         case "m":
+        case "M":
           this.toggleAudioTrack();
           break;
         case "r":
+        case "R":
           if (this.peerLinkActive) {
             this.toggleWaving();
           }
