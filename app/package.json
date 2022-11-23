@@ -62,7 +62,7 @@
     "ionicons": "3.0.0",
     "morgan": "^1.10.0",
     "nipplejs": "^0.7.1",
-    "parse": "^2.4.0",
+    "parse": "^2.10.0",
     "rxjs": "5.5.11",
     "simple-peer": "9.11.1",
     "socket.io-client": "^2.3.0",
