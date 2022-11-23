@@ -420,6 +420,15 @@ export class DriverInterfacePage {
     }
   }
 
+  toggleSpeed() {
+    if(this.DRIVE_MOTOR_SCALE == 1) {
+      this.DRIVE_MOTOR_SCALE = 0.3
+    } else {
+      this.DRIVE_MOTOR_SCALE = 1
+    }
+    console.log('Set DRIVE_MOTOR_SCALE to ' + this.DRIVE_MOTOR_SCALE)
+  }
+
   // Make sure this won't get called before we have retrieved local media and joined the correct socket room!
   initiateCall(stream) {
     console.log("starting call as initiator");
