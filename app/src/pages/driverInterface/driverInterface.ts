@@ -525,7 +525,8 @@ export class DriverInterfacePage {
     // TODO: Proper shutdown of connection. Including sockets and all of that...
     this.peer.on("close", () => {
       console.log("peer connection closed");
-      console.log("this.peer: " + this.peer);
+      console.log("this.peer:");
+      console.log(this.peer);
       // this.peer.destroy();
       // delete this.peer;
       this.peerLinkActive = false;
@@ -540,6 +541,8 @@ export class DriverInterfacePage {
     // });
     this.peer.on("error", err => {
       console.error("!! error " + err);
+      console.log(err);
+      console.log(err.code);
     });
     this.peer.on("data", msg => {
       let msgObj = JSON.parse(String(msg));
@@ -673,7 +676,8 @@ export class DriverInterfacePage {
     // console.log("Found these video tracks in localStream:", videoTracks);
 
     if (this.peer != null) {
-      this.peer.removeTrack(this.localVideoTrack, this.getOutboundStream());
+      // this.peer.removeTrack(this.localVideoTrack, this.getOutboundStream());
+      //this.getOutboundStream().getVideoTracks()[0].enabled = false
       // this.localStream.removeTrack(this.localVideoTrack);
     }
     this.showCamera = false;
@@ -708,7 +712,7 @@ export class DriverInterfacePage {
         );
         this.getOutboundStream().getVideoTracks()[0].enabled = true;
       } else {
-        this.peer.addTrack(this.localVideoTrack, this.getOutboundStream());
+        //this.peer.addTrack(this.localVideoTrack, this.getOutboundStream());
       }
     }
     this.showCamera = true;
@@ -743,7 +747,8 @@ export class DriverInterfacePage {
     }
 
     // if (this.peer != null) {
-    this.peer.removeTrack(audioTracks[0], this.getOutboundStream());
+    //this.peer.removeTrack(audioTracks[0], this.getOutboundStream());
+    this.getOutboundStream().getAudioTracks()[0].enabled = false
     // }
     this.muteAudio = true;
     this.sendData({ muteDriver: this.muteAudio });
@@ -763,8 +768,12 @@ export class DriverInterfacePage {
       return;
     }
 
+    if (!this.getOutboundStream().getAudioTracks()[0].enabled) {
+      this.getOutboundStream().getAudioTracks()[0].enabled = true
+    }
+
     // if (this.peer != null) {
-    this.peer.addTrack(this.localAudioTrack, this.getOutboundStream());
+    //this.peer.addTrack(this.localAudioTrack, this.getOutboundStream());
     // }
     this.muteAudio = false;
     this.sendData({ muteDriver: this.muteAudio });
