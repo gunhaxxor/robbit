@@ -16,11 +16,11 @@ services:
     volumes:
       - ~/docker-persistence/caddy:/data
   coturn:
-    image: instrumentisto/coturn
+    image: coturn/coturn
     network_mode: "host"
     command: ["--verbose",
-      # "--lt-cred-mech",
-      "--no-auth",
+      "--lt-cred-mech",
+      #"--no-auth",
       "--no-tls",
       "-n",
       "--listening-ip=${PUBLIC_IP}",
@@ -28,7 +28,7 @@ services:
       # "--tls-listening-port=${TURN_TLS_PORT}",
       "--relay-ip=${PUBLIC_IP}",
       "--external-ip=${PUBLIC_IP}",
-      # "--user=${TURN_USER}:${TURN_PASSWORD}",
+      "--user=${TURN_USER}:${TURN_PASSWORD}",
       "--realm=${BACKEND_SERVER}",
       "--log-file=stdout",
     ]
