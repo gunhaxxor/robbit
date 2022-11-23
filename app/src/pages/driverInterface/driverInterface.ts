@@ -39,6 +39,7 @@ export class DriverInterfacePage {
   remoteStream: MediaStream;
   remoteVideoTag: HTMLVideoElement;
   showCamera: boolean;
+  robotCameraOption: string = "environment";
   muteAudio: boolean;
   currentEmoji: string = "🙂";
   robotControlIntervalId: any;
@@ -391,6 +392,14 @@ export class DriverInterfacePage {
             this.toggleWaving();
           }
           break;
+        case "p":
+        case "P":
+          this.toggleSpeed();
+          break;
+        case "o":
+        case "O":
+          this.changeRobotCamera();
+          break;
       }
     } else if (event.type == "keyup") {
       switch (event.key) {
@@ -614,14 +623,26 @@ export class DriverInterfacePage {
     }
   }
 
-  // changeCamera() {
-  //   if (this.cameraOption == "environment") {
-  //     this.cameraOption = "user";
+  changeRobotCamera() {
+    if (this.robotCameraOption == "environment") {
+      this.robotCameraOption = "user";
+    } else {
+      this.robotCameraOption = "environment";
+    }
+    console.log("Switching robot camera to " + this.robotCameraOption);
+    // let video: HTMLVideoElement = document.querySelector("#driver-local-video");
+    this.sendData({ changeRobotCamera: this.robotCameraOption });
+    //this.localVideoTag.pause();
+    //this.retrieveCamera();
+  }
+
+  // changeDriverCamera() {
+  //   if (this.driverCameraOption == "environment") {
+  //     this.driverCameraOption = "user";
   //   } else {
-  //     this.cameraOption = "environment";
+  //     this.driverCameraOption = "environment";
   //   }
   //   // let video: HTMLVideoElement = document.querySelector("#driver-local-video");
-
   //   this.localVideoTag.pause();
   //   this.retrieveCamera();
   // }
