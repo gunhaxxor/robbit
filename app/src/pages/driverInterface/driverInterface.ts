@@ -55,7 +55,7 @@ export class DriverInterfacePage {
   SERVO_MIN_VALUE: number = 20;
   ROBOT_MOTOR_MAX_THROTTLE: number = 1000;
   DRIVE_MOTOR_SCALE: number = 0.3;
-  TURN_MOTOR_SCALE: number = 0.3;
+  TURN_MOTOR_SCALE: number = 0.23;
   servoAngle: number = this.SERVO_START_VALUE;
   SERVO_SCALE: number = 5;
   robotName: string;
@@ -432,8 +432,10 @@ export class DriverInterfacePage {
   toggleSpeed() {
     if(this.DRIVE_MOTOR_SCALE == 1) {
       this.DRIVE_MOTOR_SCALE = 0.3
+      this.TURN_MOTOR_SCALE = 0.23
     } else {
       this.DRIVE_MOTOR_SCALE = 1
+      this.TURN_MOTOR_SCALE = 0.3
     }
     console.log('Set DRIVE_MOTOR_SCALE to ' + this.DRIVE_MOTOR_SCALE)
   }
