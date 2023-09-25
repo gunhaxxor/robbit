@@ -298,6 +298,11 @@ export class RobotInterfacePage {
         this.showDriver = msgObj.showDriverCamera;
         // console.log(this.showDriver);
       }
+      if (msgObj.hasOwnProperty("changeRobotCamera")) {
+        this.cameraFacingMode = msgObj.changeRobotCamera;
+        this.changeCamera()
+        // console.log(this.showDriver);
+      }
       if (msgObj.hasOwnProperty("muteDriver")) {
         // TODO: Not implemented yet.
         // Probably want to show this in the interface somehow
@@ -343,19 +348,32 @@ export class RobotInterfacePage {
     });
   }
 
-  changeCamera() {
-    // this.peer.removeStream(this.localStream);
+  async changeCamera() {
+    console.log('changeCamera()')
     this.localStream.getTracks().forEach(trk => trk.stop());
+
     if (this.cameraFacingMode == "environment") {
       this.cameraFacingMode = "user";
     } else {
       this.cameraFacingMode = "environment";
     }
-    let video: HTMLVideoElement = document.querySelector("#robot-local-video");
-    video.pause();
-    this.retrieveCamera().then(() => {
-      // this.peer.addStream(this.localStream);
-    });
+
+    const oldVideoTrack = this.localStream.getVideoTracks()[0];
+    oldVideoTrack.stop()
+    const bufferStream = await navigator.mediaDevices
+      .getUserMedia({
+        video: { facingMode: this.cameraFacingMode },
+        audio: false
+      });
+    const newVideoTrack = bufferStream.getVideoTracks()[0];
+    this.peer.replaceTrack(oldVideoTrack, newVideoTrack, this.localStream);
+    this.localStream.removeTrack(oldVideoTrack);
+    this.localStream.addTrack(newVideoTrack);
+    let video: HTMLVideoElement = document.querySelector(
+      "#robot-local-video"
+    );
+    video.srcObject = bufferStream;
+    video.volume = 0;
   }
 
   retrieveCamera() {
